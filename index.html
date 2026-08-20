@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utsav Cipher Lab — Classical Encryption</title>
+  <meta name="description" content="Learn traditional Caesar, modified Caesar, and monoalphabetic ciphers with live encrypt and decrypt tools." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #15202b;
+      --ink-soft: #3a4a5a;
+      --paper: #eef3f6;
+      --paper-2: #e2eaf0;
+      --line: rgba(21, 32, 43, 0.12);
+      --teal: #0d7377;
+      --teal-deep: #095456;
+      --sand: #d4a373;
+      --sand-hot: #c97b3a;
+      --white: #f7fafc;
+      --box: rgba(247, 250, 252, 0.88);
+      --shadow: 0 18px 40px rgba(21, 32, 43, 0.08);
+      --radius: 18px;
+      --font-display: "Chakra Petch", sans-serif;
+      --font-body: "Figtree", sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+      --shift: 0deg;
+      --nudge-x: 0px;
+      --nudge-y: 0px;
+      --pulse: 0;
+      --grid-drift: 0px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--paper);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.55;
+    }
+
+    /* Atmospheric stage */
+    .stage {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(ellipse 80% 55% at 15% 10%, rgba(13, 115, 119, 0.18), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 90% 20%, rgba(212, 163, 115, 0.22), transparent 50%),
+        linear-gradient(160deg, #f4f8fa 0%, #e7eef3 45%, #dfe8ee 100%);
+      transform: translate3d(var(--nudge-x), var(--nudge-y), 0);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .grid-layer {
+      position: fixed;
+      inset: -20%;
+      z-index: -1;
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: translateX(var(--grid-drift)) rotate(var(--shift));
+      opacity: 0.55;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    .float-letters {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .float-letters span {
+      position: absolute;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(2rem, 5vw, 4.5rem);
+      color: rgba(13, 115, 119, 0.08);
+      transform: translateY(calc(var(--pulse) * -8px)) rotate(calc(var(--shift) * 0.4));
+      transition: transform 0.4s ease, color 0.4s ease;
+    }
+
+    .wrap {
+      width: min(1120px, calc(100% - 2rem));
+      margin: 0 auto;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: minmax(280px, 1fr) auto;
+      align-content: stretch;
+      padding: 1.5rem 0 3.5rem;
+      position: relative;
+      gap: 1.25rem;
+    }
+
+    .hero-visual {
+      position: relative;
+      inset: auto;
+      height: auto;
+      min-height: min(48vh, 420px);
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+    }
+
+    .cipher-ring {
+      width: min(72vw, 440px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1.5px solid rgba(13, 115, 119, 0.28);
+      display: grid;
+      place-items: center;
+      position: relative;
+      transform: rotate(var(--shift));
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      background:
+        radial-gradient(circle at center, rgba(247, 250, 252, 0.55) 0 38%, transparent 39%),
+        conic-gradient(from 0deg, rgba(13, 115, 119, 0.08), rgba(212, 163, 115, 0.18), rgba(13, 115, 119, 0.08));
+    }
+
+    .cipher-ring::before,
+    .cipher-ring::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 1px dashed rgba(21, 32, 43, 0.18);
+    }
+
+    .cipher-ring::before { inset: 12%; }
+    .cipher-ring::after { inset: 24%; border-style: solid; border-color: rgba(201, 123, 58, 0.35); }
+
+    .ring-core {
+      text-align: center;
+      z-index: 1;
+    }
+
+    .ring-core strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 8vw, 5rem);
+      letter-spacing: 0.04em;
+      line-height: 0.95;
+      color: var(--ink);
+    }
+
+    .ring-core span {
+      display: block;
+      margin-top: 0.55rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+    }
+
+    .orbit-letter {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1.4rem;
+      height: 1.4rem;
+      margin: -0.7rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--ink-soft);
+      transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(34vw, 205px))) rotate(calc(var(--i) * -13.846deg));
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      max-width: 34rem;
+      padding-top: 0;
+      align-self: end;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+      margin-bottom: 0.85rem;
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(3.2rem, 10vw, 5.6rem);
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .brand em {
+      font-style: normal;
+      color: var(--teal);
+      display: block;
+    }
+
+    .lede {
+      font-size: 1.08rem;
+      color: var(--ink-soft);
+      max-width: 30rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.95rem 1.35rem;
+      background: var(--ink);
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 600;
+      border-radius: 999px;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .cta:hover {
+      background: var(--teal-deep);
+      transform: translateY(-2px);
+    }
+
+    .cta svg { width: 18px; height: 18px; }
+
+    /* Lab section */
+    .lab {
+      padding: 1rem 0 5rem;
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      line-height: 1.1;
+    }
+
+    .section-head p {
+      color: var(--ink-soft);
+      max-width: 28rem;
+      font-size: 0.98rem;
+    }
+
+    .methods {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .method-btn {
+      appearance: none;
+      border: 1.5px solid var(--line);
+      background: rgba(247, 250, 252, 0.7);
+      border-radius: 14px;
+      padding: 1rem 0.9rem;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+      font: inherit;
+      color: inherit;
+    }
+
+    .method-btn:hover {
+      transform: translateY(-3px);
+      border-color: rgba(13, 115, 119, 0.35);
+    }
+
+    .method-btn.active {
+      background: var(--ink);
+      color: var(--white);
+      border-color: var(--ink);
+      box-shadow: var(--shadow);
+      transform: translateY(-3px) scale(1.01);
+    }
+
+    .method-btn .step {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .method-btn .name {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: block;
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 1rem;
+    }
+
+    .stack {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .box {
+      background: var(--box);
+      border: 1px solid rgba(21, 32, 43, 0.08);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.2rem 1.25rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      transform: translate3d(calc(var(--nudge-x) * 0.35), calc(var(--nudge-y) * 0.35), 0);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+    }
+
+    .box:hover { border-color: rgba(13, 115, 119, 0.28); }
+
+    .box-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+      margin-bottom: 0.55rem;
+    }
+
+    .box h3 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .box p { color: var(--ink-soft); font-size: 0.96rem; }
+
+    .box ul {
+      margin: 0.7rem 0 0 1.1rem;
+      color: var(--ink-soft);
+      font-size: 0.94rem;
+    }
+
+    .box li + li { margin-top: 0.35rem; }
+
+    .formula {
+      margin-top: 0.9rem;
+      padding: 0.75rem 0.85rem;
+      border-radius: 12px;
+      background: rgba(13, 115, 119, 0.08);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--teal-deep);
+    }
+
+    .field-row {
+      display: grid;
+      gap: 0.75rem;
+      margin-top: 0.85rem;
+    }
+
+    .field-row.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    label {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border: 1.5px solid rgba(21, 32, 43, 0.14);
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 12px;
+      padding: 0.75rem 0.85rem;
+      font: inherit;
+      color: var(--ink);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      resize: vertical;
+    }
+
+    textarea { min-height: 110px; }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .mode-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+    }
+
+    .mode-toggle button {
+      appearance: none;
+      border: 1.5px solid rgba(21, 32, 43, 0.14);
+      background: transparent;
+      border-radius: 999px;
+      padding: 0.7rem 0.8rem;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--ink-soft);
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .mode-toggle button.active {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: white;
+      transform: scale(1.02);
+    }
+
+    .output-box {
+      margin-top: 0.9rem;
+      min-height: 110px;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      background: var(--ink);
+      color: #d7ecec;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      transform: scale(calc(1 + (var(--pulse) * 0.012)));
+      transition: transform 0.3s ease;
+    }
+
+    .output-box .placeholder { color: rgba(215, 236, 236, 0.45); }
+
+    .alphabet-strip {
+      display: grid;
+      grid-template-columns: repeat(13, 1fr);
+      gap: 0.3rem;
+      margin-top: 0.9rem;
+    }
+
+    .alphabet-strip span {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.35rem 0;
+      border-radius: 8px;
+      background: rgba(13, 115, 119, 0.08);
+      color: var(--teal-deep);
+      transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+    }
+
+    .alphabet-strip span.lit {
+      background: var(--sand-hot);
+      color: white;
+      transform: translateY(-4px) scale(1.08);
+    }
+
+    .logic-steps {
+      display: grid;
+      gap: 0.55rem;
+      margin-top: 0.75rem;
+      max-height: 280px;
+      overflow: auto;
+      padding-right: 0.25rem;
+    }
+
+    .logic-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.65rem;
+      align-items: start;
+      padding: 0.65rem 0.75rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(21, 32, 43, 0.06);
+      font-size: 0.9rem;
+      animation: rise 0.35s ease both;
+    }
+
+    .logic-step .idx {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--sand-hot);
+      padding-top: 0.15rem;
+    }
+
+    .logic-step code {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: rgba(13, 115, 119, 0.1);
+      padding: 0.1rem 0.35rem;
+      border-radius: 5px;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .code-panel {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.65;
+      background: #18232e;
+      color: #c8d8e0;
+      border-radius: 12px;
+      padding: 0.95rem 1rem;
+      overflow: auto;
+      margin-top: 0.75rem;
+      max-height: 320px;
+    }
+
+    .code-panel .kw { color: #7fd4c8; }
+    .code-panel .fn { color: #f0b27a; }
+    .code-panel .cm { color: #6f8494; }
+    .code-panel .st { color: #e8c98a; }
+
+    .hint {
+      margin-top: 0.7rem;
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+    }
+
+    .footer {
+      padding: 2rem 0 2.5rem;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .footer strong {
+      color: var(--ink);
+      font-family: var(--font-display);
+    }
+
+    label[hidden],
+    #keywordField[hidden],
+    #keyField[hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 860px) {
+      .methods { grid-template-columns: 1fr; }
+      .panels { grid-template-columns: 1fr; }
+      .field-row.two { grid-template-columns: 1fr; }
+      .hero {
+        min-height: auto;
+        grid-template-rows: auto auto;
+        padding-top: 1rem;
+      }
+      .hero-visual { min-height: min(42vh, 320px); }
+      .alphabet-strip { grid-template-columns: repeat(9, 1fr); }
+      .cipher-ring { width: min(78vw, 320px); }
+      .orbit-letter {
+        transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(36vw, 148px))) rotate(calc(var(--i) * -13.846deg));
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" aria-hidden="true"></div>
+  <div class="grid-layer" aria-hidden="true"></div>
+  <div class="float-letters" id="floatLetters" aria-hidden="true"></div>
+
+  <header class="hero wrap">
+    <div class="hero-visual" aria-hidden="true">
+      <div class="cipher-ring" id="cipherRing">
+        <div class="ring-core">
+          <strong>26</strong>
+          <span>letter wheel</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-copy">
+      <p class="eyebrow">Engineering class · Classical cryptography</p>
+      <h1 class="brand">Utsav<em>Cipher Lab</em></h1>
+      <p class="lede">
+        Learn three classical ciphers in order — traditional Caesar, modified Caesar,
+        then monoalphabetic substitution — and encrypt or decrypt live as you go.
+      </p>
+      <a class="cta" href="#lab">
+        Enter the lab
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <main class="lab wrap" id="lab">
+    <div class="section-head">
+      <h2>Choose a method</h2>
+      <p>Start with the classic shift, then try changing shifts per letter, then full alphabet remapping.</p>
+    </div>
+
+    <div class="methods" role="tablist" aria-label="Cipher methods">
+      <button class="method-btn active" data-method="traditional" role="tab" aria-selected="true">
+        <span class="step">01</span>
+        <span class="name">Traditional Caesar</span>
+      </button>
+      <button class="method-btn" data-method="modified" role="tab" aria-selected="false">
+        <span class="step">02</span>
+        <span class="name">Modified Caesar</span>
+      </button>
+      <button class="method-btn" data-method="mono" role="tab" aria-selected="false">
+        <span class="step">03</span>
+        <span class="name">Monoalphabetic</span>
+      </button>
+    </div>
+
+    <div class="panels">
+      <div class="stack">
+        <section class="box" id="knowledgeBox">
+          <p class="box-label">Knowledge</p>
+          <h3 id="knowledgeTitle">Traditional Caesar Cipher</h3>
+          <div id="knowledgeBody"></div>
+        </section>
+
+        <section class="box">
+          <p class="box-label">Workshop</p>
+          <h3>Encrypt &amp; decrypt</h3>
+          <p id="workshopHint">Type text and a shift. The page reacts as the key changes.</p>
+
+          <div class="mode-toggle" role="group" aria-label="Operation mode">
+            <button type="button" class="active" data-mode="encrypt">Encrypt</button>
+            <button type="button" data-mode="decrypt">Decrypt</button>
+          </div>
+
+          <div class="field-row">
+            <label>
+              <span id="inputLabel">Plaintext</span>
+              <textarea id="messageInput" placeholder="Type a message like HELLO WORLD"></textarea>
+            </label>
+          </div>
+
+          <div class="field-row two">
+            <label id="keyField">
+              <span id="keyLabel">Shift key (0–25)</span>
+              <input id="keyInput" type="number" min="0" max="25" value="3" />
+            </label>
+            <label id="keywordField" hidden>
+              <span id="keywordLabel">Keyword</span>
+              <input id="keywordInput" type="text" value="CIPHER" autocomplete="off" />
+            </label>
+            <label>
+              <span>Live preview</span>
+              <input id="previewMeta" type="text" readonly value="Shift = 3" />
+            </label>
+          </div>
+
+          <p class="box-label" style="margin-top:1rem">Output</p>
+          <div class="output-box" id="outputBox" aria-live="polite">
+            <span class="placeholder">Your result will appear here…</span>
+          </div>
+
+          <div class="alphabet-strip" id="alphabetStrip" aria-hidden="true"></div>
+          <p class="hint" id="interactHint">Tip: change the shift number and watch the wheel and grid move.</p>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="box">
+          <p class="box-label">Logic</p>
+          <h3>What is happening</h3>
+          <p id="logicIntro">Each letter walks through the formula below.</p>
+          <div class="logic-steps" id="logicSteps"></div>
+        </section>
+
+        <section class="box">
+          <p class="box-label">Code</p>
+          <h3>How to build it</h3>
+          <p>Beginner-friendly JavaScript for the method you selected.</p>
+          <pre class="code-panel" id="codePanel"></pre>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer wrap">
+    <p><strong>Utsav Cipher Lab</strong> — classical encryption for learning.</p>
+    <p>Host this folder on GitHub Pages by enabling Pages on the <code>main</code> branch.</p>
+  </footer>
+
+  <script>
+    const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    const METHODS = {
+      traditional: {
+        title: "Traditional Caesar Cipher",
+        knowledge: `
+          <p>Every letter is shifted by the <strong>same fixed number</strong>. Spaces and punctuation stay as they are.</p>
+          <ul>
+            <li>Used as the first classroom example of substitution.</li>
+            <li>Easy to break if the shift is guessed (only 25 useful keys).</li>
+            <li>Great for understanding modular arithmetic: wrap around after Z.</li>
+          </ul>
+          <div class="formula">C = (P + K) mod 26 &nbsp;·&nbsp; P = (C − K) mod 26</div>
+        `,
+        workshopHint: "Pick one shift for the whole message. Try 3 (the classic Julius Caesar shift).",
+        keyMode: "shift",
+        interactHint: "Tip: change the shift number and watch the wheel and grid move.",
+        logicIntro: "Same shift applied to every letter, wrapping with mod 26.",
+        code: `<span class="cm">// Traditional Caesar</span>
+<span class="kw">function</span> <span class="fn">caesar</span>(text, key, decrypt = <span class="kw">false</span>) {
+  <span class="kw">const</span> k = decrypt ? (26 - (key % 26)) % 26 : key % 26;
+  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) => {
+    <span class="kw">const</span> base = ch <= <span class="st">'Z'</span> ? 65 : 97;
+    <span class="kw">const</span> code = ch.charCodeAt(0) - base;
+    <span class="kw">return</span> String.fromCharCode(((code + k) % 26) + base);
+  });
+}`
+      },
+      modified: {
+        title: "Modified Caesar Cipher",
+        knowledge: `
+          <p>Instead of one fixed shift, each letter gets a shift from a <strong>repeating key stream</strong> (letters map to 0–25). This is the classroom “modified” form of Caesar.</p>
+          <ul>
+            <li>Key word <code>KEY</code> means shifts 10, 4, 24, then repeats.</li>
+            <li>Harder than classic Caesar because the shift changes per position.</li>
+            <li>Closely related to the idea behind the Vigenère cipher.</li>
+          </ul>
+          <div class="formula">Cᵢ = (Pᵢ + Kᵢ) mod 26 &nbsp;·&nbsp; K repeats across the message</div>
+        `,
+        workshopHint: "Enter a keyword. Each letter of the keyword becomes the next shift.",
+        keyMode: "keyword",
+        interactHint: "Tip: type different keyword letters — the scene nudges with each character.",
+        logicIntro: "Each plaintext letter pairs with the next key letter’s shift value.",
+        code: `<span class="cm">// Modified Caesar (repeating keyword shifts)</span>
+<span class="kw">function</span> <span class="fn">modifiedCaesar</span>(text, keyword, decrypt = <span class="kw">false</span>) {
+  <span class="kw">const</span> shifts = keyword.toUpperCase().replace(/[^A-Z]/g, <span class="st">""</span>)
+    .split(<span class="st">""</span>).map(c => c.charCodeAt(0) - 65);
+  <span class="kw">let</span> i = 0;
+  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) => {
+    <span class="kw">const</span> base = ch <= <span class="st">'Z'</span> ? 65 : 97;
+    <span class="kw">let</span> k = shifts[i++ % shifts.length] || 0;
+    <span class="kw">if</span> (decrypt) k = (26 - k) % 26;
+    <span class="kw">return</span> String.fromCharCode(((ch.charCodeAt(0) - base + k) % 26) + base);
+  });
+}`
+      },
+      mono: {
+        title: "Monoalphabetic Cipher",
+        knowledge: `
+          <p>One plaintext letter always maps to <strong>one ciphertext letter</strong>, but the mapping is a mixed alphabet built from a keyword (duplicates removed), then the remaining letters in order.</p>
+          <ul>
+            <li>Keyword <code>CIPHER</code> → cipher alphabet starts with C I P H E R…</li>
+            <li>Still monoalphabetic: A always becomes the same substitute.</li>
+            <li>Stronger than Caesar, weaker than modern ciphers (frequency analysis works).</li>
+          </ul>
+          <div class="formula">Build cipher alphabet from keyword → substitute letter-by-letter</div>
+        `,
+        workshopHint: "Provide a keyword to build the substitution alphabet, then encrypt or decrypt.",
+        keyMode: "keyword",
+        interactHint: "Tip: edit the keyword — lit letters on the strip show the new mapping energy.",
+        logicIntro: "Plain alphabet maps onto a keyword-scrambled cipher alphabet.",
+        code: `<span class="cm">// Monoalphabetic substitution from keyword</span>
+<span class="kw">function</span> <span class="fn">buildAlphabet</span>(keyword) {
+  <span class="kw">const</span> seen = <span class="kw">new</span> Set();
+  <span class="kw">let</span> out = <span class="st">""</span>;
+  <span class="kw">for</span> (<span class="kw">const</span> ch of (keyword + <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>).toUpperCase()) {
+    <span class="kw">if</span> (/[A-Z]/.test(ch) && !seen.has(ch)) { seen.add(ch); out += ch; }
+  }
+  <span class="kw">return</span> out;
+}
+
+<span class="kw">function</span> <span class="fn">mono</span>(text, keyword, decrypt = <span class="kw">false</span>) {
+  <span class="kw">const</span> cipher = buildAlphabet(keyword);
+  <span class="kw">const</span> from = decrypt ? cipher : <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;
+  <span class="kw">const</span> to = decrypt ? <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span> : cipher;
+  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) => {
+    <span class="kw">const</span> up = ch.toUpperCase();
+    <span class="kw">const</span> mapped = to[from.indexOf(up)];
+    <span class="kw">return</span> ch === up ? mapped : mapped.toLowerCase();
+  });
+}`
+      }
+    };
+
+    const state = {
+      method: "traditional",
+      mode: "encrypt"
+    };
+
+    const els = {
+      knowledgeTitle: document.getElementById("knowledgeTitle"),
+      knowledgeBody: document.getElementById("knowledgeBody"),
+      workshopHint: document.getElementById("workshopHint"),
+      interactHint: document.getElementById("interactHint"),
+      logicIntro: document.getElementById("logicIntro"),
+      codePanel: document.getElementById("codePanel"),
+      messageInput: document.getElementById("messageInput"),
+      keyInput: document.getElementById("keyInput"),
+      keywordInput: document.getElementById("keywordInput"),
+      keyField: document.getElementById("keyField"),
+      keywordField: document.getElementById("keywordField"),
+      keyLabel: document.getElementById("keyLabel"),
+      inputLabel: document.getElementById("inputLabel"),
+      previewMeta: document.getElementById("previewMeta"),
+      outputBox: document.getElementById("outputBox"),
+      logicSteps: document.getElementById("logicSteps"),
+      alphabetStrip: document.getElementById("alphabetStrip"),
+      cipherRing: document.getElementById("cipherRing")
+    };
+
+    /* Decorative orbit letters */
+    ALPHA.split("").forEach((ch, i) => {
+      const span = document.createElement("span");
+      span.className = "orbit-letter";
+      span.style.setProperty("--i", i);
+      span.textContent = ch;
+      els.cipherRing.appendChild(span);
+    });
+
+    /* Floating background letters */
+    const floatHost = document.getElementById("floatLetters");
+    "CIPHERLABUTSAV".split("").forEach((ch, i) => {
+      const span = document.createElement("span");
+      span.textContent = ch;
+      span.style.left = `${(i * 7.2 + 4) % 92}%`;
+      span.style.top = `${(i * 11 + 8) % 88}%`;
+      floatHost.appendChild(span);
+    });
+
+    ALPHA.split("").forEach((ch) => {
+      const span = document.createElement("span");
+      span.textContent = ch;
+      span.dataset.letter = ch;
+      els.alphabetStrip.appendChild(span);
+    });
+
+    function buildMonoAlphabet(keyword) {
+      const seen = new Set();
+      let out = "";
+      const raw = String(keyword || "").toUpperCase() + ALPHA;
+      for (const ch of raw) {
+        if (/[A-Z]/.test(ch) && !seen.has(ch)) {
+          seen.add(ch);
+          out += ch;
+        }
+      }
+      return out;
+    }
+
+    function keywordShifts(keyword) {
+      return String(keyword || "")
+        .toUpperCase()
+        .replace(/[^A-Z]/g, "")
+        .split("")
+        .map((c) => c.charCodeAt(0) - 65);
+    }
+
+    function processTraditional(text, key, decrypt) {
+      const k = ((Number(key) % 26) + 26) % 26;
+      const shift = decrypt ? (26 - k) % 26 : k;
+      let out = "";
+      const steps = [];
+      let stepCount = 0;
+
+      for (const ch of text) {
+        if (/[a-z]/i.test(ch)) {
+          const upper = ch.toUpperCase();
+          const p = upper.charCodeAt(0) - 65;
+          const c = (p + shift) % 26;
+          const mapped = String.fromCharCode(65 + c);
+          out += ch === upper ? mapped : mapped.toLowerCase();
+          if (stepCount < 10) {
+            steps.push({
+              html: `<code>${upper}</code> → (${p} ${decrypt ? "−" : "+"} ${k}) mod 26 = <code>${mapped}</code>`
+            });
+            stepCount++;
+          }
+        } else {
+          out += ch;
+        }
+      }
+      return { out, steps, meta: `Shift = ${k}`, accent: k };
+    }
+
+    function processModified(text, keyword, decrypt) {
+      const shifts = keywordShifts(keyword);
+      if (!shifts.length) {
+        return {
+          out: text,
+          steps: [{ html: "Add letters to the keyword to create shifts." }],
+          meta: "Keyword needed",
+          accent: 0
+        };
+      }
+
+      let out = "";
+      const steps = [];
+      let i = 0;
+      let stepCount = 0;
+      let accent = shifts[0];
+
+      for (const ch of text) {
+        if (/[a-z]/i.test(ch)) {
+          const upper = ch.toUpperCase();
+          const p = upper.charCodeAt(0) - 65;
+          const keyLetter = String.fromCharCode(65 + shifts[i % shifts.length]);
+          let k = shifts[i % shifts.length];
+          const shown = k;
+          if (decrypt) k = (26 - k) % 26;
+          const c = (p + k) % 26;
+          const mapped = String.fromCharCode(65 + c);
+          out += ch === upper ? mapped : mapped.toLowerCase();
+          if (stepCount < 10) {
+            steps.push({
+              html: `<code>${upper}</code> with key <code>${keyLetter}</code> (${shown}) → <code>${mapped}</code>`
+            });
+            stepCount++;
+          }
+          accent = shown;
+          i++;
+        } else {
+          out += ch;
+        }
+      }
+
+      return { out, steps, meta: `Key stream = ${keyword.toUpperCase().replace(/[^A-Z]/g, "") || "—"}`, accent };
+    }
+
+    function processMono(text, keyword, decrypt) {
+      const cipher = buildMonoAlphabet(keyword);
+      const from = decrypt ? cipher : ALPHA;
+      const to = decrypt ? ALPHA : cipher;
+      let out = "";
+      const steps = [];
+      let stepCount = 0;
+
+      for (const ch of text) {
+        if (/[a-z]/i.test(ch)) {
+          const upper = ch.toUpperCase();
+          const idx = from.indexOf(upper);
+          const mapped = to[idx];
+          out += ch === upper ? mapped : mapped.toLowerCase();
+          if (stepCount < 10) {
+            steps.push({
+              html: `<code>${upper}</code> maps via cipher alphabet → <code>${mapped}</code>`
+            });
+            stepCount++;
+          }
+        } else {
+          out += ch;
+        }
+      }
+
+      const accent = (keyword.toUpperCase().replace(/[^A-Z]/g, "").charCodeAt(0) - 65) || 0;
+      return {
+        out,
+        steps,
+        meta: `Cipher A→${cipher[0]} … Z→${cipher[25]}`,
+        accent: Number.isFinite(accent) ? accent : 0,
+        cipher
+      };
+    }
+
+    function setMotion(accent, sourceText) {
+      const n = Number(accent) || 0;
+      const drift = (n % 26) * 3.2;
+      const x = ((n % 7) - 3) * 2.2;
+      const y = ((n % 5) - 2) * 1.8;
+      const pulse = Math.min(6, (sourceText || "").length * 0.15 + (n % 26) * 0.08);
+
+      document.documentElement.style.setProperty("--shift", `${(n % 26) * (360 / 26)}deg`);
+      document.documentElement.style.setProperty("--grid-drift", `${drift}px`);
+      document.documentElement.style.setProperty("--nudge-x", `${x}px`);
+      document.documentElement.style.setProperty("--nudge-y", `${y}px`);
+      document.documentElement.style.setProperty("--pulse", String(pulse));
+    }
+
+    function lightAlphabet(result) {
+      const nodes = els.alphabetStrip.querySelectorAll("span");
+      nodes.forEach((n) => n.classList.remove("lit"));
+
+      if (state.method === "traditional") {
+        const k = ((Number(els.keyInput.value) % 26) + 26) % 26;
+        if (nodes[k]) nodes[k].classList.add("lit");
+        if (nodes[0]) nodes[0].classList.add("lit");
+      } else if (state.method === "modified") {
+        keywordShifts(els.keywordInput.value).slice(0, 6).forEach((s) => {
+          if (nodes[s]) nodes[s].classList.add("lit");
+        });
+      } else if (result.cipher) {
+        // light first few cipher-mapped letters
+        for (let i = 0; i < 6; i++) {
+          const ch = result.cipher[i];
+          const node = els.alphabetStrip.querySelector(`[data-letter="${ch}"]`);
+          if (node) node.classList.add("lit");
+        }
+      }
+    }
+
+    function renderMethod() {
+      const m = METHODS[state.method];
+      els.knowledgeTitle.textContent = m.title;
+      els.knowledgeBody.innerHTML = m.knowledge;
+      els.workshopHint.textContent = m.workshopHint;
+      els.interactHint.textContent = m.interactHint;
+      els.logicIntro.textContent = m.logicIntro;
+      els.codePanel.innerHTML = m.code;
+
+      const isKeyword = m.keyMode === "keyword";
+      els.keyField.hidden = isKeyword;
+      els.keywordField.hidden = !isKeyword;
+
+      if (state.method === "traditional") {
+        els.keyLabel.textContent = "Shift key (0–25)";
+      }
+
+      runCipher();
+    }
+
+    function runCipher() {
+      const text = els.messageInput.value;
+      const decrypt = state.mode === "decrypt";
+      els.inputLabel.textContent = decrypt ? "Ciphertext" : "Plaintext";
+
+      let result;
+      if (state.method === "traditional") {
+        result = processTraditional(text, els.keyInput.value || 0, decrypt);
+      } else if (state.method === "modified") {
+        result = processModified(text, els.keywordInput.value, decrypt);
+      } else {
+        result = processMono(text, els.keywordInput.value, decrypt);
+      }
+
+      els.previewMeta.value = result.meta;
+
+      if (!text.trim()) {
+        els.outputBox.innerHTML = '<span class="placeholder">Your result will appear here…</span>';
+      } else {
+        els.outputBox.textContent = result.out;
+      }
+
+      if (!result.steps.length) {
+        els.logicSteps.innerHTML = `<div class="logic-step"><span class="idx">00</span><div>Type letters to see each step unfold.</div></div>`;
+      } else {
+        els.logicSteps.innerHTML = result.steps
+          .map((s, i) => `<div class="logic-step" style="animation-delay:${i * 40}ms"><span class="idx">${String(i + 1).padStart(2, "0")}</span><div>${s.html}</div></div>`)
+          .join("");
+      }
+
+      setMotion(result.accent, text + (els.keywordInput.value || "") + (els.keyInput.value || ""));
+      lightAlphabet(result);
+    }
+
+    document.querySelectorAll(".method-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".method-btn").forEach((b) => {
+          b.classList.remove("active");
+          b.setAttribute("aria-selected", "false");
+        });
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+        state.method = btn.dataset.method;
+        renderMethod();
+      });
+    });
+
+    document.querySelectorAll(".mode-toggle button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".mode-toggle button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.mode = btn.dataset.mode;
+        runCipher();
+      });
+    });
+
+    ["input", "change"].forEach((evt) => {
+      els.messageInput.addEventListener(evt, runCipher);
+      els.keyInput.addEventListener(evt, runCipher);
+      els.keywordInput.addEventListener(evt, runCipher);
+    });
+
+    renderMethod();
+  </script>
+</body>
+</html>
