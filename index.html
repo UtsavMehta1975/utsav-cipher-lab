@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Utsav Cipher Lab — Classical Encryption</title>
+  <title>Advance Cipher Lab — Classical Encryption</title>
   <meta name="description" content="Learn traditional Caesar, modified Caesar, and monoalphabetic ciphers with live encrypt and decrypt tools." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -614,10 +614,10 @@
 
     <div class="hero-copy">
       <p class="eyebrow">Engineering class · Classical cryptography</p>
-      <h1 class="brand">Utsav<em>Cipher Lab</em></h1>
+      <h1 class="brand">Advance<em>Cipher Lab</em></h1>
       <p class="lede">
         Learn three classical ciphers in order — traditional Caesar, modified Caesar,
-        then monoalphabetic substitution — and encrypt or decrypt live as you go.
+        then monoalphabetic substitution — with live tools, logic steps, and code.
       </p>
       <a class="cta" href="#lab">
         Enter the lab
@@ -658,9 +658,9 @@
         </section>
 
         <section class="box">
-          <p class="box-label">Workshop</p>
+          <p class="box-label">Input</p>
           <h3>Encrypt &amp; decrypt</h3>
-          <p id="workshopHint">Type text and a shift. The page reacts as the key changes.</p>
+          <p id="workshopHint">Type text and a key. The page reacts as values change.</p>
 
           <div class="mode-toggle" role="group" aria-label="Operation mode">
             <button type="button" class="active" data-mode="encrypt">Encrypt</button>
@@ -688,14 +688,16 @@
               <input id="previewMeta" type="text" readonly value="Shift = 3" />
             </label>
           </div>
+          <p class="hint" id="interactHint">Tip: change the shift number and watch the wheel and grid move.</p>
+        </section>
 
-          <p class="box-label" style="margin-top:1rem">Output</p>
+        <section class="box">
+          <p class="box-label">Output</p>
+          <h3>Result</h3>
           <div class="output-box" id="outputBox" aria-live="polite">
             <span class="placeholder">Your result will appear here…</span>
           </div>
-
           <div class="alphabet-strip" id="alphabetStrip" aria-hidden="true"></div>
-          <p class="hint" id="interactHint">Tip: change the shift number and watch the wheel and grid move.</p>
         </section>
       </div>
 
@@ -710,7 +712,7 @@
         <section class="box">
           <p class="box-label">Code</p>
           <h3>How to build it</h3>
-          <p>Beginner-friendly JavaScript for the method you selected.</p>
+          <p>Beginner-friendly JavaScript for the method you selected — copy and study it.</p>
           <pre class="code-panel" id="codePanel"></pre>
         </section>
       </div>
@@ -718,7 +720,7 @@
   </main>
 
   <footer class="footer wrap">
-    <p><strong>Utsav Cipher Lab</strong> — classical encryption for learning.</p>
+    <p><strong>Advance Cipher Lab</strong> — classical encryption for learning.</p>
     <p>Host this folder on GitHub Pages by enabling Pages on the <code>main</code> branch.</p>
   </footer>
 
@@ -854,7 +856,7 @@
 
     /* Floating background letters */
     const floatHost = document.getElementById("floatLetters");
-    "CIPHERLABUTSAV".split("").forEach((ch, i) => {
+    "ADVANCECIPHERLAB".split("").forEach((ch, i) => {
       const span = document.createElement("span");
       span.textContent = ch;
       span.style.left = `${(i * 7.2 + 4) % 92}%`;
