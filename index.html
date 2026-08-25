@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Guptlekh — गुप्तलेख</title>
-  <meta name="description" content="Guptlekh is a night lab for traditional Caesar, modified Caesar, and monoalphabetic ciphers — encrypt live, watch every letter, crack weak keys, and practice." />
+  <meta name="description" content="Guptlekh is a quiet bench for traditional Caesar, modified Caesar, and monoalphabetic ciphers — encrypt live, watch every letter, and practice classical cryptanalysis." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet" />
@@ -104,9 +104,9 @@
     .float-letters span {
       position: absolute;
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(2rem, 5vw, 4.5rem);
-      color: rgba(159, 184, 171, 0.045);
+      font-weight: 500;
+      font-size: clamp(1.5rem, 3.6vw, 3rem);
+      color: rgba(159, 184, 171, 0.032);
       transform: translateY(calc(var(--pulse) * -8px)) rotate(calc(var(--shift) * 0.4));
       transition: transform 0.4s ease, color 0.4s ease;
     }
@@ -238,7 +238,7 @@
       font-family: var(--font-mono);
       font-size: 0.68rem;
       font-weight: 500;
-      color: #c9e8d8;
+      color: #c8d4cc;
       border-radius: 50%;
       cursor: pointer;
     }
@@ -249,7 +249,7 @@
     }
 
     .disk.inner .disk-letter {
-      color: var(--phosphor);
+      color: #b8c4bc;
       transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(24vw, 132px))) rotate(calc(var(--i) * -13.846deg - var(--disk-rot)));
     }
 
@@ -454,7 +454,7 @@
 
     .method-btn .name {
       font-family: var(--font-display);
-      font-weight: 600;
+      font-weight: 500;
       font-size: 1.05rem;
       display: block;
     }
@@ -548,7 +548,7 @@
       padding: 0.75rem 0.85rem;
       font: inherit;
       color: var(--ink);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
       resize: vertical;
     }
 
@@ -586,7 +586,7 @@
       font-weight: 500;
       cursor: pointer;
       color: var(--ink-soft);
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     }
 
     .mode-toggle button.active {
@@ -605,34 +605,33 @@
     .ghost-btn {
       padding: 0.5rem 0.8rem;
       font-size: 0.82rem;
-      background: rgba(8, 22, 18, 0.55);
+      background: rgba(16, 20, 18, 0.55);
     }
 
     .ghost-btn:hover {
-      border-color: var(--teal);
-      color: var(--teal-deep);
+      border-color: var(--brass);
+      color: var(--sand);
     }
 
     .output-box {
       margin-top: 0.9rem;
       min-height: 96px;
       padding: 0.9rem 1rem;
-      border-radius: 4px;
+      border-radius: 6px;
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
       font-family: var(--font-mono);
       font-size: 0.92rem;
       white-space: pre-wrap;
       word-break: break-word;
-      transform: scale(calc(1 + (var(--pulse) * 0.012)));
-      transition: transform 0.3s ease;
+      border: 1px solid var(--line);
     }
 
-    .output-box .placeholder { color: rgba(215, 236, 236, 0.45); }
+    .output-box .placeholder { color: var(--ink-soft); }
     .output-box mark {
-      background: var(--sand-hot);
-      color: white;
-      border-radius: 4px;
+      background: rgba(185, 171, 140, 0.28);
+      color: var(--white);
+      border-radius: 3px;
       padding: 0 0.12em;
     }
 
@@ -666,14 +665,13 @@
       border-radius: 7px;
     }
 
-    .map-col .from { background: rgba(61, 204, 168, 0.12); color: var(--teal-deep); }
+    .map-col .from { background: rgba(106, 154, 132, 0.12); color: var(--teal-deep); }
     .map-col .arrow { font-size: 0.6rem; color: var(--ink-soft); padding: 0; }
-    .map-col .to { background: rgba(228, 180, 92, 0.16); color: var(--sand); }
+    .map-col .to { background: rgba(185, 171, 140, 0.16); color: var(--sand); }
     .map-col.active .from,
     .map-col.active .to {
-      background: var(--sand-hot);
-      color: white;
-      transform: translateY(-2px);
+      background: rgba(185, 171, 140, 0.38);
+      color: var(--white);
     }
 
     .step-hero {
@@ -683,19 +681,22 @@
       align-items: center;
       margin-top: 0.7rem;
       padding: 0.85rem;
-      border-radius: 4px;
-      background: rgba(61, 204, 168, 0.08);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.9);
+      border: 1px solid var(--line);
     }
 
     .glyph {
       width: 4.1rem;
       height: 4.1rem;
-      border-radius: 4px;
+      border-radius: 8px;
+      display: grid;
       place-items: center;
       font-family: var(--font-display);
       font-size: 1.85rem;
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
+      border: 1px solid var(--line);
     }
 
     .hud {
@@ -725,7 +726,7 @@
     .hud span {
       font-family: var(--font-display);
       font-size: 0.95rem;
-      color: var(--phosphor);
+      color: var(--ink);
     }
 
     .tapes {
@@ -753,15 +754,14 @@
       min-width: 1.55rem;
       text-align: center;
       padding: 0.3rem 0.12rem;
-      border-radius: 7px;
-      background: rgba(61, 204, 168, 0.1);
+      border-radius: 4px;
+      background: rgba(106, 154, 132, 0.12);
     }
 
-    .tape.cipher i { background: var(--void); color: var(--phosphor); }
+    .tape.cipher i { background: var(--void); color: var(--ink); }
     .tape i.on {
-      background: var(--sand-hot);
-      color: white;
-      transform: translateY(-2px);
+      background: rgba(185, 171, 140, 0.38);
+      color: var(--white);
     }
 
     .rail {
@@ -775,8 +775,8 @@
     .rail button {
       appearance: none;
       border: 0;
-      background: rgba(141, 255, 196, 0.07);
-      border-radius: 7px;
+      background: rgba(106, 154, 132, 0.1);
+      border-radius: 4px;
       padding: 0.22rem 0;
       font-family: var(--font-mono);
       font-size: 0.55rem;
@@ -785,9 +785,9 @@
       cursor: pointer;
     }
 
-    .rail button.start { background: var(--teal); color: white; }
-    .rail button.end { background: var(--sand-hot); color: white; }
-    .rail button.wrap { outline: 1px dashed var(--sand-hot); }
+    .rail button.start { background: var(--teal); color: #f4f1ea; }
+    .rail button.end { background: var(--brass); color: #14120e; }
+    .rail button.wrap { outline: 1px dashed var(--brass); }
 
     .pair {
       display: flex;
@@ -795,15 +795,15 @@
       gap: 0.45rem;
     }
 
-    .pair .glyph.from { background: var(--teal-deep); color: var(--void); }
-    .pair .arrow { font-family: var(--font-display); color: var(--sand-hot); font-size: 1.3rem; }
+    .pair .glyph.from { background: rgba(185, 171, 140, 0.18); color: var(--sand); }
+    .pair .arrow { font-family: var(--font-display); color: var(--brass); font-size: 1.3rem; }
 
     .wrap-pill {
       display: inline-block;
       margin-left: 0.35rem;
       padding: 0.1rem 0.4rem;
       border-radius: 999px;
-      background: rgba(201, 123, 58, 0.16);
+      background: rgba(185, 171, 140, 0.16);
       color: var(--sand);
       font-family: var(--font-mono);
       font-size: 0.68rem;
@@ -848,9 +848,9 @@
 
     .player button.active,
     .player button:hover {
-      background: var(--void);
-      color: var(--phosphor);
-      border-color: var(--phosphor);
+      background: rgba(185, 171, 140, 0.12);
+      color: var(--white);
+      border-color: rgba(185, 171, 140, 0.4);
     }
 
     .player .count {
@@ -874,30 +874,30 @@
       gap: 0.65rem;
       align-items: start;
       padding: 0.55rem 0.7rem;
-      border-radius: 12px;
-      background: rgba(8, 22, 18, 0.55);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.55);
       border: 1px solid var(--line);
       font-size: 0.88rem;
     }
 
     .logic-step.current {
-      border-color: var(--sand-hot);
-      background: rgba(201, 123, 58, 0.12);
+      border-color: rgba(185, 171, 140, 0.45);
+      background: rgba(185, 171, 140, 0.1);
     }
 
     .logic-step .idx {
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      color: var(--sand-hot);
+      color: var(--brass);
       padding-top: 0.15rem;
     }
 
     .logic-step code {
       font-family: var(--font-mono);
       font-size: 0.82rem;
-      background: rgba(61, 204, 168, 0.1);
+      background: rgba(106, 154, 132, 0.12);
       padding: 0.1rem 0.35rem;
-      border-radius: 5px;
+      border-radius: 4px;
     }
 
     .stream {
@@ -920,10 +920,10 @@
     }
 
     .stream th { color: var(--ink-soft); font-weight: 500; text-align: left; padding-right: 0.6rem; }
-    .stream .p { background: rgba(61, 204, 168, 0.12); }
-    .stream .k { background: rgba(201, 123, 58, 0.16); }
-    .stream .c { background: var(--void); color: var(--phosphor); }
-    .stream .on { outline: 2px solid var(--sand-hot); }
+    .stream .p { background: rgba(106, 154, 132, 0.12); }
+    .stream .k { background: rgba(185, 171, 140, 0.16); }
+    .stream .c { background: var(--void); color: var(--ink); }
+    .stream .on { outline: 1px solid var(--brass); }
 
     .freq-list { display: grid; gap: 0.28rem; margin-top: 0.7rem; }
     .freq-row {
@@ -936,16 +936,16 @@
     }
 
     .bar {
-      height: 8px;
-      border-radius: 99px;
-      background: rgba(141, 255, 196, 0.08);
+      height: 7px;
+      border-radius: 3px;
+      background: rgba(176, 188, 180, 0.08);
       overflow: hidden;
     }
 
     .bar > i {
       display: block;
       height: 100%;
-      background: linear-gradient(90deg, var(--teal), var(--sand-hot));
+      background: var(--teal);
       width: 0;
       transition: width 0.35s ease;
     }
@@ -964,8 +964,8 @@
       gap: 0.55rem;
       align-items: center;
       padding: 0.45rem 0.6rem;
-      border-radius: 10px;
-      background: rgba(8, 22, 18, 0.7);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.7);
       border: 1px solid transparent;
       cursor: pointer;
       font-size: 0.82rem;
@@ -976,13 +976,13 @@
 
     .crack-row:hover,
     .crack-row.best {
-      border-color: var(--teal);
-      background: rgba(61, 204, 168, 0.08);
+      border-color: rgba(185, 171, 140, 0.4);
+      background: rgba(185, 171, 140, 0.08);
     }
 
     .crack-row .k {
       font-family: var(--font-mono);
-      color: var(--sand-hot);
+      color: var(--brass);
     }
 
     .crack-row .preview {
@@ -1007,53 +1007,55 @@
       min-width: 1.5rem;
       text-align: center;
       padding: 0.28rem 0.2rem;
-      border-radius: 7px;
-      background: rgba(61, 204, 168, 0.1);
+      border-radius: 4px;
+      background: rgba(106, 154, 132, 0.12);
     }
 
     .build-row span.dup {
-      background: rgba(141, 255, 196, 0.08);
-      color: #9aa6b1;
+      background: rgba(176, 188, 180, 0.08);
+      color: #8b9890;
       text-decoration: line-through;
     }
 
-    .build-row span.kw { background: var(--sand-hot); color: white; }
+    .build-row span.kw { background: rgba(185, 171, 140, 0.32); color: var(--white); }
 
     .code-panel {
       font-family: var(--font-mono);
       font-size: 0.78rem;
       line-height: 1.65;
-      background: #061410;
-      color: #b7e8d2;
-      border-radius: 12px;
+      background: #0d1110;
+      color: #c8d4cc;
+      border: 1px solid var(--line);
+      border-radius: 6px;
       padding: 0.95rem 1rem;
       overflow: auto;
       margin-top: 0.75rem;
       max-height: 360px;
     }
 
-    .code-panel .kw { color: #7fd4c8; }
-    .code-panel .fn { color: #f0b27a; }
-    .code-panel .cm { color: #6f8494; }
-    .code-panel .st { color: #e8c98a; }
+    .code-panel .kw { color: #9fb8ab; }
+    .code-panel .fn { color: #c2b394; }
+    .code-panel .cm { color: #6d7a74; }
+    .code-panel .st { color: #d4c4a4; }
 
     .hint { margin-top: 0.7rem; font-size: 0.85rem; color: var(--ink-soft); }
 
     .challenge-card {
       margin-top: 0.75rem;
       padding: 0.85rem;
-      border-radius: 12px;
-      background: rgba(8, 22, 18, 0.7);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.7);
     }
 
     .challenge-card .prompt {
       font-family: var(--font-mono);
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
       padding: 0.7rem 0.8rem;
-      border-radius: 10px;
+      border-radius: 6px;
       margin: 0.55rem 0;
       word-break: break-word;
+      border: 1px solid var(--line);
     }
 
     .challenge-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.65rem; }
@@ -1079,9 +1081,9 @@
       cursor: pointer;
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--teal-deep);
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: var(--ink-soft);
     }
     .detect-catalog p { margin-top: 0.55rem; line-height: 1.55; }
     .badge.family {
@@ -1096,8 +1098,8 @@
     }
     .guess-card {
       padding: 0.85rem 0.95rem;
-      border-radius: 4px;
-      background: rgba(8, 22, 18, 0.7);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.7);
       border: 1px solid var(--line);
     }
     .guess-card header {
@@ -1115,37 +1117,38 @@
     .badge {
       font-family: var(--font-mono);
       font-size: 0.68rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      text-transform: none;
       padding: 0.18rem 0.45rem;
-      border-radius: 999px;
+      border-radius: 4px;
     }
-    .badge.high { background: rgba(27, 127, 90, 0.16); color: var(--ok); }
-    .badge.medium { background: rgba(61, 204, 168, 0.16); color: var(--teal-deep); }
-    .badge.weak { background: rgba(228, 180, 92, 0.16); color: var(--sand); }
+    .badge.high { background: rgba(143, 191, 166, 0.16); color: var(--ok); }
+    .badge.medium { background: rgba(106, 154, 132, 0.16); color: var(--teal-deep); }
+    .badge.weak { background: rgba(185, 171, 140, 0.16); color: var(--sand); }
     .guess-card .why { font-size: 0.9rem; color: var(--ink-soft); }
     .guess-card .preview {
       font-family: var(--font-mono);
       font-size: 0.8rem;
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
       padding: 0.55rem 0.7rem;
-      border-radius: 10px;
+      border-radius: 6px;
       margin: 0.55rem 0 0.65rem;
       white-space: pre-wrap;
       word-break: break-word;
       max-height: 4.8rem;
       overflow: auto;
+      border: 1px solid var(--line);
     }
     .guess-card .apply-btn {
       appearance: none;
-      border: 1px solid var(--phosphor);
-      background: var(--void);
-      color: var(--phosphor);
-      border-radius: 2px;
+      border: 1px solid rgba(185, 171, 140, 0.4);
+      background: transparent;
+      color: var(--ink);
+      border-radius: 6px;
       padding: 0.48rem 0.85rem;
       font: inherit;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 0.82rem;
       cursor: pointer;
     }
@@ -1170,7 +1173,8 @@
 
     label[hidden],
     #keywordField[hidden],
-    #keyField[hidden] { display: none !important; }
+    #keyField[hidden],
+    #wrapPill[hidden] { display: none !important; }
 
     @media (max-width: 860px) {
       .methods { grid-template-columns: 1fr; }
@@ -1232,9 +1236,9 @@
       </p>
       <div class="learn-chips">
         <span class="chip">cipher disk</span>
-        <span class="chip">detect · chi² · ioc</span>
-        <span class="chip">mod 26 wrap</span>
-        <span class="chip">Base64 / hex sniff</span>
+        <span class="chip">detect</span>
+        <span class="chip">mod 26</span>
+        <span class="chip">encodings</span>
       </div>
       <a class="cta" href="#lab">
         Open the bench
@@ -1265,7 +1269,7 @@
         <button type="button" class="ghost-btn" id="detectSampleBtn">Try a sample</button>
       </div>
       <details class="detect-catalog">
-        <summary>Sniff list · 90+ names</summary>
+        <summary>Formats this bench can rank</summary>
         <p>
           AES, DES, Triple DES, Blowfish, RC2, RC4, RC4 Drop, RC6, SM4, GOST, Fernet, LS47, ChaCha, Salsa20, Rabbit, RSA,
           PGP, OpenPGP, X.509, PEM, MD2, MD4, MD5, SHA-1, SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224, SHA-512/256,
@@ -1419,7 +1423,7 @@
         </section>
 
         <section class="box">
-          <p class="box-label">Code · C++</p>
+          <p class="box-label">C++ sample</p>
           <h3>How to build it</h3>
           <p>The same rules the lab is using, written as beginner-friendly C++ — a language you can take to contests, college labs, and systems work.</p>
           <pre class="code-panel" id="codePanel"></pre>
@@ -1435,7 +1439,7 @@
   </main>
 
   <footer class="footer wrap">
-    <p><strong>Guptlekh</strong> — night bench for classical crypto. <span class="script">गुप्त लेख, साफ़ सबक.</span></p>
+    <p><strong>Guptlekh</strong> — a classical cryptography bench. <span class="script">गुप्त लेख, साफ़ सबक.</span></p>
     <p>Host this folder on GitHub Pages from the <code>main</code> branch.</p>
   </footer>
 
