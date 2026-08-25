@@ -3,58 +3,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advance Cipher Lab — Classical Encryption</title>
-  <meta name="description" content="Learn traditional Caesar, modified Caesar, and monoalphabetic ciphers with live encrypt and decrypt tools." />
+  <title>Guptlekh — गुप्तलेख</title>
+  <meta name="description" content="Guptlekh is a night lab for traditional Caesar, modified Caesar, and monoalphabetic ciphers — encrypt live, watch every letter, crack weak keys, and practice." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #15202b;
-      --ink-soft: #3a4a5a;
-      --paper: #eef3f6;
-      --paper-2: #e2eaf0;
-      --line: rgba(21, 32, 43, 0.12);
-      --teal: #0d7377;
-      --teal-deep: #095456;
-      --sand: #d4a373;
-      --sand-hot: #c97b3a;
-      --white: #f7fafc;
-      --box: rgba(247, 250, 252, 0.88);
-      --shadow: 0 18px 40px rgba(21, 32, 43, 0.08);
-      --radius: 18px;
-      --font-display: "Chakra Petch", sans-serif;
-      --font-body: "Figtree", sans-serif;
+      --ink: #c8d4cc;
+      --ink-soft: #8b9890;
+      --paper: #0c0f0d;
+      --void: #080b09;
+      --line: rgba(176, 188, 180, 0.1);
+      --teal: #6a9a84;
+      --teal-deep: #9fb8ab;
+      --sand: #c2b394;
+      --sand-hot: #d4c4a4;
+      --white: #e6ebe8;
+      --box: rgba(14, 18, 16, 0.88);
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      --radius: 8px;
+      --ok: #8fbfa6;
+      --font-display: "IBM Plex Sans", sans-serif;
+      --font-body: "IBM Plex Sans", sans-serif;
       --font-mono: "IBM Plex Mono", monospace;
+      --font-indic: "Tiro Devanagari Hindi", serif;
       --shift: 0deg;
       --nudge-x: 0px;
       --nudge-y: 0px;
       --pulse: 0;
       --grid-drift: 0px;
+      --disk-rot: 0deg;
+      --brass: #b9ab8c;
+      --panel: #101412;
+      --phosphor: #9fb8ab;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; color-scheme: dark; }
 
     body {
       font-family: var(--font-body);
+      font-weight: 400;
       color: var(--ink);
       background: var(--paper);
       min-height: 100vh;
       overflow-x: hidden;
-      line-height: 1.55;
+      line-height: 1.65;
+      letter-spacing: 0.01em;
     }
 
-    /* Atmospheric stage */
+    ::selection {
+      background: rgba(176, 168, 140, 0.28);
+      color: #f4f1ea;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 8;
+      background: radial-gradient(ellipse 80% 70% at 50% 0%, transparent 40%, rgba(0, 0, 0, 0.22) 100%);
+    }
+
     .stage {
       position: fixed;
       inset: 0;
       z-index: -2;
       background:
-        radial-gradient(ellipse 80% 55% at 15% 10%, rgba(13, 115, 119, 0.18), transparent 55%),
-        radial-gradient(ellipse 70% 50% at 90% 20%, rgba(212, 163, 115, 0.22), transparent 50%),
-        linear-gradient(160deg, #f4f8fa 0%, #e7eef3 45%, #dfe8ee 100%);
+        radial-gradient(ellipse 60% 45% at 18% 8%, rgba(90, 110, 98, 0.12), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 88% 10%, rgba(160, 140, 100, 0.06), transparent 50%),
+        #0c0f0d;
       transform: translate3d(var(--nudge-x), var(--nudge-y), 0);
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
@@ -66,11 +86,11 @@
       background-image:
         linear-gradient(var(--line) 1px, transparent 1px),
         linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 48px 48px;
-      transform: translateX(var(--grid-drift)) rotate(var(--shift));
-      opacity: 0.55;
-      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      background-size: 72px 72px;
+      transform: translateX(var(--grid-drift));
+      opacity: 0.22;
       pointer-events: none;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
     }
 
     .float-letters {
@@ -86,164 +106,290 @@
       font-family: var(--font-display);
       font-weight: 700;
       font-size: clamp(2rem, 5vw, 4.5rem);
-      color: rgba(13, 115, 119, 0.08);
+      color: rgba(159, 184, 171, 0.045);
       transform: translateY(calc(var(--pulse) * -8px)) rotate(calc(var(--shift) * 0.4));
       transition: transform 0.4s ease, color 0.4s ease;
     }
 
+    .float-letters span.indic {
+      font-family: var(--font-indic);
+      color: rgba(194, 179, 148, 0.07);
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 1.1rem 0 0.15rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--ink-soft);
+    }
+
+    .topbar .prompt {
+      color: var(--ink-soft);
+    }
+
+    .topbar .script {
+      font-family: var(--font-indic);
+      font-size: 1.02rem;
+      letter-spacing: 0;
+      color: var(--sand);
+      font-style: italic;
+    }
+
     .wrap {
-      width: min(1120px, calc(100% - 2rem));
+      width: min(1180px, calc(100% - 2rem));
       margin: 0 auto;
     }
 
-    /* Hero */
     .hero {
-      min-height: 100vh;
+      min-height: calc(100vh - 3.2rem);
       display: grid;
-      grid-template-rows: minmax(280px, 1fr) auto;
-      align-content: stretch;
-      padding: 1.5rem 0 3.5rem;
+      grid-template-columns: minmax(280px, 1.05fr) minmax(260px, 0.95fr);
+      align-items: center;
+      padding: 2rem 0 3rem;
       position: relative;
-      gap: 1.25rem;
+      gap: 1.5rem;
     }
 
-    .hero-visual {
+    .machine {
       position: relative;
-      inset: auto;
-      height: auto;
-      min-height: min(48vh, 420px);
-      display: grid;
-      place-items: center;
+      width: min(92vw, 440px);
+      margin: 0 auto;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        repeating-conic-gradient(from 0.35deg, rgba(185, 171, 140, 0.28) 0 0.35deg, transparent 0.35deg 13.846deg),
+        radial-gradient(circle at 50% 42%, #1c2420 0 18%, #121816 42%, #0c100e 72%);
+      box-shadow:
+        0 0 0 7px #0e1210,
+        0 0 0 8px rgba(185, 171, 140, 0.35),
+        0 28px 60px rgba(0, 0, 0, 0.45);
+      user-select: none;
+      touch-action: none;
+    }
+
+    .disk-window {
+      position: absolute;
+      left: 50%;
+      top: 4.2%;
+      width: 2.4rem;
+      height: 3.1rem;
+      margin-left: -1.2rem;
+      border: 1px solid var(--brass);
+      border-radius: 4px;
+      background: rgba(185, 171, 140, 0.08);
+      z-index: 4;
       pointer-events: none;
     }
 
-    .cipher-ring {
-      width: min(72vw, 440px);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      border: 1.5px solid rgba(13, 115, 119, 0.28);
-      display: grid;
-      place-items: center;
-      position: relative;
-      transform: rotate(var(--shift));
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-      background:
-        radial-gradient(circle at center, rgba(247, 250, 252, 0.55) 0 38%, transparent 39%),
-        conic-gradient(from 0deg, rgba(13, 115, 119, 0.08), rgba(212, 163, 115, 0.18), rgba(13, 115, 119, 0.08));
+    .disk-window::after {
+      content: "READ";
+      position: absolute;
+      left: 50%;
+      bottom: -1.15rem;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      color: var(--brass);
     }
 
-    .cipher-ring::before,
-    .cipher-ring::after {
-      content: "";
+    .disk {
       position: absolute;
       border-radius: 50%;
-      border: 1px dashed rgba(21, 32, 43, 0.18);
     }
 
-    .cipher-ring::before { inset: 12%; }
-    .cipher-ring::after { inset: 24%; border-style: solid; border-color: rgba(201, 123, 58, 0.35); }
+    .disk.outer {
+      inset: 6%;
+      border: 1px solid rgba(185, 171, 140, 0.28);
+      background: conic-gradient(from 0deg, rgba(106, 154, 132, 0.08), rgba(185, 171, 140, 0.08), rgba(106, 154, 132, 0.08));
+      z-index: 2;
+    }
+
+    .disk.inner {
+      inset: 22%;
+      border: 1px solid rgba(159, 184, 171, 0.22);
+      background:
+        radial-gradient(circle at center, #1a221e 0 46%, #101612 47%);
+      transform: rotate(var(--disk-rot));
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      cursor: grab;
+      z-index: 2;
+    }
+
+    .disk.inner:active { cursor: grabbing; }
+
+    .disk-letter {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 1.45rem;
+      height: 1.45rem;
+      margin: -0.72rem;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: #c9e8d8;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .disk.outer .disk-letter {
+      color: #d2cbb8;
+      transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(36vw, 198px))) rotate(calc(var(--i) * -13.846deg));
+    }
+
+    .disk.inner .disk-letter {
+      color: var(--phosphor);
+      transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(24vw, 132px))) rotate(calc(var(--i) * -13.846deg - var(--disk-rot)));
+    }
+
+    .disk-letter:hover,
+    .disk-letter.active {
+      background: rgba(185, 171, 140, 0.35);
+      color: #f4f1ea;
+    }
 
     .ring-core {
+      position: absolute;
+      inset: 38%;
+      display: grid;
+      place-items: center;
       text-align: center;
-      z-index: 1;
+      z-index: 3;
+      pointer-events: none;
+      background: radial-gradient(circle, #141a17, #0e1311);
+      border-radius: 50%;
+      border: 1px solid rgba(185, 171, 140, 0.18);
     }
 
     .ring-core strong {
       display: block;
       font-family: var(--font-display);
-      font-size: clamp(2.8rem, 8vw, 5rem);
+      font-size: clamp(1.5rem, 4vw, 2.15rem);
       letter-spacing: 0.04em;
+      font-weight: 500;
       line-height: 0.95;
       color: var(--ink);
     }
 
     .ring-core span {
       display: block;
-      margin-top: 0.55rem;
+      margin-top: 0.4rem;
       font-family: var(--font-mono);
-      font-size: 0.78rem;
-      letter-spacing: 0.18em;
+      font-size: 0.64rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--teal-deep);
-    }
-
-    .orbit-letter {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 1.4rem;
-      height: 1.4rem;
-      margin: -0.7rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--ink-soft);
-      transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(34vw, 205px))) rotate(calc(var(--i) * -13.846deg));
+      color: var(--brass);
     }
 
     .hero-copy {
       position: relative;
       z-index: 2;
-      max-width: 34rem;
-      padding-top: 0;
-      align-self: end;
+      max-width: 38rem;
     }
 
     .eyebrow {
       font-family: var(--font-mono);
-      font-size: 0.78rem;
-      letter-spacing: 0.14em;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--teal-deep);
+      color: var(--ink-soft);
       margin-bottom: 0.85rem;
     }
 
     .brand {
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(3.2rem, 10vw, 5.6rem);
-      line-height: 0.92;
-      letter-spacing: -0.02em;
+      font-weight: 500;
+      font-size: clamp(2.6rem, 7vw, 4.4rem);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
       margin-bottom: 1rem;
+      color: var(--white);
     }
 
     .brand em {
       font-style: normal;
-      color: var(--teal);
-      display: block;
+      color: var(--sand);
+      font-weight: 500;
+    }
+
+    .script-line {
+      font-size: 0.98rem;
+      color: var(--ink-soft);
+      margin: -0.35rem 0 0.85rem;
+    }
+
+    .script-line span {
+      font-family: var(--font-indic);
+      font-style: italic;
+      color: var(--sand);
+      margin-right: 0.5rem;
     }
 
     .lede {
       font-size: 1.08rem;
       color: var(--ink-soft);
-      max-width: 30rem;
-      margin-bottom: 1.6rem;
+      max-width: 34rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .learn-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .chip {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      padding: 0.32rem 0.55rem;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
     }
 
     .cta {
       display: inline-flex;
       align-items: center;
-      gap: 0.65rem;
-      padding: 0.95rem 1.35rem;
-      background: var(--ink);
-      color: var(--white);
+      gap: 0.55rem;
+      padding: 0.7rem 1.05rem;
+      background: transparent;
+      color: var(--ink);
       text-decoration: none;
-      font-weight: 600;
-      border-radius: 999px;
-      transition: transform 0.25s ease, background 0.25s ease;
+      font-weight: 500;
+      border-radius: 6px;
+      border: 1px solid rgba(185, 171, 140, 0.45);
+      letter-spacing: 0.02em;
+      font-size: 0.92rem;
+      text-transform: none;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      appearance: none;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .cta:hover {
-      background: var(--teal-deep);
-      transform: translateY(-2px);
+      background: rgba(185, 171, 140, 0.12);
+      color: var(--white);
+      border-color: var(--brass);
     }
 
     .cta svg { width: 18px; height: 18px; }
 
-    /* Lab section */
-    .lab {
-      padding: 1rem 0 5rem;
-    }
+    .lab { padding: 1rem 0 5rem; }
 
     .section-head {
       display: flex;
@@ -262,7 +408,7 @@
 
     .section-head p {
       color: var(--ink-soft);
-      max-width: 28rem;
+      max-width: 32rem;
       font-size: 0.98rem;
     }
 
@@ -275,28 +421,25 @@
 
     .method-btn {
       appearance: none;
-      border: 1.5px solid var(--line);
-      background: rgba(247, 250, 252, 0.7);
-      border-radius: 14px;
-      padding: 1rem 0.9rem;
+      border: 1px solid var(--line);
+      background: rgba(16, 20, 18, 0.7);
+      border-radius: var(--radius);
+      padding: 1rem 0.95rem;
       text-align: left;
       cursor: pointer;
-      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+      transition: border-color 0.2s ease, background 0.2s ease;
       font: inherit;
       color: inherit;
     }
 
     .method-btn:hover {
-      transform: translateY(-3px);
-      border-color: rgba(13, 115, 119, 0.35);
+      border-color: rgba(185, 171, 140, 0.35);
     }
 
     .method-btn.active {
-      background: var(--ink);
-      color: var(--white);
-      border-color: var(--ink);
-      box-shadow: var(--shadow);
-      transform: translateY(-3px) scale(1.01);
+      background: rgba(20, 26, 22, 0.95);
+      color: var(--ink);
+      border-color: rgba(185, 171, 140, 0.45);
     }
 
     .method-btn .step {
@@ -316,36 +459,39 @@
       display: block;
     }
 
+    .method-btn .blurb {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.82rem;
+      opacity: 0.78;
+      line-height: 1.35;
+    }
+
     .panels {
       display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
+      grid-template-columns: 1.08fr 0.92fr;
       gap: 1rem;
     }
 
-    .stack {
-      display: grid;
-      gap: 1rem;
-    }
+    .stack { display: grid; gap: 1rem; }
 
     .box {
-      background: var(--box);
-      border: 1px solid rgba(21, 32, 43, 0.08);
+      background-color: var(--box);
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 1.15rem 1.2rem 1.25rem;
-      box-shadow: var(--shadow);
+      padding: 1.2rem 1.25rem 1.3rem;
+      box-shadow: none;
       backdrop-filter: blur(10px);
-      transform: translate3d(calc(var(--nudge-x) * 0.35), calc(var(--nudge-y) * 0.35), 0);
-      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
     }
 
-    .box:hover { border-color: rgba(13, 115, 119, 0.28); }
+    .box:hover { border-color: rgba(176, 188, 180, 0.18); }
 
     .box-label {
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--teal-deep);
+      color: var(--brass);
       margin-bottom: 0.55rem;
     }
 
@@ -356,34 +502,34 @@
     }
 
     .box p { color: var(--ink-soft); font-size: 0.96rem; }
-
-    .box ul {
-      margin: 0.7rem 0 0 1.1rem;
-      color: var(--ink-soft);
-      font-size: 0.94rem;
-    }
-
+    .box ul { margin: 0.7rem 0 0 1.1rem; color: var(--ink-soft); font-size: 0.94rem; }
     .box li + li { margin-top: 0.35rem; }
 
     .formula {
       margin-top: 0.9rem;
       padding: 0.75rem 0.85rem;
-      border-radius: 12px;
-      background: rgba(13, 115, 119, 0.08);
+      border-radius: 6px;
+      background: rgba(106, 154, 132, 0.08);
       font-family: var(--font-mono);
       font-size: 0.82rem;
       color: var(--teal-deep);
+      border-left: 1px solid var(--teal);
     }
 
-    .field-row {
-      display: grid;
-      gap: 0.75rem;
-      margin-top: 0.85rem;
+    .worked {
+      margin-top: 0.75rem;
+      padding: 0.75rem 0.85rem;
+      border-radius: 6px;
+      background: rgba(185, 171, 140, 0.08);
+      font-size: 0.9rem;
+      color: var(--ink);
+      border-left: 1px solid var(--brass);
     }
 
-    .field-row.two {
-      grid-template-columns: 1fr 1fr;
-    }
+    .worked strong { font-family: var(--font-mono); }
+
+    .field-row { display: grid; gap: 0.75rem; margin-top: 0.85rem; }
+    .field-row.two { grid-template-columns: 1fr 1fr; }
 
     label {
       display: grid;
@@ -396,9 +542,9 @@
     input[type="number"],
     textarea {
       width: 100%;
-      border: 1.5px solid rgba(21, 32, 43, 0.14);
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(10, 13, 12, 0.9);
+      border-radius: 6px;
       padding: 0.75rem 0.85rem;
       font: inherit;
       color: var(--ink);
@@ -408,12 +554,16 @@
 
     textarea { min-height: 110px; }
 
+    input::placeholder,
+    textarea::placeholder {
+      color: rgba(127, 168, 150, 0.55);
+    }
+
     input:focus,
     textarea:focus {
       outline: none;
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.15);
-      transform: translateY(-1px);
+      border-color: var(--brass);
+      box-shadow: 0 0 0 2px rgba(185, 171, 140, 0.12);
     }
 
     .mode-toggle {
@@ -423,33 +573,53 @@
       margin-top: 0.85rem;
     }
 
-    .mode-toggle button {
+    .mode-toggle button,
+    .ghost-btn,
+    .player button,
+    .challenge-actions button {
       appearance: none;
-      border: 1.5px solid rgba(21, 32, 43, 0.14);
+      border: 1px solid var(--line);
       background: transparent;
-      border-radius: 999px;
-      padding: 0.7rem 0.8rem;
+      border-radius: 6px;
+      padding: 0.65rem 0.8rem;
       font: inherit;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       color: var(--ink-soft);
       transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     }
 
     .mode-toggle button.active {
-      background: var(--teal);
+      background: rgba(185, 171, 140, 0.16);
+      border-color: rgba(185, 171, 140, 0.4);
+      color: var(--white);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+    }
+
+    .ghost-btn {
+      padding: 0.5rem 0.8rem;
+      font-size: 0.82rem;
+      background: rgba(8, 22, 18, 0.55);
+    }
+
+    .ghost-btn:hover {
       border-color: var(--teal);
-      color: white;
-      transform: scale(1.02);
+      color: var(--teal-deep);
     }
 
     .output-box {
       margin-top: 0.9rem;
-      min-height: 110px;
+      min-height: 96px;
       padding: 0.9rem 1rem;
-      border-radius: 12px;
-      background: var(--ink);
-      color: #d7ecec;
+      border-radius: 4px;
+      background: var(--void);
+      color: var(--phosphor);
       font-family: var(--font-mono);
       font-size: 0.92rem;
       white-space: pre-wrap;
@@ -459,38 +629,243 @@
     }
 
     .output-box .placeholder { color: rgba(215, 236, 236, 0.45); }
-
-    .alphabet-strip {
-      display: grid;
-      grid-template-columns: repeat(13, 1fr);
-      gap: 0.3rem;
-      margin-top: 0.9rem;
-    }
-
-    .alphabet-strip span {
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      padding: 0.35rem 0;
-      border-radius: 8px;
-      background: rgba(13, 115, 119, 0.08);
-      color: var(--teal-deep);
-      transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
-    }
-
-    .alphabet-strip span.lit {
+    .output-box mark {
       background: var(--sand-hot);
       color: white;
-      transform: translateY(-4px) scale(1.08);
+      border-radius: 4px;
+      padding: 0 0.12em;
+    }
+
+    .mapping-scroll { overflow-x: auto; margin-top: 0.75rem; }
+    .mapping-grid {
+      display: grid;
+      grid-template-columns: repeat(26, minmax(1.55rem, 1fr));
+      gap: 0.22rem;
+      min-width: 640px;
+    }
+
+    .map-col {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      font: inherit;
+      display: grid;
+      gap: 0.22rem;
+      justify-items: center;
+      cursor: pointer;
+      padding: 0.15rem 0;
+      border-radius: 8px;
+    }
+
+    .map-col span {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      width: 100%;
+      text-align: center;
+      padding: 0.32rem 0;
+      border-radius: 7px;
+    }
+
+    .map-col .from { background: rgba(61, 204, 168, 0.12); color: var(--teal-deep); }
+    .map-col .arrow { font-size: 0.6rem; color: var(--ink-soft); padding: 0; }
+    .map-col .to { background: rgba(228, 180, 92, 0.16); color: var(--sand); }
+    .map-col.active .from,
+    .map-col.active .to {
+      background: var(--sand-hot);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .step-hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.9rem;
+      align-items: center;
+      margin-top: 0.7rem;
+      padding: 0.85rem;
+      border-radius: 4px;
+      background: rgba(61, 204, 168, 0.08);
+    }
+
+    .glyph {
+      width: 4.1rem;
+      height: 4.1rem;
+      border-radius: 4px;
+      place-items: center;
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      background: var(--void);
+      color: var(--phosphor);
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.1rem;
+      padding: 0.7rem 0.8rem;
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      box-shadow: none;
+      border: 1px solid var(--line);
+    }
+
+    .hud b {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brass);
+      font-weight: 500;
+      margin-bottom: 0.18rem;
+    }
+
+    .hud span {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      color: var(--phosphor);
+    }
+
+    .tapes {
+      overflow-x: auto;
+      margin-top: 0.75rem;
+      padding-bottom: 0.2rem;
+    }
+
+    .tape {
+      display: flex;
+      gap: 0.22rem;
+      margin-bottom: 0.28rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .tape .tag {
+      min-width: 1.4rem;
+      color: var(--teal-deep);
+      padding-top: 0.28rem;
+    }
+
+    .tape i {
+      font-style: normal;
+      min-width: 1.55rem;
+      text-align: center;
+      padding: 0.3rem 0.12rem;
+      border-radius: 7px;
+      background: rgba(61, 204, 168, 0.1);
+    }
+
+    .tape.cipher i { background: var(--void); color: var(--phosphor); }
+    .tape i.on {
+      background: var(--sand-hot);
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .rail {
+      display: grid;
+      grid-template-columns: repeat(26, minmax(0.7rem, 1fr));
+      gap: 0.12rem;
+      margin-top: 0.75rem;
+      overflow-x: auto;
+    }
+
+    .rail button {
+      appearance: none;
+      border: 0;
+      background: rgba(141, 255, 196, 0.07);
+      border-radius: 7px;
+      padding: 0.22rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      line-height: 1.15;
+      color: var(--ink-soft);
+      cursor: pointer;
+    }
+
+    .rail button.start { background: var(--teal); color: white; }
+    .rail button.end { background: var(--sand-hot); color: white; }
+    .rail button.wrap { outline: 1px dashed var(--sand-hot); }
+
+    .pair {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .pair .glyph.from { background: var(--teal-deep); color: var(--void); }
+    .pair .arrow { font-family: var(--font-display); color: var(--sand-hot); font-size: 1.3rem; }
+
+    .wrap-pill {
+      display: inline-block;
+      margin-left: 0.35rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: rgba(201, 123, 58, 0.16);
+      color: var(--sand);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+    }
+
+    .speed {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    .speed input { accent-color: var(--teal); }
+
+    .kbd {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-soft);
+    }
+
+    .math-line {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      color: var(--teal-deep);
+      margin-top: 0.25rem;
+    }
+
+    .player {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+      margin-top: 0.8rem;
+    }
+
+    .player button {
+      padding: 0.48rem 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    .player button.active,
+    .player button:hover {
+      background: var(--void);
+      color: var(--phosphor);
+      border-color: var(--phosphor);
+    }
+
+    .player .count {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      margin-left: auto;
     }
 
     .logic-steps {
       display: grid;
-      gap: 0.55rem;
+      gap: 0.45rem;
       margin-top: 0.75rem;
-      max-height: 280px;
+      max-height: 220px;
       overflow: auto;
-      padding-right: 0.25rem;
     }
 
     .logic-step {
@@ -498,12 +873,16 @@
       grid-template-columns: auto 1fr;
       gap: 0.65rem;
       align-items: start;
-      padding: 0.65rem 0.75rem;
+      padding: 0.55rem 0.7rem;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(21, 32, 43, 0.06);
-      font-size: 0.9rem;
-      animation: rise 0.35s ease both;
+      background: rgba(8, 22, 18, 0.55);
+      border: 1px solid var(--line);
+      font-size: 0.88rem;
+    }
+
+    .logic-step.current {
+      border-color: var(--sand-hot);
+      background: rgba(201, 123, 58, 0.12);
     }
 
     .logic-step .idx {
@@ -516,27 +895,141 @@
     .logic-step code {
       font-family: var(--font-mono);
       font-size: 0.82rem;
-      background: rgba(13, 115, 119, 0.1);
+      background: rgba(61, 204, 168, 0.1);
       padding: 0.1rem 0.35rem;
       border-radius: 5px;
     }
 
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .stream {
+      overflow-x: auto;
+      margin-top: 0.7rem;
     }
+
+    .stream table {
+      border-collapse: separate;
+      border-spacing: 0.28rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .stream td, .stream th {
+      min-width: 1.7rem;
+      text-align: center;
+      padding: 0.32rem 0.2rem;
+      border-radius: 7px;
+    }
+
+    .stream th { color: var(--ink-soft); font-weight: 500; text-align: left; padding-right: 0.6rem; }
+    .stream .p { background: rgba(61, 204, 168, 0.12); }
+    .stream .k { background: rgba(201, 123, 58, 0.16); }
+    .stream .c { background: var(--void); color: var(--phosphor); }
+    .stream .on { outline: 2px solid var(--sand-hot); }
+
+    .freq-list { display: grid; gap: 0.28rem; margin-top: 0.7rem; }
+    .freq-row {
+      display: grid;
+      grid-template-columns: 1.1rem 1fr 2.4rem;
+      gap: 0.45rem;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(141, 255, 196, 0.08);
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--sand-hot));
+      width: 0;
+      transition: width 0.35s ease;
+    }
+
+    .crack-list {
+      display: grid;
+      gap: 0.35rem;
+      margin-top: 0.7rem;
+      max-height: 230px;
+      overflow: auto;
+    }
+
+    .crack-row {
+      display: grid;
+      grid-template-columns: 2.6rem 1fr auto;
+      gap: 0.55rem;
+      align-items: center;
+      padding: 0.45rem 0.6rem;
+      border-radius: 10px;
+      background: rgba(8, 22, 18, 0.7);
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-size: 0.82rem;
+      text-align: left;
+      font: inherit;
+      width: 100%;
+    }
+
+    .crack-row:hover,
+    .crack-row.best {
+      border-color: var(--teal);
+      background: rgba(61, 204, 168, 0.08);
+    }
+
+    .crack-row .k {
+      font-family: var(--font-mono);
+      color: var(--sand-hot);
+    }
+
+    .crack-row .preview {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .build-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.28rem;
+      margin-top: 0.45rem;
+    }
+
+    .build-row span {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      min-width: 1.5rem;
+      text-align: center;
+      padding: 0.28rem 0.2rem;
+      border-radius: 7px;
+      background: rgba(61, 204, 168, 0.1);
+    }
+
+    .build-row span.dup {
+      background: rgba(141, 255, 196, 0.08);
+      color: #9aa6b1;
+      text-decoration: line-through;
+    }
+
+    .build-row span.kw { background: var(--sand-hot); color: white; }
 
     .code-panel {
       font-family: var(--font-mono);
       font-size: 0.78rem;
       line-height: 1.65;
-      background: #18232e;
-      color: #c8d8e0;
+      background: #061410;
+      color: #b7e8d2;
       border-radius: 12px;
       padding: 0.95rem 1rem;
       overflow: auto;
       margin-top: 0.75rem;
-      max-height: 320px;
+      max-height: 360px;
     }
 
     .code-panel .kw { color: #7fd4c8; }
@@ -544,10 +1037,117 @@
     .code-panel .cm { color: #6f8494; }
     .code-panel .st { color: #e8c98a; }
 
-    .hint {
-      margin-top: 0.7rem;
-      font-size: 0.85rem;
+    .hint { margin-top: 0.7rem; font-size: 0.85rem; color: var(--ink-soft); }
+
+    .challenge-card {
+      margin-top: 0.75rem;
+      padding: 0.85rem;
+      border-radius: 12px;
+      background: rgba(8, 22, 18, 0.7);
+    }
+
+    .challenge-card .prompt {
+      font-family: var(--font-mono);
+      background: var(--void);
+      color: var(--phosphor);
+      padding: 0.7rem 0.8rem;
+      border-radius: 10px;
+      margin: 0.55rem 0;
+      word-break: break-word;
+    }
+
+    .challenge-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.65rem; }
+    .feedback { margin-top: 0.55rem; font-weight: 600; font-size: 0.9rem; }
+    .feedback.ok { color: var(--ok); }
+    .feedback.no { color: #f0a8a0; }
+
+    .detect-box { margin-bottom: 1.25rem; }
+    .detect-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.75rem;
+      align-items: center;
+    }
+    .detect-actions .cta { padding: 0.72rem 1.15rem; }
+    .detect-catalog {
+      margin-top: 0.85rem;
+      font-size: 0.82rem;
       color: var(--ink-soft);
+    }
+    .detect-catalog summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+    }
+    .detect-catalog p { margin-top: 0.55rem; line-height: 1.55; }
+    .badge.family {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
+    }
+    .detect-results {
+      display: grid;
+      gap: 0.65rem;
+      margin-top: 0.9rem;
+    }
+    .guess-card {
+      padding: 0.85rem 0.95rem;
+      border-radius: 4px;
+      background: rgba(8, 22, 18, 0.7);
+      border: 1px solid var(--line);
+    }
+    .guess-card header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+      margin-bottom: 0.35rem;
+    }
+    .guess-card h4 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      margin: 0;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.45rem;
+      border-radius: 999px;
+    }
+    .badge.high { background: rgba(27, 127, 90, 0.16); color: var(--ok); }
+    .badge.medium { background: rgba(61, 204, 168, 0.16); color: var(--teal-deep); }
+    .badge.weak { background: rgba(228, 180, 92, 0.16); color: var(--sand); }
+    .guess-card .why { font-size: 0.9rem; color: var(--ink-soft); }
+    .guess-card .preview {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--void);
+      color: var(--phosphor);
+      padding: 0.55rem 0.7rem;
+      border-radius: 10px;
+      margin: 0.55rem 0 0.65rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 4.8rem;
+      overflow: auto;
+    }
+    .guess-card .apply-btn {
+      appearance: none;
+      border: 1px solid var(--phosphor);
+      background: var(--void);
+      color: var(--phosphor);
+      border-radius: 2px;
+      padding: 0.48rem 0.85rem;
+      font: inherit;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
     }
 
     .footer {
@@ -561,16 +1161,16 @@
       gap: 0.75rem;
     }
 
-    .footer strong {
-      color: var(--ink);
-      font-family: var(--font-display);
+    .footer strong { color: var(--ink); font-family: var(--font-display); }
+    .footer .script {
+      font-family: var(--font-indic);
+      font-style: italic;
+      color: var(--sand);
     }
 
     label[hidden],
     #keywordField[hidden],
-    #keyField[hidden] {
-      display: none !important;
-    }
+    #keyField[hidden] { display: none !important; }
 
     @media (max-width: 860px) {
       .methods { grid-template-columns: 1fr; }
@@ -578,14 +1178,16 @@
       .field-row.two { grid-template-columns: 1fr; }
       .hero {
         min-height: auto;
-        grid-template-rows: auto auto;
+        grid-template-columns: 1fr;
         padding-top: 1rem;
       }
-      .hero-visual { min-height: min(42vh, 320px); }
-      .alphabet-strip { grid-template-columns: repeat(9, 1fr); }
-      .cipher-ring { width: min(78vw, 320px); }
-      .orbit-letter {
-        transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(36vw, 148px))) rotate(calc(var(--i) * -13.846deg));
+      .hud { grid-template-columns: repeat(3, 1fr); }
+      .machine { width: min(92vw, 380px); }
+      .disk.outer .disk-letter {
+        transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(38vw, 158px))) rotate(calc(var(--i) * -13.846deg));
+      }
+      .disk.inner .disk-letter {
+        transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(26vw, 108px))) rotate(calc(var(--i) * -13.846deg - var(--disk-rot)));
       }
     }
 
@@ -602,25 +1204,40 @@
   <div class="grid-layer" aria-hidden="true"></div>
   <div class="float-letters" id="floatLetters" aria-hidden="true"></div>
 
+  <div class="wrap">
+    <div class="topbar">
+      <span class="prompt">Guptlekh · classical cryptography</span>
+      <span class="script">गुप्तलेख</span>
+    </div>
+  </div>
+
   <header class="hero wrap">
-    <div class="hero-visual" aria-hidden="true">
-      <div class="cipher-ring" id="cipherRing">
-        <div class="ring-core">
-          <strong>26</strong>
-          <span>letter wheel</span>
-        </div>
+    <div class="machine" id="cipherMachine" title="Outer ring is plaintext. Inner ring is ciphertext. Drag or click to set the shift.">
+      <div class="disk-window" aria-hidden="true"></div>
+      <div class="disk outer" id="outerDisk"></div>
+      <div class="disk inner" id="innerDisk"></div>
+      <div class="ring-core">
+        <strong id="ringMap">A→D</strong>
+        <span id="ringCaption">drag the inner disk</span>
       </div>
     </div>
 
     <div class="hero-copy">
-      <p class="eyebrow">Engineering class · Classical cryptography</p>
-      <h1 class="brand">Advance<em>Cipher Lab</em></h1>
+      <p class="eyebrow">Classical cryptography</p>
+      <p class="script-line"><span>गुप्तलेख</span> secret writing, made visible</p>
+      <h1 class="brand">Gupt<em>lekh</em></h1>
       <p class="lede">
-        Learn three classical ciphers in order — traditional Caesar, modified Caesar,
-        then monoalphabetic substitution — with live tools, logic steps, and code.
+        A quiet bench for classroom ciphers. The outer ring is plaintext; the inner ring is ciphertext.
+        Turn the disk, watch a letter wrap past Z, then ask what an unknown sample might be.
       </p>
+      <div class="learn-chips">
+        <span class="chip">cipher disk</span>
+        <span class="chip">detect · chi² · ioc</span>
+        <span class="chip">mod 26 wrap</span>
+        <span class="chip">Base64 / hex sniff</span>
+      </div>
       <a class="cta" href="#lab">
-        Enter the lab
+        Open the bench
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
           <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -629,37 +1246,83 @@
   </header>
 
   <main class="lab wrap" id="lab">
+    <section class="box detect-box" id="detectBox">
+      <p class="box-label">Detect</p>
+      <h3>What is this text?</h3>
+      <p>
+        Paste unknown ciphertext, a hash, or encoded data. Guptlekh ranks every format it can actually
+        see — encodings, hash lengths, PEM/PGP wrappers, and classroom ciphers.
+        AES-class algorithms stay a <strong>family guess</strong>: they are designed to look like noise.
+      </p>
+      <div class="field-row">
+        <label>
+          <span>Unknown text</span>
+          <textarea id="detectInput" placeholder="Paste hex, Base64, a hash, PEM, Morse, or a classical ciphertext…"></textarea>
+        </label>
+      </div>
+      <div class="detect-actions">
+        <button type="button" class="cta" id="detectBtn">Detect</button>
+        <button type="button" class="ghost-btn" id="detectSampleBtn">Try a sample</button>
+      </div>
+      <details class="detect-catalog">
+        <summary>Sniff list · 90+ names</summary>
+        <p>
+          AES, DES, Triple DES, Blowfish, RC2, RC4, RC4 Drop, RC6, SM4, GOST, Fernet, LS47, ChaCha, Salsa20, Rabbit, RSA,
+          PGP, OpenPGP, X.509, PEM, MD2, MD4, MD5, SHA-1, SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224, SHA-512/256,
+          SHA-3-224, SHA-3-256, SHA-3-384, SHA-3-512, SHAKE-128, SHAKE-256, RIPEMD-128, RIPEMD-160, RIPEMD-256, RIPEMD-320,
+          HAS-160, Whirlpool, NT Hash, LM Hash, Bcrypt, Scrypt, PBKDF2, EVP, HKDF, HMAC, CRC-8, CRC-16, CRC-24, CRC-32, CRC-64,
+          Fletcher-16, Fletcher-32, Enigma, Bombe, Typex, Caesar Box, Affine, ROT13, ROT47, ROT8000, XOR, Vigenère, Rail Fence,
+          Bacon, Atbash, Columnar Transposition, Playfair, Substitution, Base64, Base32, Base58, Base62, Base85, Base91,
+          Hex, Binary, Octal, Decimal, URL, HTML Entity, Unicode, UTF-8, Punycode, Quoted-printable, Morse, Braille, CharCode,
+          ASN.1, TLV, P-list, Citrix CTX1, HASSH, EXIF, LSB, RGBA, Shannon Entropy, PRNG.
+        </p>
+      </details>
+      <div class="detect-results" id="detectResults"></div>
+    </section>
+
     <div class="section-head">
-      <h2>Choose a method</h2>
-      <p>Start with the classic shift, then try changing shifts per letter, then full alphabet remapping.</p>
+      <h2>The bench</h2>
+      <p>Same shift → changing shift → mixed alphabet. Each method reuses the last idea and adds one new rule.</p>
+    </div>
+
+    <div class="hud" aria-label="Lab status">
+      <div><b>Method</b><span id="hudMethod">Caesar</span></div>
+      <div><b>Mode</b><span id="hudMode">Encrypt</span></div>
+      <div><b>Key</b><span id="hudKey">3</span></div>
+      <div><b>Letters</b><span id="hudLetters">0</span></div>
+      <div><b>Wraps</b><span id="hudWraps">0</span></div>
+      <div><b>Strength</b><span id="hudStrength">26 keys</span></div>
     </div>
 
     <div class="methods" role="tablist" aria-label="Cipher methods">
       <button class="method-btn active" data-method="traditional" role="tab" aria-selected="true">
-        <span class="step">01</span>
+        <span class="step">01 · one shift</span>
         <span class="name">Traditional Caesar</span>
+        <span class="blurb">Every letter jumps the same distance around the alphabet.</span>
       </button>
       <button class="method-btn" data-method="modified" role="tab" aria-selected="false">
-        <span class="step">02</span>
+        <span class="step">02 · key stream</span>
         <span class="name">Modified Caesar</span>
+        <span class="blurb">A keyword supplies a new shift for each letter.</span>
       </button>
       <button class="method-btn" data-method="mono" role="tab" aria-selected="false">
-        <span class="step">03</span>
+        <span class="step">03 · mixed alphabet</span>
         <span class="name">Monoalphabetic</span>
+        <span class="blurb">One scrambled alphabet. A always becomes the same substitute.</span>
       </button>
     </div>
 
     <div class="panels">
       <div class="stack">
         <section class="box" id="knowledgeBox">
-          <p class="box-label">Knowledge</p>
+          <p class="box-label">Lesson</p>
           <h3 id="knowledgeTitle">Traditional Caesar Cipher</h3>
           <div id="knowledgeBody"></div>
         </section>
 
-        <section class="box">
-          <p class="box-label">Input</p>
-          <h3>Encrypt &amp; decrypt</h3>
+        <section class="box" id="workshopBox">
+          <p class="box-label">Workshop</p>
+          <h3>Encrypt &amp; decrypt live</h3>
           <p id="workshopHint">Type text and a key. The page reacts as values change.</p>
 
           <div class="mode-toggle" role="group" aria-label="Operation mode">
@@ -670,7 +1333,7 @@
           <div class="field-row">
             <label>
               <span id="inputLabel">Plaintext</span>
-              <textarea id="messageInput" placeholder="Type a message like HELLO WORLD"></textarea>
+              <textarea id="messageInput" placeholder="Try ATTACK AT DAWN"></textarea>
             </label>
           </div>
 
@@ -684,11 +1347,26 @@
               <input id="keywordInput" type="text" value="CIPHER" autocomplete="off" />
             </label>
             <label>
-              <span>Live preview</span>
+              <span>What the key is doing</span>
               <input id="previewMeta" type="text" readonly value="Shift = 3" />
             </label>
           </div>
-          <p class="hint" id="interactHint">Tip: change the shift number and watch the wheel and grid move.</p>
+
+          <div class="toolbar">
+            <button type="button" class="ghost-btn" id="exampleBtn">Load example</button>
+            <button type="button" class="ghost-btn" id="copyBtn">Copy result</button>
+            <button type="button" class="ghost-btn" id="clearBtn">Clear</button>
+          </div>
+          <p class="hint" id="interactHint">Tip: drag the inner disk, or click a letter in the read window.</p>
+        </section>
+
+        <section class="box">
+          <p class="box-label">Alphabet map</p>
+          <h3 id="mapTitle">Plain letter → cipher letter</h3>
+          <p>Hover or click a column. That pair is what every matching letter in your message uses.</p>
+          <div class="mapping-scroll">
+            <div class="mapping-grid" id="mappingGrid"></div>
+          </div>
         </section>
 
         <section class="box">
@@ -697,186 +1375,114 @@
           <div class="output-box" id="outputBox" aria-live="polite">
             <span class="placeholder">Your result will appear here…</span>
           </div>
-          <div class="alphabet-strip" id="alphabetStrip" aria-hidden="true"></div>
         </section>
       </div>
 
       <div class="stack">
         <section class="box">
-          <p class="box-label">Logic</p>
-          <h3>What is happening</h3>
-          <p id="logicIntro">Each letter walks through the formula below.</p>
+          <p class="box-label">Letter engine</p>
+          <h3>Watch one letter at a time</h3>
+          <p id="logicIntro">Press play to walk the formula across the message.</p>
+          <div class="step-hero" id="stepHero">
+            <div class="pair">
+              <div class="glyph from" id="stepFrom">?</div>
+              <span class="arrow" aria-hidden="true">→</span>
+              <div class="glyph" id="stepGlyph">?</div>
+            </div>
+            <div>
+              <strong id="stepHeadline">Type a message to begin</strong>
+              <span class="wrap-pill" id="wrapPill" hidden>wrapped past Z</span>
+              <div class="math-line" id="stepMath">C = (P + K) mod 26</div>
+            </div>
+          </div>
+          <div class="rail" id="modRail" aria-label="mod 26 number line"></div>
+          <div class="tapes" id="tapes"></div>
+          <div class="player">
+            <button type="button" id="prevBtn">Prev</button>
+            <button type="button" id="playBtn">Play</button>
+            <button type="button" id="nextBtn">Next</button>
+            <label class="speed">
+              Speed
+              <input id="speedInput" type="range" min="140" max="800" value="420" />
+            </label>
+            <span class="count" id="stepCount">0 / 0</span>
+          </div>
+          <p class="kbd">Keys: ← → to step, space to play (outside a text box).</p>
           <div class="logic-steps" id="logicSteps"></div>
         </section>
 
         <section class="box">
-          <p class="box-label">Code</p>
+          <p class="box-label">Insight</p>
+          <h3 id="analysisTitle">Why this is easy to break</h3>
+          <p id="analysisIntro"></p>
+          <div id="analysisBody"></div>
+        </section>
+
+        <section class="box">
+          <p class="box-label">Code · C++</p>
           <h3>How to build it</h3>
-          <p>Beginner-friendly JavaScript for the method you selected — copy and study it.</p>
+          <p>The same rules the lab is using, written as beginner-friendly C++ — a language you can take to contests, college labs, and systems work.</p>
           <pre class="code-panel" id="codePanel"></pre>
+        </section>
+
+        <section class="box">
+          <p class="box-label">Challenge</p>
+          <h3>Check that you understood</h3>
+          <div id="challengeBox"></div>
         </section>
       </div>
     </div>
   </main>
 
   <footer class="footer wrap">
-    <p><strong>Advance Cipher Lab</strong> — classical encryption for learning.</p>
-    <p>Host this folder on GitHub Pages by enabling Pages on the <code>main</code> branch.</p>
+    <p><strong>Guptlekh</strong> — night bench for classical crypto. <span class="script">गुप्त लेख, साफ़ सबक.</span></p>
+    <p>Host this folder on GitHub Pages from the <code>main</code> branch.</p>
   </footer>
 
   <script>
     const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    const METHODS = {
-      traditional: {
-        title: "Traditional Caesar Cipher",
-        knowledge: `
-          <p>Every letter is shifted by the <strong>same fixed number</strong>. Spaces and punctuation stay as they are.</p>
-          <ul>
-            <li>Used as the first classroom example of substitution.</li>
-            <li>Easy to break if the shift is guessed (only 25 useful keys).</li>
-            <li>Great for understanding modular arithmetic: wrap around after Z.</li>
-          </ul>
-          <div class="formula">C = (P + K) mod 26 &nbsp;·&nbsp; P = (C − K) mod 26</div>
-        `,
-        workshopHint: "Pick one shift for the whole message. Try 3 (the classic Julius Caesar shift).",
-        keyMode: "shift",
-        interactHint: "Tip: change the shift number and watch the wheel and grid move.",
-        logicIntro: "Same shift applied to every letter, wrapping with mod 26.",
-        code: `<span class="cm">// Traditional Caesar</span>
-<span class="kw">function</span> <span class="fn">caesar</span>(text, key, decrypt = <span class="kw">false</span>) {
-  <span class="kw">const</span> k = decrypt ? (26 - (key % 26)) % 26 : key % 26;
-  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) => {
-    <span class="kw">const</span> base = ch <= <span class="st">'Z'</span> ? 65 : 97;
-    <span class="kw">const</span> code = ch.charCodeAt(0) - base;
-    <span class="kw">return</span> String.fromCharCode(((code + k) % 26) + base);
-  });
-}`
-      },
-      modified: {
-        title: "Modified Caesar Cipher",
-        knowledge: `
-          <p>Instead of one fixed shift, each letter gets a shift from a <strong>repeating key stream</strong> (letters map to 0–25). This is the classroom “modified” form of Caesar.</p>
-          <ul>
-            <li>Key word <code>KEY</code> means shifts 10, 4, 24, then repeats.</li>
-            <li>Harder than classic Caesar because the shift changes per position.</li>
-            <li>Closely related to the idea behind the Vigenère cipher.</li>
-          </ul>
-          <div class="formula">Cᵢ = (Pᵢ + Kᵢ) mod 26 &nbsp;·&nbsp; K repeats across the message</div>
-        `,
-        workshopHint: "Enter a keyword. Each letter of the keyword becomes the next shift.",
-        keyMode: "keyword",
-        interactHint: "Tip: type different keyword letters — the scene nudges with each character.",
-        logicIntro: "Each plaintext letter pairs with the next key letter’s shift value.",
-        code: `<span class="cm">// Modified Caesar (repeating keyword shifts)</span>
-<span class="kw">function</span> <span class="fn">modifiedCaesar</span>(text, keyword, decrypt = <span class="kw">false</span>) {
-  <span class="kw">const</span> shifts = keyword.toUpperCase().replace(/[^A-Z]/g, <span class="st">""</span>)
-    .split(<span class="st">""</span>).map(c => c.charCodeAt(0) - 65);
-  <span class="kw">let</span> i = 0;
-  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) => {
-    <span class="kw">const</span> base = ch <= <span class="st">'Z'</span> ? 65 : 97;
-    <span class="kw">let</span> k = shifts[i++ % shifts.length] || 0;
-    <span class="kw">if</span> (decrypt) k = (26 - k) % 26;
-    <span class="kw">return</span> String.fromCharCode(((ch.charCodeAt(0) - base + k) % 26) + base);
-  });
-}`
-      },
-      mono: {
-        title: "Monoalphabetic Cipher",
-        knowledge: `
-          <p>One plaintext letter always maps to <strong>one ciphertext letter</strong>, but the mapping is a mixed alphabet built from a keyword (duplicates removed), then the remaining letters in order.</p>
-          <ul>
-            <li>Keyword <code>CIPHER</code> → cipher alphabet starts with C I P H E R…</li>
-            <li>Still monoalphabetic: A always becomes the same substitute.</li>
-            <li>Stronger than Caesar, weaker than modern ciphers (frequency analysis works).</li>
-          </ul>
-          <div class="formula">Build cipher alphabet from keyword → substitute letter-by-letter</div>
-        `,
-        workshopHint: "Provide a keyword to build the substitution alphabet, then encrypt or decrypt.",
-        keyMode: "keyword",
-        interactHint: "Tip: edit the keyword — lit letters on the strip show the new mapping energy.",
-        logicIntro: "Plain alphabet maps onto a keyword-scrambled cipher alphabet.",
-        code: `<span class="cm">// Monoalphabetic substitution from keyword</span>
-<span class="kw">function</span> <span class="fn">buildAlphabet</span>(keyword) {
-  <span class="kw">const</span> seen = <span class="kw">new</span> Set();
-  <span class="kw">let</span> out = <span class="st">""</span>;
-  <span class="kw">for</span> (<span class="kw">const</span> ch of (keyword + <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>).toUpperCase()) {
-    <span class="kw">if</span> (/[A-Z]/.test(ch) && !seen.has(ch)) { seen.add(ch); out += ch; }
-  }
-  <span class="kw">return</span> out;
-}
-
-<span class="kw">function</span> <span class="fn">mono</span>(text, keyword, decrypt = <span class="kw">false</span>) {
-  <span class="kw">const</span> cipher = buildAlphabet(keyword);
-  <span class="kw">const</span> from = decrypt ? cipher : <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;
-  <span class="kw">const</span> to = decrypt ? <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span> : cipher;
-  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) => {
-    <span class="kw">const</span> up = ch.toUpperCase();
-    <span class="kw">const</span> mapped = to[from.indexOf(up)];
-    <span class="kw">return</span> ch === up ? mapped : mapped.toLowerCase();
-  });
-}`
-      }
+    const ENGLISH_FREQ = {
+      A: 8.2, B: 1.5, C: 2.8, D: 4.3, E: 12.7, F: 2.2, G: 2.0, H: 6.1,
+      I: 7.0, J: 0.15, K: 0.77, L: 4.0, M: 2.4, N: 6.7, O: 7.5, P: 1.9,
+      Q: 0.1, R: 6.0, S: 6.3, T: 9.1, U: 2.8, V: 1.0, W: 2.4, X: 0.15,
+      Y: 2.0, Z: 0.07
     };
 
-    const state = {
-      method: "traditional",
-      mode: "encrypt"
-    };
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const els = {
-      knowledgeTitle: document.getElementById("knowledgeTitle"),
-      knowledgeBody: document.getElementById("knowledgeBody"),
-      workshopHint: document.getElementById("workshopHint"),
-      interactHint: document.getElementById("interactHint"),
-      logicIntro: document.getElementById("logicIntro"),
-      codePanel: document.getElementById("codePanel"),
-      messageInput: document.getElementById("messageInput"),
-      keyInput: document.getElementById("keyInput"),
-      keywordInput: document.getElementById("keywordInput"),
-      keyField: document.getElementById("keyField"),
-      keywordField: document.getElementById("keywordField"),
-      keyLabel: document.getElementById("keyLabel"),
-      inputLabel: document.getElementById("inputLabel"),
-      previewMeta: document.getElementById("previewMeta"),
-      outputBox: document.getElementById("outputBox"),
-      logicSteps: document.getElementById("logicSteps"),
-      alphabetStrip: document.getElementById("alphabetStrip"),
-      cipherRing: document.getElementById("cipherRing")
-    };
+    const escapeHtml = (value) => String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
 
-    /* Decorative orbit letters */
-    ALPHA.split("").forEach((ch, i) => {
-      const span = document.createElement("span");
-      span.className = "orbit-letter";
-      span.style.setProperty("--i", i);
-      span.textContent = ch;
-      els.cipherRing.appendChild(span);
+    const wrap26 = (n) => ((Number(n) % 26) + 26) % 26;
+    const lettersOnly = (s) => String(s || "").toUpperCase().replace(/[^A-Z]/g, "");
+    const sleep = (ms, signal) => new Promise((resolve, reject) => {
+      const timer = setTimeout(resolve, ms);
+      signal?.addEventListener("abort", () => {
+        clearTimeout(timer);
+        reject(new DOMException("aborted", "AbortError"));
+      }, { once: true });
     });
 
-    /* Floating background letters */
-    const floatHost = document.getElementById("floatLetters");
-    "ADVANCECIPHERLAB".split("").forEach((ch, i) => {
-      const span = document.createElement("span");
-      span.textContent = ch;
-      span.style.left = `${(i * 7.2 + 4) % 92}%`;
-      span.style.top = `${(i * 11 + 8) % 88}%`;
-      floatHost.appendChild(span);
-    });
-
-    ALPHA.split("").forEach((ch) => {
-      const span = document.createElement("span");
-      span.textContent = ch;
-      span.dataset.letter = ch;
-      els.alphabetStrip.appendChild(span);
-    });
+    function chiSquared(text) {
+      const letters = lettersOnly(text);
+      if (!letters.length) return Number.POSITIVE_INFINITY;
+      const counts = Object.fromEntries([...ALPHA].map((ch) => [ch, 0]));
+      for (const ch of letters) counts[ch] += 1;
+      return [...ALPHA].reduce((score, ch) => {
+        const expected = letters.length * (ENGLISH_FREQ[ch] / 100);
+        const diff = counts[ch] - expected;
+        return score + (diff * diff) / (expected || 0.0001);
+      }, 0);
+    }
 
     function buildMonoAlphabet(keyword) {
       const seen = new Set();
       let out = "";
-      const raw = String(keyword || "").toUpperCase() + ALPHA;
-      for (const ch of raw) {
-        if (/[A-Z]/.test(ch) && !seen.has(ch)) {
+      for (const ch of lettersOnly(keyword) + ALPHA) {
+        if (!seen.has(ch)) {
           seen.add(ch);
           out += ch;
         }
@@ -885,238 +1491,1845 @@
     }
 
     function keywordShifts(keyword) {
-      return String(keyword || "")
-        .toUpperCase()
-        .replace(/[^A-Z]/g, "")
-        .split("")
-        .map((c) => c.charCodeAt(0) - 65);
+      return [...lettersOnly(keyword)].map((ch) => ch.charCodeAt(0) - 65);
     }
 
-    function processTraditional(text, key, decrypt) {
-      const k = ((Number(key) % 26) + 26) % 26;
-      const shift = decrypt ? (26 - k) % 26 : k;
-      let out = "";
-      const steps = [];
-      let stepCount = 0;
+    class CipherEngine {
+      static traditional(text, key, decrypt) {
+        const k = wrap26(key);
+        const shift = decrypt ? wrap26(-k) : k;
+        const tokens = [];
+        let out = "";
+        let letterIndex = 0;
 
-      for (const ch of text) {
-        if (/[a-z]/i.test(ch)) {
-          const upper = ch.toUpperCase();
-          const p = upper.charCodeAt(0) - 65;
-          const c = (p + shift) % 26;
-          const mapped = String.fromCharCode(65 + c);
-          out += ch === upper ? mapped : mapped.toLowerCase();
-          if (stepCount < 10) {
-            steps.push({
-              html: `<code>${upper}</code> → (${p} ${decrypt ? "−" : "+"} ${k}) mod 26 = <code>${mapped}</code>`
+        for (const ch of text) {
+          if (/[a-z]/i.test(ch)) {
+            const upper = ch.toUpperCase();
+            const p = upper.charCodeAt(0) - 65;
+            const c = (p + shift) % 26;
+            const mapped = String.fromCharCode(65 + c);
+            out += ch === upper ? mapped : mapped.toLowerCase();
+            tokens.push({
+              kind: "letter",
+              original: upper,
+              mapped,
+              p,
+              k,
+              c,
+              letterIndex,
+              wrap: p + shift >= 26,
+              html: `<code>${upper}</code> → (${p} ${decrypt ? "−" : "+"} ${k}) mod 26 = <code>${mapped}</code>${p + shift >= 26 ? " · wrapped past Z" : ""}`,
+              headline: `${upper} becomes ${mapped}`,
+              math: decrypt
+                ? `(${p} − ${k}) mod 26 = ${c} → ${mapped}`
+                : `(${p} + ${k}) mod 26 = ${c} → ${mapped}`
             });
-            stepCount++;
+            letterIndex += 1;
+          } else {
+            out += ch;
+            tokens.push({
+              kind: "other",
+              original: ch,
+              mapped: ch,
+              html: `<code>${escapeHtml(ch) || "space"}</code> is not a letter, so it stays.`,
+              headline: "Punctuation stays put",
+              math: "Only A–Z wrap around the wheel"
+            });
           }
-        } else {
-          out += ch;
         }
-      }
-      return { out, steps, meta: `Shift = ${k}`, accent: k };
-    }
 
-    function processModified(text, keyword, decrypt) {
-      const shifts = keywordShifts(keyword);
-      if (!shifts.length) {
         return {
-          out: text,
-          steps: [{ html: "Add letters to the keyword to create shifts." }],
-          meta: "Keyword needed",
-          accent: 0
+          out,
+          tokens,
+          meta: `One shift for every letter: ${k}`,
+          accent: k,
+          mapFrom: ALPHA,
+          mapTo: ALPHA.slice(shift) + ALPHA.slice(0, shift)
         };
       }
 
-      let out = "";
-      const steps = [];
-      let i = 0;
-      let stepCount = 0;
-      let accent = shifts[0];
-
-      for (const ch of text) {
-        if (/[a-z]/i.test(ch)) {
-          const upper = ch.toUpperCase();
-          const p = upper.charCodeAt(0) - 65;
-          const keyLetter = String.fromCharCode(65 + shifts[i % shifts.length]);
-          let k = shifts[i % shifts.length];
-          const shown = k;
-          if (decrypt) k = (26 - k) % 26;
-          const c = (p + k) % 26;
-          const mapped = String.fromCharCode(65 + c);
-          out += ch === upper ? mapped : mapped.toLowerCase();
-          if (stepCount < 10) {
-            steps.push({
-              html: `<code>${upper}</code> with key <code>${keyLetter}</code> (${shown}) → <code>${mapped}</code>`
-            });
-            stepCount++;
-          }
-          accent = shown;
-          i++;
-        } else {
-          out += ch;
+      static modified(text, keyword, decrypt) {
+        const shifts = keywordShifts(keyword);
+        if (!shifts.length) {
+          return {
+            out: text,
+            tokens: [{
+              kind: "other",
+              original: "",
+              mapped: "",
+              html: "Type a keyword made of letters. Each letter is a shift (A=0 … Z=25).",
+              headline: "Need a keyword",
+              math: "Kᵢ comes from the repeating key stream"
+            }],
+            meta: "Keyword needed",
+            accent: 0,
+            mapFrom: ALPHA,
+            mapTo: ALPHA,
+            stream: []
+          };
         }
+
+        const tokens = [];
+        const stream = [];
+        let out = "";
+        let i = 0;
+
+        for (const ch of text) {
+          if (/[a-z]/i.test(ch)) {
+            const upper = ch.toUpperCase();
+            const p = upper.charCodeAt(0) - 65;
+            const shown = shifts[i % shifts.length];
+            const keyLetter = String.fromCharCode(65 + shown);
+            const k = decrypt ? wrap26(-shown) : shown;
+            const c = (p + k) % 26;
+            const mapped = String.fromCharCode(65 + c);
+            out += ch === upper ? mapped : mapped.toLowerCase();
+            tokens.push({
+              kind: "letter",
+              original: upper,
+              mapped,
+              p,
+              k: shown,
+              c,
+              keyLetter,
+              letterIndex: i,
+              wrap: p + k >= 26,
+              html: `<code>${upper}</code> pairs with key <code>${keyLetter}</code> (${shown}) → <code>${mapped}</code>${p + k >= 26 ? " · wrapped" : ""}`,
+              headline: `${upper} + ${keyLetter} → ${mapped}`,
+              math: decrypt
+                ? `(${p} − ${shown}) mod 26 = ${c}`
+                : `(${p} + ${shown}) mod 26 = ${c}`
+            });
+            stream.push({ p: upper, k: keyLetter, c: mapped, i });
+            i += 1;
+          } else {
+            out += ch;
+            tokens.push({
+              kind: "other",
+              original: ch,
+              mapped: ch,
+              html: "Non-letters do not consume a key letter.",
+              headline: "Key stream pauses",
+              math: "Spaces are skipped by the keyword pointer"
+            });
+          }
+        }
+
+        const first = shifts[0];
+        return {
+          out,
+          tokens,
+          meta: `Repeating shifts from ${lettersOnly(keyword)}`,
+          accent: first,
+          mapFrom: ALPHA,
+          mapTo: ALPHA.slice(first) + ALPHA.slice(0, first),
+          stream
+        };
       }
 
-      return { out, steps, meta: `Key stream = ${keyword.toUpperCase().replace(/[^A-Z]/g, "") || "—"}`, accent };
-    }
+      static mono(text, keyword, decrypt) {
+        const cipher = buildMonoAlphabet(keyword);
+        const from = decrypt ? cipher : ALPHA;
+        const to = decrypt ? ALPHA : cipher;
+        const tokens = [];
+        let out = "";
+        let letterIndex = 0;
 
-    function processMono(text, keyword, decrypt) {
-      const cipher = buildMonoAlphabet(keyword);
-      const from = decrypt ? cipher : ALPHA;
-      const to = decrypt ? ALPHA : cipher;
-      let out = "";
-      const steps = [];
-      let stepCount = 0;
-
-      for (const ch of text) {
-        if (/[a-z]/i.test(ch)) {
-          const upper = ch.toUpperCase();
-          const idx = from.indexOf(upper);
-          const mapped = to[idx];
-          out += ch === upper ? mapped : mapped.toLowerCase();
-          if (stepCount < 10) {
-            steps.push({
-              html: `<code>${upper}</code> maps via cipher alphabet → <code>${mapped}</code>`
+        for (const ch of text) {
+          if (/[a-z]/i.test(ch)) {
+            const upper = ch.toUpperCase();
+            const mapped = to[from.indexOf(upper)];
+            out += ch === upper ? mapped : mapped.toLowerCase();
+            tokens.push({
+              kind: "letter",
+              original: upper,
+              mapped,
+              letterIndex,
+              html: `<code>${upper}</code> is always <code>${mapped}</code> in this mixed alphabet.`,
+              headline: `${upper} maps to ${mapped}`,
+              math: decrypt
+                ? `cipher “${upper}” sits at plaintext ${mapped}`
+                : `plaintext ${upper} → cipher ${mapped}`
             });
-            stepCount++;
+            letterIndex += 1;
+          } else {
+            out += ch;
+            tokens.push({
+              kind: "other",
+              original: ch,
+              mapped: ch,
+              html: "Spaces and punctuation are copied as-is.",
+              headline: "No substitution",
+              math: "The mixed alphabet only covers A–Z"
+            });
           }
-        } else {
-          out += ch;
         }
+
+        const accent = lettersOnly(keyword).charCodeAt(0) - 65 || 0;
+        return {
+          out,
+          tokens,
+          meta: `A→${cipher[0]}  B→${cipher[1]}  Z→${cipher[25]}`,
+          accent: Number.isFinite(accent) ? accent : 0,
+          mapFrom: ALPHA,
+          mapTo: cipher,
+          cipher,
+          keywordBuild: lettersOnly(keyword)
+        };
       }
-
-      const accent = (keyword.toUpperCase().replace(/[^A-Z]/g, "").charCodeAt(0) - 65) || 0;
-      return {
-        out,
-        steps,
-        meta: `Cipher A→${cipher[0]} … Z→${cipher[25]}`,
-        accent: Number.isFinite(accent) ? accent : 0,
-        cipher
-      };
     }
 
-    function setMotion(accent, sourceText) {
-      const n = Number(accent) || 0;
-      const drift = (n % 26) * 3.2;
-      const x = ((n % 7) - 3) * 2.2;
-      const y = ((n % 5) - 2) * 1.8;
-      const pulse = Math.min(6, (sourceText || "").length * 0.15 + (n % 26) * 0.08);
-
-      document.documentElement.style.setProperty("--shift", `${(n % 26) * (360 / 26)}deg`);
-      document.documentElement.style.setProperty("--grid-drift", `${drift}px`);
-      document.documentElement.style.setProperty("--nudge-x", `${x}px`);
-      document.documentElement.style.setProperty("--nudge-y", `${y}px`);
-      document.documentElement.style.setProperty("--pulse", String(pulse));
+    function shannonEntropy(text) {
+      const s = String(text || "");
+      if (!s.length) return 0;
+      const freq = new Map();
+      for (const ch of s) freq.set(ch, (freq.get(ch) || 0) + 1);
+      let h = 0;
+      for (const n of freq.values()) {
+        const p = n / s.length;
+        h -= p * Math.log2(p);
+      }
+      return h;
     }
 
-    function lightAlphabet(result) {
-      const nodes = els.alphabetStrip.querySelectorAll("span");
-      nodes.forEach((n) => n.classList.remove("lit"));
+    function indexOfCoincidence(text) {
+      const letters = lettersOnly(text);
+      const n = letters.length;
+      if (n < 2) return 0;
+      const counts = Object.fromEntries([...ALPHA].map((ch) => [ch, 0]));
+      for (const ch of letters) counts[ch] += 1;
+      let sum = 0;
+      for (const ch of ALPHA) sum += counts[ch] * (counts[ch] - 1);
+      return sum / (n * (n - 1));
+    }
 
-      if (state.method === "traditional") {
-        const k = ((Number(els.keyInput.value) % 26) + 26) % 26;
-        if (nodes[k]) nodes[k].classList.add("lit");
-        if (nodes[0]) nodes[0].classList.add("lit");
-      } else if (state.method === "modified") {
-        keywordShifts(els.keywordInput.value).slice(0, 6).forEach((s) => {
-          if (nodes[s]) nodes[s].classList.add("lit");
+    function looksPrintable(text) {
+      const s = String(text || "");
+      if (!s.length) return false;
+      let ok = 0;
+      for (const ch of s) {
+        const c = ch.charCodeAt(0);
+        if (ch === "\n" || ch === "\r" || ch === "\t" || (c >= 32 && c < 127)) ok += 1;
+      }
+      return ok / s.length > 0.88;
+    }
+
+    function previewText(text, limit = 96) {
+      const s = String(text || "").replace(/\s+/g, " ").trim();
+      return s.length > limit ? `${s.slice(0, limit)}…` : s;
+    }
+
+    function decodeHex(raw) {
+      const hex = String(raw).replace(/[\s:]/g, "");
+      if (hex.length < 8 || hex.length % 2 !== 0 || /[^0-9a-f]/i.test(hex)) return null;
+      let out = "";
+      for (let i = 0; i < hex.length; i += 2) {
+        const n = parseInt(hex.slice(i, i + 2), 16);
+        if (Number.isNaN(n)) return null;
+        out += String.fromCharCode(n);
+      }
+      return out;
+    }
+
+    function decodeBase64(raw) {
+      const compact = String(raw).replace(/\s/g, "");
+      if (compact.length < 8 || compact.length % 4 !== 0) return null;
+      if (!/^[A-Za-z0-9+/]+={0,2}$/.test(compact)) return null;
+      try {
+        return atob(compact);
+      } catch {
+        return null;
+      }
+    }
+
+    function decodeUrl(raw) {
+      if (!/%[0-9A-Fa-f]{2}/.test(raw)) return null;
+      try {
+        return decodeURIComponent(String(raw).replace(/\+/g, " "));
+      } catch {
+        return null;
+      }
+    }
+
+    function compactBits(raw) {
+      return String(raw).replace(/\s/g, "");
+    }
+
+    const MORSE_AZ = ".-|-...|-.-.|-..|.|..-.|--.|....|..|.---|-.-|.-..|--|-.|---|.--.|--.-|.-.|...|-|..-|...-|.--|-.--|-.--|--..".split("|");
+    const MORSE_MAP = Object.fromEntries(MORSE_AZ.map((code, i) => [code, ALPHA[i]]));
+    MORSE_MAP["-----"] = "0"; MORSE_MAP[".----"] = "1"; MORSE_MAP["..---"] = "2";
+    MORSE_MAP["...--"] = "3"; MORSE_MAP["....-"] = "4"; MORSE_MAP["....."] = "5";
+    MORSE_MAP["-...."] = "6"; MORSE_MAP["--..."] = "7"; MORSE_MAP["---.."] = "8";
+    MORSE_MAP["----."] = "9"; MORSE_MAP["/"] = " ";
+
+    function decodeMorse(raw) {
+      const tokens = String(raw).trim().split(/\s+/);
+      if (tokens.length < 4) return null;
+      let out = "";
+      for (const t of tokens) {
+        if (!(t in MORSE_MAP)) return null;
+        out += MORSE_MAP[t];
+      }
+      return out;
+    }
+
+    function decodeBinary(raw) {
+      const bits = compactBits(raw);
+      if (bits.length < 16 || bits.length % 8 !== 0 || /[^01]/.test(bits)) return null;
+      let out = "";
+      for (let i = 0; i < bits.length; i += 8) {
+        out += String.fromCharCode(parseInt(bits.slice(i, i + 8), 2));
+      }
+      return out;
+    }
+
+    function decodeOctal(raw) {
+      const parts = String(raw).trim().split(/[\s,]+/).filter(Boolean);
+      if (parts.length < 4 || parts.some((p) => /[^0-7]/.test(p) || p.length > 3)) return null;
+      return parts.map((p) => String.fromCharCode(parseInt(p, 8))).join("");
+    }
+
+    function decodeCharCodes(raw) {
+      const parts = String(raw).trim().split(/[\s,;]+/).filter(Boolean);
+      if (parts.length < 4 || parts.some((p) => !/^\d{1,3}$/.test(p))) return null;
+      const nums = parts.map(Number);
+      if (nums.some((n) => n > 255)) return null;
+      return nums.map((n) => String.fromCharCode(n)).join("");
+    }
+
+    function atbash(text) {
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        return String.fromCharCode(base + (25 - (ch.charCodeAt(0) - base)));
+      });
+    }
+
+    function rot47(text) {
+      return [...String(text)].map((ch) => {
+        const c = ch.charCodeAt(0);
+        if (c < 33 || c > 126) return ch;
+        return String.fromCharCode(33 + ((c - 33 + 47) % 94));
+      }).join("");
+    }
+
+    function affineDecrypt(text, a, b) {
+      let inv = 0;
+      for (let x = 1; x < 26; x += 1) if ((a * x) % 26 === 1) inv = x;
+      if (!inv) return text;
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        const p = (inv * ((ch.charCodeAt(0) - base - b) % 26 + 26)) % 26;
+        return String.fromCharCode(base + p);
+      });
+    }
+
+    function railFenceDecrypt(cipher, rails) {
+      const n = cipher.length;
+      if (rails < 2 || rails >= n) return cipher;
+      const pattern = [];
+      let r = 0;
+      let dir = 1;
+      for (let i = 0; i < n; i += 1) {
+        pattern.push(r);
+        r += dir;
+        if (r === 0 || r === rails - 1) dir *= -1;
+      }
+      const counts = Array(rails).fill(0);
+      for (const p of pattern) counts[p] += 1;
+      const rows = [];
+      let idx = 0;
+      for (let i = 0; i < rails; i += 1) {
+        rows.push(cipher.slice(idx, idx + counts[i]).split(""));
+        idx += counts[i];
+      }
+      const pos = Array(rails).fill(0);
+      let out = "";
+      for (const p of pattern) out += rows[p][pos[p]++];
+      return out;
+    }
+
+    function baconDecode(raw) {
+      const bits = String(raw).toUpperCase().replace(/[^AB]/g, "");
+      if (bits.length < 20 || bits.length % 5 !== 0) return null;
+      let out = "";
+      for (let i = 0; i < bits.length; i += 5) {
+        const n = parseInt(bits.slice(i, i + 5).replace(/A/g, "0").replace(/B/g, "1"), 2);
+        if (n > 25) return null;
+        out += ALPHA[n];
+      }
+      return out;
+    }
+
+    function xorKey(text, key) {
+      return [...String(text)].map((ch) => String.fromCharCode(ch.charCodeAt(0) ^ key)).join("");
+    }
+
+    const HASH_LEN = {
+      2: ["CRC-8"],
+      4: ["CRC-16", "Fletcher-16"],
+      6: ["CRC-24"],
+      8: ["CRC-32", "Fletcher-32"],
+      16: ["CRC-64"],
+      32: ["MD5", "MD4", "MD2", "NT Hash", "LM Hash", "RIPEMD-128"],
+      40: ["SHA-1", "RIPEMD-160", "HAS-160", "HASSH"],
+      56: ["SHA-224", "SHA-512/224", "SHA-3-224"],
+      64: ["SHA-256", "SHA-512/256", "SHA-3-256", "RIPEMD-256", "GOST"],
+      80: ["RIPEMD-320"],
+      96: ["SHA-384", "SHA-3-384"],
+      128: ["SHA-512", "SHA-3-512", "Whirlpool", "SHAKE-256"]
+    };
+
+    const MODERN_FAMILY = "AES, DES, Triple DES, Blowfish, RC2, RC4, RC4 Drop, RC6, SM4, ChaCha, Salsa20, Rabbit, LS47, RSA ciphertext, PRNG";
+
+    class CipherDetector {
+      static inspect(raw) {
+        const text = String(raw || "");
+        const trimmed = text.trim();
+        if (!trimmed) return { error: "Paste some text first." };
+
+        const letters = lettersOnly(trimmed);
+        const guesses = [];
+        const entropy = shannonEntropy(trimmed);
+
+        this.#magic(trimmed, guesses);
+        this.#encodings(trimmed, guesses);
+        this.#hashes(trimmed, guesses);
+        const structured = guesses.some((g) =>
+          (g.confidence === "high" && ["encoding", "format", "kdf", "modern"].includes(g.family))
+          || (g.family === "hash" && g.confidence !== "weak")
+        );
+        if (!structured) {
+          this.#classics(trimmed, letters, guesses);
+          this.#xor(trimmed, guesses);
+        }
+
+        const hexRaw = decodeHex(trimmed);
+        const hexIsBinary = Boolean(hexRaw && !looksPrintable(hexRaw));
+        if (letters.length >= 16 && !hexIsBinary) {
+          const englishScore = chiSquared(trimmed);
+          if (englishScore < 45 && indexOfCoincidence(trimmed) > 0.058) {
+            guesses.push({
+              id: "plaintext",
+              title: "Already looks like English",
+              family: "metric",
+              confidence: "medium",
+              reason: `Chi-squared ${englishScore.toFixed(0)} and IOC ${indexOfCoincidence(trimmed).toFixed(3)} match plaintext more than ciphertext.`,
+              preview: previewText(trimmed),
+              apply: { method: "traditional", mode: "encrypt", text: trimmed, key: 0 }
+            });
+          }
+        }
+
+        this.#modern(trimmed, letters, guesses);
+
+        guesses.push({
+          id: "entropy",
+          title: `Shannon entropy ${entropy.toFixed(2)} bits/char`,
+          family: "metric",
+          confidence: entropy >= 4.5 ? "medium" : "weak",
+          reason: entropy >= 4.5
+            ? "High entropy: compressed data, a hash, a modern cipher, or a PRNG all look like this."
+            : "Low-to-mid entropy: encodings and classical ciphers usually live here.",
+          preview: previewText(trimmed),
+          score: 90,
+          apply: null
         });
-      } else if (result.cipher) {
-        // light first few cipher-mapped letters
-        for (let i = 0; i < 6; i++) {
-          const ch = result.cipher[i];
-          const node = els.alphabetStrip.querySelector(`[data-letter="${ch}"]`);
-          if (node) node.classList.add("lit");
+
+        if (!guesses.some((g) => g.id !== "entropy") && letters.length && letters.length < 16) {
+          guesses.push({
+            id: "short",
+            title: "Too short to name a cipher",
+            family: "metric",
+            confidence: "weak",
+            reason: "Classroom ciphers need ~16 letters. Hashes, PEM headers, Morse, and encodings can still match below that.",
+            preview: previewText(trimmed),
+            apply: null
+          });
+        }
+
+        const rank = { high: 0, medium: 1, weak: 2 };
+        guesses.sort((a, b) => rank[a.confidence] - rank[b.confidence] || (a.score ?? 99) - (b.score ?? 99));
+        const seen = new Set();
+        const unique = guesses.filter((g) => {
+          if (seen.has(g.id)) return false;
+          seen.add(g.id);
+          return true;
+        });
+        return { guesses: unique.slice(0, 12) };
+      }
+
+      static #magic(text, guesses) {
+        const u = text.trim();
+        const head = u.slice(0, 80).toUpperCase();
+
+        if (/-----BEGIN PGP/.test(head)) {
+          guesses.push({
+            id: "pgp", title: "PGP / OpenPGP armor", family: "format", confidence: "high",
+            reason: "ASCII armor header -----BEGIN PGP. This is a wrapper, not a guess at the inner cipher.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        } else if (/-----BEGIN CERTIFICATE/.test(head) || /-----BEGIN X509/.test(head)) {
+          guesses.push({
+            id: "x509", title: "X.509 certificate · PEM", family: "format", confidence: "high",
+            reason: "PEM certificate header. The body is Base64 DER.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        } else if (/-----BEGIN/.test(head)) {
+          const kind = (u.match(/-----BEGIN ([^-]+)-----/) || [])[1] || "PEM";
+          guesses.push({
+            id: "pem", title: `PEM · ${kind.trim()}`, family: "format", confidence: "high",
+            reason: "PEM wrapper. RSA keys, CSRs, and certs all use this envelope.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+
+        if (/^\$2[abxy]\$\d{2}\$/.test(u)) {
+          guesses.push({
+            id: "bcrypt", title: "Bcrypt", family: "kdf", confidence: "high",
+            reason: "Modular crypt prefix $2a$ / $2b$ / $2y$.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^\$(s0|7)\$/i.test(u) || /^\$scrypt\$/i.test(u)) {
+          guesses.push({
+            id: "scrypt", title: "Scrypt", family: "kdf", confidence: "high",
+            reason: "Modular crypt / $scrypt$ prefix.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^\$pbkdf2/i.test(u)) {
+          guesses.push({
+            id: "pbkdf2", title: "PBKDF2", family: "kdf", confidence: "high",
+            reason: "PHC / modular crypt string. HKDF has no single dump format — it looks like the inner hash.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (u.startsWith("U2FsdGVkX1") || u.startsWith("Salted__")) {
+          guesses.push({
+            id: "evp", title: "OpenSSL EVP · Salted__", family: "format", confidence: "high",
+            reason: "OpenSSL enc default prefix. Cipher inside is still unnamed.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^gAAAAA/.test(u) && u.length > 40) {
+          guesses.push({
+            id: "fernet", title: "Fernet", family: "modern", confidence: "high",
+            reason: "Version 0x80 + timestamp Base64 (gAAAAA…). AES-128-CBC sits under the token.",
+            preview: previewText(u), score: 2, apply: null
+          });
+        }
+        if (/^bplist/i.test(u) || /<plist[\s>]/i.test(u)) {
+          guesses.push({
+            id: "plist", title: "P-list", family: "format", confidence: "high",
+            reason: "Apple property list magic (bplist) or XML <plist>.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^C1[A-Za-z0-9+/=]{8,}/.test(compactBits(u))) {
+          guesses.push({
+            id: "citrix", title: "Citrix CTX1", family: "encoding", confidence: "medium",
+            reason: "CTX1 strings commonly start with C1 and a Base64-like body.",
+            preview: previewText(u), score: 12, apply: null
+          });
+        }
+        if (/^xn--/i.test(u)) {
+          guesses.push({
+            id: "punycode", title: "Punycode", family: "encoding", confidence: "high",
+            reason: "IDNA prefix xn--.",
+            preview: previewText(u), score: 2,
+            apply: { method: "traditional", mode: "encrypt", text: u, key: 0 }
+          });
+        }
+        if (/^=[\dA-F]{2}/i.test(u) && (u.match(/=[0-9A-F]{2}/gi) || []).length >= 3) {
+          guesses.push({
+            id: "qp", title: "Quoted-printable", family: "encoding", confidence: "high",
+            reason: "MIME =XX bytes.",
+            preview: previewText(u.replace(/=([0-9A-F]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))),
+            score: 3, apply: null
+          });
+        }
+        if (/\\u[0-9a-f]{4}/i.test(u) || /\\x[0-9a-f]{2}/i.test(u)) {
+          guesses.push({
+            id: "unicode", title: "Unicode / UTF-8 escapes", family: "encoding", confidence: "high",
+            reason: "\\uXXXX or \\xHH escapes.",
+            preview: previewText(u), score: 3, apply: null
+          });
+        }
+        if (/&(#\d+|#x[0-9a-f]+|[a-z]+);/i.test(u)) {
+          const decoded = u.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m) => {
+            const ta = document.createElement("textarea");
+            ta.innerHTML = m;
+            return ta.value;
+          });
+          guesses.push({
+            id: "html", title: "HTML entity", family: "encoding", confidence: "high",
+            reason: "Named or numeric HTML entities.",
+            preview: previewText(decoded), score: 3,
+            apply: { method: "traditional", mode: "encrypt", text: decoded, key: 0 }
+          });
+        }
+
+        const hexHead = compactBits(u).slice(0, 8).toUpperCase();
+        if (hexHead.startsWith("FFD8FF") || compactBits(u).toUpperCase().includes("45786966")) {
+          guesses.push({
+            id: "exif", title: "JPEG / EXIF", family: "format", confidence: "medium",
+            reason: "JPEG SOI (FF D8) or ASCII Exif in the hex. LSB/RGBA stego is not proven from a dump alone.",
+            preview: previewText(u), score: 8, apply: null
+          });
+        }
+        if (hexHead.startsWith("89504E47")) {
+          guesses.push({
+            id: "png", title: "PNG · possible LSB/RGBA payload", family: "format", confidence: "medium",
+            reason: "PNG signature. Pixel LSB is a hiding method, not a named cipher.",
+            preview: previewText(u), score: 8, apply: null
+          });
+        }
+        if (hexHead.startsWith("3082") || hexHead.startsWith("3081")) {
+          guesses.push({
+            id: "asn1", title: "ASN.1 / TLV (DER)", family: "format", confidence: "medium",
+            reason: "Hex starts with SEQUENCE (0x30). X.509 and RSA blobs are DER TLV trees.",
+            preview: previewText(u), score: 9, apply: null
+          });
+        }
+      }
+
+      static #encodings(text, guesses) {
+        const hex = decodeHex(text);
+        if (hex && looksPrintable(hex) && hex !== text) {
+          guesses.push({
+            id: "hex", title: "Hex encoding", family: "encoding", confidence: "high",
+            reason: "Even-length 0–9/A–F digits decode to printable text.",
+            preview: previewText(hex), score: chiSquared(hex),
+            apply: { method: "traditional", mode: "encrypt", text: hex, key: 3 }
+          });
+        }
+
+        const b64 = decodeBase64(text);
+        if (b64 && looksPrintable(b64)) {
+          guesses.push({
+            id: "base64", title: "Base64 encoding", family: "encoding", confidence: "high",
+            reason: "Charset and padding match Base64, and decoding yields printable characters.",
+            preview: previewText(b64), score: chiSquared(b64),
+            apply: { method: "traditional", mode: "encrypt", text: b64, key: 3 }
+          });
+        }
+
+        const compact = compactBits(text);
+        if (compact.length >= 8 && compact.length % 8 === 0 && /^[A-Z2-7=]+$/i.test(compact) && /[2-7]/.test(compact)) {
+          guesses.push({
+            id: "base32", title: "Base32 encoding", family: "encoding", confidence: "medium",
+            reason: "A–Z and 2–7 with length a multiple of 8 (RFC 4648).",
+            preview: previewText(text), score: 20, apply: null
+          });
+        }
+        if (compact.length >= 16 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(compact) && !/[0OIl]/.test(compact)) {
+          guesses.push({
+            id: "base58", title: "Base58 encoding", family: "encoding", confidence: "medium",
+            reason: "Bitcoin-style alphabet (no 0, O, I, l).",
+            preview: previewText(text), score: 22, apply: null
+          });
+        }
+        if (compact.length >= 16 && /^[0-9A-Za-z]+$/.test(compact) && /[0-9]/.test(compact) && /[a-z]/.test(compact) && /[A-Z]/.test(compact) && compact.length % 4 !== 0) {
+          guesses.push({
+            id: "base62", title: "Base62 encoding", family: "encoding", confidence: "weak",
+            reason: "0–9 plus mixed-case letters, not padded like Base64.",
+            preview: previewText(text), score: 40, apply: null
+          });
+        }
+        if (/^<~[\s\S]*~>$/.test(text.trim())) {
+          guesses.push({
+            id: "base85", title: "Base85 / Ascii85", family: "encoding", confidence: "high",
+            reason: "Ascii85 framed with <~ ~>.",
+            preview: previewText(text), score: 18, apply: null
+          });
+        } else if (compact.length >= 16 && /[~{}]/.test(compact) && !/^[A-Za-z0-9+/=]+$/.test(compact)) {
+          guesses.push({
+            id: "base91", title: "Base91 encoding", family: "encoding", confidence: "weak",
+            reason: "Dense printable alphabet including braces — typical of Base91, not Base64.",
+            preview: previewText(text), score: 35, apply: null
+          });
+        }
+
+        const url = decodeUrl(text);
+        if (url && url !== text && looksPrintable(url)) {
+          guesses.push({
+            id: "url", title: "URL encoding", family: "encoding", confidence: "high",
+            reason: "Percent-encoded bytes decode to readable text.",
+            preview: previewText(url), score: chiSquared(url),
+            apply: { method: "traditional", mode: "encrypt", text: url, key: 3 }
+          });
+        }
+
+        const bin = decodeBinary(text);
+        if (bin && looksPrintable(bin)) {
+          guesses.push({
+            id: "binary", title: "Binary encoding", family: "encoding", confidence: "high",
+            reason: "Groups of 8 bits decode to printable characters.",
+            preview: previewText(bin), score: chiSquared(bin),
+            apply: { method: "traditional", mode: "encrypt", text: bin, key: 3 }
+          });
+        }
+        const oct = decodeOctal(text);
+        if (oct && looksPrintable(oct)) {
+          guesses.push({
+            id: "octal", title: "Octal encoding", family: "encoding", confidence: "high",
+            reason: "Space-separated octal codes decode to printable text.",
+            preview: previewText(oct), score: chiSquared(oct),
+            apply: { method: "traditional", mode: "encrypt", text: oct, key: 3 }
+          });
+        }
+        const codes = decodeCharCodes(text);
+        if (codes && looksPrintable(codes) && !oct) {
+          guesses.push({
+            id: "charcode", title: "CharCode / decimal bytes", family: "encoding", confidence: "high",
+            reason: "Decimal 0–255 list (JS charCode / UTF-8 bytes).",
+            preview: previewText(codes), score: chiSquared(codes),
+            apply: { method: "traditional", mode: "encrypt", text: codes, key: 3 }
+          });
+        }
+
+        const morse = decodeMorse(text);
+        if (morse && /[A-Z]/.test(morse)) {
+          guesses.push({
+            id: "morse", title: "Morse code", family: "encoding", confidence: "high",
+            reason: "Dots, dashes, and spaces map onto A–Z.",
+            preview: previewText(morse), score: chiSquared(morse),
+            apply: { method: "traditional", mode: "encrypt", text: morse, key: 0 }
+          });
+        }
+
+        const chars = [...text];
+        const visible = chars.filter((ch) => ch.trim());
+        const braille = visible.filter((ch) => {
+          const c = ch.codePointAt(0);
+          return c >= 0x2800 && c <= 0x28FF;
+        }).length;
+        if (visible.length >= 4 && braille / visible.length > 0.7) {
+          guesses.push({
+            id: "braille", title: "Braille", family: "encoding", confidence: "high",
+            reason: "Most glyphs sit in U+2800–U+28FF.",
+            preview: previewText(text), score: 4, apply: null
+          });
+        }
+
+        const cjk = chars.filter((ch) => {
+          const c = ch.codePointAt(0);
+          return c >= 0x4E00 && c <= 0x9FFF;
+        }).length;
+        if (cjk >= 8 && cjk / chars.length > 0.5) {
+          guesses.push({
+            id: "rot8000", title: "ROT8000 (possible)", family: "classical", confidence: "weak",
+            reason: "Dense CJK block — ROT8000 rotates the BMP. Not proven without a known pair.",
+            preview: previewText(text), score: 50, apply: null
+          });
+        }
+      }
+
+      static #hashes(text, guesses) {
+        const hex = compactBits(text);
+        if (/^[0-9a-f]+$/i.test(hex) && HASH_LEN[hex.length]) {
+          const names = HASH_LEN[hex.length];
+          guesses.push({
+            id: `hash-${hex.length}`,
+            title: names.slice(0, 3).join(" / "),
+            family: "hash",
+            confidence: hex.length >= 32 ? "medium" : "weak",
+            reason: `${hex.length} hex chars match ${names.join(", ")}. Length is not a proof. HMAC / HKDF / SHAKE squeeze to the same width as the inner digest.`,
+            preview: previewText(text), score: 15, apply: null
+          });
+        }
+      }
+
+      static #classics(text, letters, guesses) {
+        if (letters.length < 12) return;
+        const ioc = indexOfCoincidence(text);
+
+        const rot13 = CipherEngine.traditional(text, 13, true).out;
+        if (chiSquared(rot13) < 50 && chiSquared(text) > 70) {
+          guesses.push({
+            id: "rot13", title: "ROT13", family: "classical", confidence: "high",
+            reason: "Caesar shift 13 reads as English.",
+            preview: previewText(rot13), score: chiSquared(rot13),
+            apply: { method: "traditional", mode: "decrypt", text, key: 13 }
+          });
+        }
+
+        const caesar = [];
+        for (let k = 0; k < 26; k += 1) {
+          const plain = CipherEngine.traditional(text, k, true).out;
+          caesar.push({ k, plain, score: chiSquared(plain) });
+        }
+        caesar.sort((a, b) => a.score - b.score);
+        const best = caesar[0];
+        const second = caesar[1];
+        const gap = (second?.score ?? 999) - best.score;
+        if (best.k !== 0 && best.k !== 13 && best.score < 70 && gap > 18) {
+          guesses.push({
+            id: "caesar", title: `Traditional Caesar · shift ${best.k}`, family: "classical",
+            confidence: best.score < 40 ? "high" : "medium",
+            reason: `IOC ${ioc.toFixed(3)} is in the English band, and shift ${best.k} is the clear chi-squared winner.`,
+            preview: previewText(best.plain), score: best.score,
+            apply: { method: "traditional", mode: "decrypt", text, key: best.k }
+          });
+        }
+
+        const ab = atbash(text);
+        if (chiSquared(ab) < 55 && chiSquared(text) > 80) {
+          guesses.push({
+            id: "atbash", title: "Atbash", family: "classical", confidence: "high",
+            reason: "A↔Z, B↔Y fold reads as English.",
+            preview: previewText(ab), score: chiSquared(ab),
+            apply: { method: "mono", mode: "decrypt", text, keyword: "ZYXWVUTSRQPONMLKJIHGFEDCBA" }
+          });
+        }
+
+        const r47 = rot47(text);
+        if (/[!-~]/.test(text) && looksPrintable(r47) && chiSquared(r47) < 55 && chiSquared(text) > 90) {
+          guesses.push({
+            id: "rot47", title: "ROT47", family: "classical", confidence: "medium",
+            reason: "ASCII 33–126 rotated by 47 becomes readable English.",
+            preview: previewText(r47), score: chiSquared(r47),
+            apply: { method: "traditional", mode: "encrypt", text: r47, key: 0 }
+          });
+        }
+
+        if (letters.length >= 16 && best.score > 80) {
+          let affBest = { score: 1e9, a: 1, b: 0, plain: text };
+          const as = [3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
+          for (const a of as) {
+            for (let b = 0; b < 26; b += 1) {
+              const plain = affineDecrypt(text, a, b);
+              const score = chiSquared(plain);
+              if (score < affBest.score) affBest = { score, a, b, plain };
+            }
+          }
+          if (affBest.score < 50 && affBest.score + 20 < best.score) {
+            guesses.push({
+              id: "affine", title: `Affine cipher · a=${affBest.a}, b=${affBest.b}`, family: "classical",
+              confidence: "medium",
+              reason: "Brute force of coprime (a, b) mod 26 beat a simple Caesar shift.",
+              preview: previewText(affBest.plain), score: affBest.score,
+              apply: { method: "traditional", mode: "encrypt", text: affBest.plain, key: 0 }
+            });
+          }
+        }
+
+        if (letters.length >= 16) {
+          let railBest = { score: 1e9, rails: 0, plain: letters };
+          for (let rails = 2; rails <= 8; rails += 1) {
+            const plain = railFenceDecrypt(letters, rails);
+            const score = chiSquared(plain);
+            if (score < railBest.score) railBest = { score, rails, plain };
+          }
+          if (railBest.score < 45 && railBest.rails && railBest.score + 25 < best.score) {
+            guesses.push({
+              id: "rail", title: `Rail Fence / Caesar Box · ${railBest.rails} rails`, family: "classical",
+              confidence: "medium",
+              reason: "Zig-zag transposition unscrambles into English-like frequencies. Columnar transposition is the same family.",
+              preview: previewText(railBest.plain), score: railBest.score,
+              apply: { method: "traditional", mode: "encrypt", text: railBest.plain, key: 0 }
+            });
+          }
+        }
+
+        const bacon = baconDecode(text);
+        if (bacon && chiSquared(bacon) < 80) {
+          guesses.push({
+            id: "bacon", title: "Bacon cipher", family: "classical", confidence: "high",
+            reason: "A/B groups of 5 decode to letters.",
+            preview: previewText(bacon), score: chiSquared(bacon),
+            apply: { method: "traditional", mode: "encrypt", text: bacon, key: 0 }
+          });
+        }
+
+        if (letters.length >= 16 && letters.length % 2 === 0 && !letters.includes("J") && ioc >= 0.055 && best.score > 70) {
+          guesses.push({
+            id: "playfair", title: "Playfair (possible)", family: "classical", confidence: "weak",
+            reason: "Even letter count, no J, English-like IOC — Playfair-shaped, not proven.",
+            preview: previewText(text), score: 55,
+            apply: { method: "mono", mode: "decrypt", text, keyword: "" }
+          });
+        }
+
+        if (letters.length >= 16 && /^([A-Z]{4,5}[\s/]*)+$/.test(text.trim()) && ioc < 0.048) {
+          guesses.push({
+            id: "enigma", title: "Enigma / Typex-style groups", family: "classical", confidence: "weak",
+            reason: "5-letter groups and low IOC match machine ciphers. A Bombe is an attack machine, not a dump format.",
+            preview: previewText(text), score: 48,
+            apply: { method: "modified", mode: "decrypt", text, keyword: "" }
+          });
+        }
+
+        if (letters.length >= 16 && ioc >= 0.055 && best.score > 70 && !guesses.some((g) => g.id === "caesar" || g.id === "rot13")) {
+          guesses.push({
+            id: "mono", title: "Monoalphabetic substitution", family: "classical", confidence: "medium",
+            reason: `IOC ${ioc.toFixed(3)} stays near English, but no single Caesar shift reads as English.`,
+            preview: previewText(text), score: best.score,
+            apply: { method: "mono", mode: "decrypt", text, keyword: "" }
+          });
+        } else if (letters.length >= 16 && ioc >= 0.041 && ioc < 0.055) {
+          const period = this.#bestPeriod(letters);
+          guesses.push({
+            id: "modified",
+            title: period
+              ? `Vigenère / modified Caesar · key length ≈ ${period}`
+              : "Vigenère / modified Caesar (repeating key stream)",
+            family: "classical", confidence: "medium",
+            reason: `IOC ${ioc.toFixed(3)} is below English, which fits a changing shift. Keyword is not recovered — only the likely length.`,
+            preview: previewText(text), score: 60,
+            apply: { method: "modified", mode: "decrypt", text, keyword: "" }
+          });
+        }
+      }
+
+      static #bestPeriod(letters) {
+        let bestLen = 0;
+        let bestIoc = 0;
+        for (let p = 2; p <= 12; p += 1) {
+          if (letters.length < p * 8) continue;
+          let sum = 0;
+          for (let r = 0; r < p; r += 1) {
+            let col = "";
+            for (let i = r; i < letters.length; i += p) col += letters[i];
+            sum += indexOfCoincidence(col);
+          }
+          const avg = sum / p;
+          if (avg > bestIoc) {
+            bestIoc = avg;
+            bestLen = p;
+          }
+        }
+        return bestIoc > 0.052 ? bestLen : 0;
+      }
+
+      static #xor(text, guesses) {
+        const raw = decodeHex(text) || decodeBase64(text);
+        const blob = raw && !looksPrintable(raw) ? raw : null;
+        if (!blob || blob.length < 8) return;
+        let best = { score: 1e9, key: 0, plain: "" };
+        for (let k = 1; k < 256; k += 1) {
+          const plain = xorKey(blob, k);
+          if (!looksPrintable(plain)) continue;
+          const score = chiSquared(plain);
+          if (score < best.score) best = { score, key: k, plain };
+        }
+        if (best.plain && best.score < 80) {
+          guesses.push({
+            id: "xor",
+            title: `Single-byte XOR · 0x${best.key.toString(16).padStart(2, "0")}`,
+            family: "classical", confidence: "medium",
+            reason: "A repeating 8-bit XOR key turns the blob into printable English-like text.",
+            preview: previewText(best.plain), score: best.score,
+            apply: { method: "traditional", mode: "encrypt", text: best.plain, key: 0 }
+          });
+        }
+      }
+
+      static #modern(text, letters, guesses) {
+        const entropy = shannonEntropy(text);
+        const ioc = letters.length >= 16 ? indexOfCoincidence(text) : 1;
+        const compact = compactBits(text);
+        const hex = decodeHex(text);
+        const b64 = decodeBase64(text);
+        const readableEncoding = (hex && looksPrintable(hex)) || (b64 && looksPrintable(b64));
+        const randomish = entropy >= 4.2 || (letters.length >= 16 && ioc < 0.042) || (hex && !looksPrintable(hex));
+        if (randomish && compact.length >= 16 && !readableEncoding) {
+          guesses.push({
+            id: "modern",
+            title: "High entropy · modern crypto / PRNG",
+            family: "modern",
+            confidence: "weak",
+            reason: `Entropy ${entropy.toFixed(2)} bits/char. ${MODERN_FAMILY} are indistinguishable from random bits without a header (PEM, Fernet, EVP Salted__). Not identified as a named algorithm.`,
+            preview: previewText(text), score: 200, apply: null
+          });
         }
       }
     }
 
-    function renderMethod() {
-      const m = METHODS[state.method];
-      els.knowledgeTitle.textContent = m.title;
-      els.knowledgeBody.innerHTML = m.knowledge;
-      els.workshopHint.textContent = m.workshopHint;
-      els.interactHint.textContent = m.interactHint;
-      els.logicIntro.textContent = m.logicIntro;
-      els.codePanel.innerHTML = m.code;
+    const METHODS = {
+      traditional: {
+        title: "Traditional Caesar Cipher",
+        knowledge: `
+          <p>Imagine the alphabet as a <strong>wheel of 26 letters</strong>. You turn the wheel a fixed number of clicks, then read every letter through that new position.</p>
+          <ul>
+            <li>Shift 3 is the classic: A→D, B→E, … X→A, Y→B, Z→C.</li>
+            <li>The wrap-around is modular arithmetic: after 25 you start at 0 again.</li>
+            <li>Only 25 useful keys exist, so a computer (or this lab) can try them all.</li>
+          </ul>
+          <div class="formula">Encrypt: C = (P + K) mod 26 &nbsp;·&nbsp; Decrypt: P = (C − K) mod 26</div>
+          <div class="worked">Worked example: <strong>HELLO</strong> with K = 3 → <strong>KHOOR</strong>. H is the 7th letter (0-based), 7+3=10 → K.</div>
+        `,
+        workshopHint: "Use one shift for the whole message. Click the wheel, or type 3 — Julius Caesar’s famous key.",
+        interactHint: "Tip: drag the inner disk like a real cipher wheel, or click a letter.",
+        logicIntro: "Same K for every letter. Play the engine to see mod 26 wrap around.",
+        analysisTitle: "Crack all 26 shifts",
+        analysisIntro: "Caesar is a teaching cipher because the key space is tiny. The lab scores each shift against English letter frequencies (chi-squared). The lowest score is usually readable English.",
+        keyMode: "shift",
+        example: { text: "ATTACK AT DAWN", key: 3, keyword: "CIPHER", mode: "encrypt" },
+        challenge: {
+          title: "Decrypt this Caesar message",
+          body: "A student used the classic classroom shift. Decode the ciphertext, then press check.",
+          cipher: "WKH HDJOH KDV ODQGHG",
+          answer: "THE EAGLE HAS LANDED",
+          hint: "Try shift 3, or press “Crack all 26” and pick the best English score.",
+          setup: { mode: "decrypt", key: 3, text: "WKH HDJOH KDV ODQGHG" }
+        },
+        code: `<span class="cm">// Traditional Caesar — one shift, wrap with mod 26</span>
+<span class="cm">#include &lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
 
-      const isKeyword = m.keyMode === "keyword";
-      els.keyField.hidden = isKeyword;
-      els.keywordField.hidden = !isKeyword;
+<span class="kw">string</span> <span class="fn">caesar</span>(<span class="kw">string</span> text, <span class="kw">int</span> key, <span class="kw">bool</span> decrypt = <span class="kw">false</span>) {
+  <span class="kw">int</span> k = key % 26;
+  <span class="kw">if</span> (decrypt) k = (26 - k) % 26;
 
-      if (state.method === "traditional") {
-        els.keyLabel.textContent = "Shift key (0–25)";
+  <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; (<span class="kw">int</span>)text.size(); i++) {
+    <span class="kw">char</span> ch = text[i], base = 0;
+    <span class="kw">if</span> (ch &gt;= <span class="st">'A'</span> &amp;&amp; ch &lt;= <span class="st">'Z'</span>) base = <span class="st">'A'</span>;
+    <span class="kw">else if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) base = <span class="st">'a'</span>;
+    <span class="kw">else continue</span>;
+    text[i] = base + (ch - base + k) % 26;
+  }
+  <span class="kw">return</span> text;
+}`
+      },
+      modified: {
+        title: "Modified Caesar Cipher",
+        knowledge: `
+          <p>Keep the Caesar wheel, but <strong>change the shift on every letter</strong>. A keyword is turned into numbers (A=0 … Z=25) and repeated under the message. This is the classroom path toward Vigenère.</p>
+          <ul>
+            <li><code>KEY</code> means shifts 10, 4, 24, then start over.</li>
+            <li>Spaces do not eat a key letter — only A–Z do.</li>
+            <li>Harder than Caesar, still not modern encryption.</li>
+          </ul>
+          <div class="formula">Cᵢ = (Pᵢ + Kᵢ) mod 26 &nbsp;·&nbsp; K repeats: KEYKEYKEY…</div>
+          <div class="worked">HELLO + KEY → H+K, E+E, L+Y, L+K, O+E. Write the keyword under the letters to see the stream.</div>
+        `,
+        workshopHint: "Type a keyword. Each of its letters becomes the next shift in a repeating stream.",
+        interactHint: "Tip: change one keyword letter and watch the key-stream table jump.",
+        logicIntro: "Each plaintext letter borrows the next keyword shift.",
+        analysisTitle: "See the key stream",
+        analysisIntro: "Lay the keyword under the message. That alignment is the whole idea — if someone finds the keyword length, they can split the text into Caesar ciphers.",
+        keyMode: "keyword",
+        example: { text: "MEET ME AT NOON", key: 3, keyword: "KEY", mode: "encrypt" },
+        challenge: {
+          title: "Decrypt with keyword KEY",
+          body: "The sender reused a short keyword. Load the challenge, then decrypt.",
+          cipher: "",
+          answer: "MEET ME AT NOON",
+          hint: "Keyword KEY. Spaces do not use a key letter.",
+          setup: { mode: "decrypt", keyword: "KEY", text: "" }
+        },
+        code: `<span class="cm">// Modified Caesar — repeating keyword shifts</span>
+<span class="cm">#include &lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">string</span> <span class="fn">modifiedCaesar</span>(<span class="kw">string</span> text, <span class="kw">string</span> keyword, <span class="kw">bool</span> decrypt = <span class="kw">false</span>) {
+  <span class="kw">string</span> key;
+  <span class="kw">for</span> (<span class="kw">char</span> ch : keyword) {
+    <span class="kw">if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) ch = ch - <span class="st">'a'</span> + <span class="st">'A'</span>;
+    <span class="kw">if</span> (ch &gt;= <span class="st">'A'</span> &amp;&amp; ch &lt;= <span class="st">'Z'</span>) key += ch;
+  }
+  <span class="kw">if</span> (key.empty()) <span class="kw">return</span> text;
+
+  <span class="kw">int</span> i = 0;
+  <span class="kw">for</span> (<span class="kw">int</span> n = 0; n &lt; (<span class="kw">int</span>)text.size(); n++) {
+    <span class="kw">char</span> ch = text[n], base = 0;
+    <span class="kw">if</span> (ch &gt;= <span class="st">'A'</span> &amp;&amp; ch &lt;= <span class="st">'Z'</span>) base = <span class="st">'A'</span>;
+    <span class="kw">else if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) base = <span class="st">'a'</span>;
+    <span class="kw">else continue</span>;
+    <span class="kw">int</span> k = key[i++ % key.size()] - <span class="st">'A'</span>;
+    <span class="kw">if</span> (decrypt) k = (26 - k) % 26;
+    text[n] = base + (ch - base + k) % 26;
+  }
+  <span class="kw">return</span> text;
+}`
+      },
+      mono: {
+        title: "Monoalphabetic Cipher",
+        knowledge: `
+          <p>Now drop the wheel. Build <strong>one mixed alphabet</strong> from a keyword (unique letters first, then the leftover letters in order). Every plaintext A uses the same substitute for the whole message — that is what “monoalphabetic” means.</p>
+          <ul>
+            <li>Keyword CIPHER → C I P H E R, then A B D F G … (skipped letters already used).</li>
+            <li>Stronger than Caesar, still breakable: E, T, A stay common in English.</li>
+            <li>Frequency analysis is the historical attack — try it in the insight panel.</li>
+          </ul>
+          <div class="formula">cipherAlphabet = unique(keyword) + leftover letters &nbsp;·&nbsp; substitute 1-to-1</div>
+          <div class="worked">If the mixed alphabet starts CIPHER… then A→C, B→I, C→P. HELLO becomes the letters sitting in those slots.</div>
+        `,
+        workshopHint: "The keyword only builds the alphabet. After that, substitution is a simple lookup.",
+        interactHint: "Tip: edit the keyword and watch duplicates get crossed out in the builder.",
+        logicIntro: "Same substitute every time. The map does not change mid-message.",
+        analysisTitle: "Build the mixed alphabet",
+        analysisIntro: "Duplicates in the keyword are skipped, then the rest of A–Z is appended. Frequency bars still look like English — only the letter names changed. That is why this cipher is not “secret enough”.",
+        keyMode: "keyword",
+        example: { text: "THE QUICK BROWN FOX", key: 3, keyword: "CIPHER", mode: "encrypt" },
+        challenge: {
+          title: "Decrypt with keyword CIPHER",
+          body: "Recover the plaintext using the mixed alphabet from CIPHER.",
+          cipher: "",
+          answer: "THE QUICK BROWN FOX",
+          hint: "Build CIPHER + leftover letters, then reverse-lookup each ciphertext letter.",
+          setup: { mode: "decrypt", keyword: "CIPHER", text: "" }
+        },
+        code: `<span class="cm">// Mixed alphabet from a keyword, then 1-to-1 substitute</span>
+<span class="cm">#include &lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">string</span> <span class="fn">buildAlphabet</span>(<span class="kw">string</span> keyword) {
+  <span class="kw">string</span> out;
+  <span class="kw">bool</span> seen[26] = {};
+  <span class="kw">string</span> source = keyword + <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;
+  <span class="kw">for</span> (<span class="kw">char</span> ch : source) {
+    <span class="kw">if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) ch = ch - <span class="st">'a'</span> + <span class="st">'A'</span>;
+    <span class="kw">if</span> (ch &lt; <span class="st">'A'</span> || ch &gt; <span class="st">'Z'</span>) <span class="kw">continue</span>;
+    <span class="kw">int</span> idx = ch - <span class="st">'A'</span>;
+    <span class="kw">if</span> (seen[idx]) <span class="kw">continue</span>;
+    seen[idx] = <span class="kw">true</span>;
+    out += ch;
+  }
+  <span class="kw">return</span> out;
+}
+
+<span class="kw">string</span> <span class="fn">mono</span>(<span class="kw">string</span> text, <span class="kw">string</span> keyword, <span class="kw">bool</span> decrypt = <span class="kw">false</span>) {
+  <span class="kw">string</span> cipher = buildAlphabet(keyword);
+  <span class="kw">string</span> plain  = <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;
+  <span class="kw">string</span> from = decrypt ? cipher : plain;
+  <span class="kw">string</span> to   = decrypt ? plain  : cipher;
+
+  <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; (<span class="kw">int</span>)text.size(); i++) {
+    <span class="kw">char</span> ch = text[i], up = ch;
+    <span class="kw">if</span> (up &gt;= <span class="st">'a'</span> &amp;&amp; up &lt;= <span class="st">'z'</span>) up = up - <span class="st">'a'</span> + <span class="st">'A'</span>;
+    <span class="kw">if</span> (up &lt; <span class="st">'A'</span> || up &gt; <span class="st">'Z'</span>) <span class="kw">continue</span>;
+    <span class="kw">char</span> mapped = to[from.find(up)];
+    <span class="kw">if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) mapped = mapped - <span class="st">'A'</span> + <span class="st">'a'</span>;
+    text[i] = mapped;
+  }
+  <span class="kw">return</span> text;
+}`
+      }
+    };
+
+    // Fix modified challenge ciphertext by computing it at runtime instead of a broken string.
+    METHODS.modified.challenge.cipher = CipherEngine.modified("MEET ME AT NOON", "KEY", false).out;
+    METHODS.modified.challenge.setup.text = METHODS.modified.challenge.cipher;
+    METHODS.mono.challenge.cipher = CipherEngine.mono("THE QUICK BROWN FOX", "CIPHER", false).out;
+    METHODS.mono.challenge.setup.text = METHODS.mono.challenge.cipher;
+
+    class CipherLab {
+      constructor() {
+        this.state = {
+          method: "traditional",
+          mode: "encrypt",
+          step: 0,
+          highlight: null,
+          playing: false,
+          speed: 420
+        };
+        this.result = { tokens: [], out: "", mapFrom: ALPHA, mapTo: ALPHA };
+        this.playAbort = null;
+        this.detectGuesses = [];
+        this.els = Object.fromEntries([
+          "knowledgeTitle", "knowledgeBody", "workshopHint", "interactHint", "logicIntro",
+          "codePanel", "messageInput", "keyInput", "keywordInput", "keyField", "keywordField",
+          "keyLabel", "inputLabel", "previewMeta", "outputBox", "logicSteps",
+          "ringMap", "ringCaption", "mappingGrid", "stepGlyph", "stepFrom", "stepHeadline", "stepMath",
+          "playBtn", "prevBtn", "nextBtn", "stepCount", "analysisTitle", "analysisIntro",
+          "analysisBody", "challengeBox", "exampleBtn", "copyBtn", "clearBtn", "mapTitle",
+          "outerDisk", "innerDisk", "cipherMachine", "hudMethod", "hudMode", "hudKey",
+          "hudLetters", "hudWraps", "hudStrength", "modRail", "tapes", "wrapPill", "speedInput",
+          "detectInput", "detectBtn", "detectSampleBtn", "detectResults"
+        ].map((id) => [id, document.getElementById(id)]));
+
+        this.#buildDecor();
+        this.#bind();
+        this.renderMethod();
       }
 
-      runCipher();
-    }
+      #buildDecor() {
+        ALPHA.split("").forEach((ch, i) => {
+          const outer = document.createElement("button");
+          outer.type = "button";
+          outer.className = "disk-letter";
+          outer.style.setProperty("--i", i);
+          outer.textContent = ch;
+          outer.dataset.shift = String(i);
+          outer.title = `Plaintext ${ch}`;
+          this.els.outerDisk.appendChild(outer);
 
-    function runCipher() {
-      const text = els.messageInput.value;
-      const decrypt = state.mode === "decrypt";
-      els.inputLabel.textContent = decrypt ? "Ciphertext" : "Plaintext";
+          const inner = document.createElement("button");
+          inner.type = "button";
+          inner.className = "disk-letter";
+          inner.style.setProperty("--i", i);
+          inner.dataset.index = String(i);
+          inner.textContent = ch;
+          inner.title = `Ciphertext slot ${ch}`;
+          this.els.innerDisk.appendChild(inner);
+        });
 
-      let result;
-      if (state.method === "traditional") {
-        result = processTraditional(text, els.keyInput.value || 0, decrypt);
-      } else if (state.method === "modified") {
-        result = processModified(text, els.keywordInput.value, decrypt);
-      } else {
-        result = processMono(text, els.keywordInput.value, decrypt);
+        const floatHost = document.getElementById("floatLetters");
+        [..."GUPTLEKH", "अ", "क", "ष", "र", "आ", "गु", "प्त"].forEach((ch, i) => {
+          const span = document.createElement("span");
+          span.textContent = ch;
+          if (/[^A-Z]/.test(ch)) span.className = "indic";
+          span.style.left = `${(i * 7.2 + 4) % 92}%`;
+          span.style.top = `${(i * 11 + 8) % 88}%`;
+          floatHost.appendChild(span);
+        });
+
+        this.els.modRail.innerHTML = [...ALPHA].map((ch, i) =>
+          `<button type="button" data-n="${i}" title="${ch} = ${i}">${ch}<br>${i}</button>`
+        ).join("");
       }
 
-      els.previewMeta.value = result.meta;
+      #bind() {
+        document.querySelectorAll(".method-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".method-btn").forEach((b) => {
+              b.classList.remove("active");
+              b.setAttribute("aria-selected", "false");
+            });
+            btn.classList.add("active");
+            btn.setAttribute("aria-selected", "true");
+            this.state.method = btn.dataset.method;
+            this.state.step = 0;
+            this.stopPlay();
+            this.renderMethod();
+          });
+        });
 
-      if (!text.trim()) {
-        els.outputBox.innerHTML = '<span class="placeholder">Your result will appear here…</span>';
-      } else {
-        els.outputBox.textContent = result.out;
+        document.querySelectorAll(".mode-toggle button").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".mode-toggle button").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            this.state.mode = btn.dataset.mode;
+            this.runCipher();
+          });
+        });
+
+        ["input", "change"].forEach((evt) => {
+          this.els.messageInput.addEventListener(evt, () => this.runCipher());
+          this.els.keyInput.addEventListener(evt, () => this.runCipher());
+          this.els.keywordInput.addEventListener(evt, () => this.runCipher());
+        });
+
+        this.els.cipherMachine.addEventListener("click", (event) => {
+          const letter = event.target.closest(".disk-letter");
+          if (!letter || this.didDrag) return;
+          const shift = Number(letter.dataset.shift ?? letter.dataset.index);
+          this.#applyShift(shift);
+        });
+
+        this.els.innerDisk.addEventListener("pointerdown", (event) => {
+          this.drag = {
+            pointerId: event.pointerId,
+            moved: false,
+            origin: this.#angleFromEvent(event),
+            startShift: wrap26(this.els.keyInput.value)
+          };
+          this.els.innerDisk.setPointerCapture(event.pointerId);
+        });
+
+        this.els.innerDisk.addEventListener("pointermove", (event) => {
+          if (!this.drag || event.pointerId !== this.drag.pointerId) return;
+          const angle = this.#angleFromEvent(event);
+          let delta = angle - this.drag.origin;
+          if (delta > 180) delta -= 360;
+          if (delta < -180) delta += 360;
+          if (Math.abs(delta) > 4) this.drag.moved = true;
+          const next = wrap26(this.drag.startShift - Math.round(delta / (360 / 26)));
+          if (this.drag.moved) this.#applyShift(next);
+        });
+
+        const endDrag = (event) => {
+          if (!this.drag || event.pointerId !== this.drag.pointerId) return;
+          this.didDrag = this.drag.moved;
+          this.drag = null;
+          setTimeout(() => { this.didDrag = false; }, 0);
+        };
+        this.els.innerDisk.addEventListener("pointerup", endDrag);
+        this.els.innerDisk.addEventListener("pointercancel", endDrag);
+
+        this.els.mappingGrid.addEventListener("click", (event) => {
+          const col = event.target.closest(".map-col");
+          if (!col) return;
+          this.state.highlight = col.dataset.from;
+          this.showStepForLetter(col.dataset.from);
+          this.paintMapping();
+          this.paintOutput();
+        });
+
+        this.els.playBtn.addEventListener("click", () => this.togglePlay());
+        this.els.prevBtn.addEventListener("click", () => this.nudgeStep(-1));
+        this.els.nextBtn.addEventListener("click", () => this.nudgeStep(1));
+        this.els.speedInput.addEventListener("input", () => {
+          this.state.speed = Number(this.els.speedInput.value);
+        });
+        this.els.exampleBtn.addEventListener("click", () => this.loadExample());
+        this.els.clearBtn.addEventListener("click", () => {
+          this.els.messageInput.value = "";
+          this.runCipher();
+        });
+        this.els.copyBtn.addEventListener("click", async () => {
+          const text = this.result.out || "";
+          if (!text) return;
+          await navigator.clipboard.writeText(text);
+          this.els.copyBtn.textContent = "Copied";
+          setTimeout(() => { this.els.copyBtn.textContent = "Copy result"; }, 1200);
+        });
+
+        window.addEventListener("keydown", (event) => {
+          const typing = /^(INPUT|TEXTAREA)$/.test(event.target.tagName);
+          if (typing) return;
+          if (event.code === "Space") {
+            event.preventDefault();
+            this.togglePlay();
+          } else if (event.key === "ArrowRight") {
+            this.nudgeStep(1);
+          } else if (event.key === "ArrowLeft") {
+            this.nudgeStep(-1);
+          }
+        });
+
+        this.els.detectBtn.addEventListener("click", () => this.runDetect());
+        this.els.detectSampleBtn.addEventListener("click", () => {
+          this.els.detectInput.value = "WKH HDJOH KDV ODQGHG RQ WKH PRRQ";
+          this.runDetect();
+        });
+        this.els.detectResults.addEventListener("click", (event) => {
+          const btn = event.target.closest("[data-apply]");
+          if (!btn) return;
+          const guess = this.detectGuesses[Number(btn.dataset.apply)];
+          if (guess?.apply) this.applyDetection(guess.apply);
+        });
       }
 
-      if (!result.steps.length) {
-        els.logicSteps.innerHTML = `<div class="logic-step"><span class="idx">00</span><div>Type letters to see each step unfold.</div></div>`;
-      } else {
-        els.logicSteps.innerHTML = result.steps
-          .map((s, i) => `<div class="logic-step" style="animation-delay:${i * 40}ms"><span class="idx">${String(i + 1).padStart(2, "0")}</span><div>${s.html}</div></div>`)
-          .join("");
+      #angleFromEvent(event) {
+        const box = this.els.innerDisk.getBoundingClientRect();
+        const dx = event.clientX - (box.left + box.width / 2);
+        const dy = event.clientY - (box.top + box.height / 2);
+        return (Math.atan2(dy, dx) * 180 / Math.PI + 450) % 360;
       }
 
-      setMotion(result.accent, text + (els.keywordInput.value || "") + (els.keyInput.value || ""));
-      lightAlphabet(result);
-    }
+      #applyShift(shift) {
+        if (this.state.method !== "traditional") {
+          this.state.method = "traditional";
+          document.querySelectorAll(".method-btn").forEach((b) => {
+            const on = b.dataset.method === "traditional";
+            b.classList.toggle("active", on);
+            b.setAttribute("aria-selected", String(on));
+          });
+          this.renderMethod();
+        }
+        this.els.keyInput.value = String(wrap26(shift));
+        this.runCipher();
+      }
 
-    document.querySelectorAll(".method-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      stopPlay() {
+        this.playAbort?.abort();
+        this.playAbort = null;
+        this.state.playing = false;
+        this.els.playBtn.textContent = "Play";
+        this.els.playBtn.classList.remove("active");
+      }
+
+      async togglePlay() {
+        if (this.state.playing) {
+          this.stopPlay();
+          return;
+        }
+        if (!this.result.tokens.length) return;
+        this.state.playing = true;
+        this.els.playBtn.textContent = "Pause";
+        this.els.playBtn.classList.add("active");
+        const ctrl = new AbortController();
+        this.playAbort = ctrl;
+        try {
+          for (let i = this.state.step; i < this.result.tokens.length; i += 1) {
+            this.state.step = i;
+            this.paintStep();
+            await sleep(reduceMotion ? 0 : this.state.speed, ctrl.signal);
+          }
+        } catch {
+          return;
+        }
+        this.stopPlay();
+      }
+
+      nudgeStep(delta) {
+        this.stopPlay();
+        const max = Math.max(0, this.result.tokens.length - 1);
+        this.state.step = Math.min(max, Math.max(0, this.state.step + delta));
+        this.paintStep();
+      }
+
+      showStepForLetter(letter) {
+        const idx = this.result.tokens.findIndex((t) => t.kind === "letter" && t.original === letter);
+        if (idx >= 0) {
+          this.state.step = idx;
+          this.paintStep();
+        }
+      }
+
+      loadExample() {
+        const ex = METHODS[this.state.method].example;
+        this.state.mode = ex.mode;
+        document.querySelectorAll(".mode-toggle button").forEach((b) => {
+          b.classList.toggle("active", b.dataset.mode === ex.mode);
+        });
+        this.els.messageInput.value = ex.text;
+        this.els.keyInput.value = String(ex.key);
+        this.els.keywordInput.value = ex.keyword;
+        this.state.step = 0;
+        this.runCipher();
+      }
+
+      loadChallenge() {
+        const ch = METHODS[this.state.method].challenge;
+        this.applyDetection({
+          method: this.state.method,
+          mode: ch.setup.mode,
+          text: ch.setup.text,
+          key: ch.setup.key,
+          keyword: ch.setup.keyword
+        });
+      }
+
+      selectMethod(method) {
+        if (!METHODS[method]) return;
         document.querySelectorAll(".method-btn").forEach((b) => {
-          b.classList.remove("active");
-          b.setAttribute("aria-selected", "false");
+          const on = b.dataset.method === method;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-selected", String(on));
         });
-        btn.classList.add("active");
-        btn.setAttribute("aria-selected", "true");
-        state.method = btn.dataset.method;
-        renderMethod();
-      });
-    });
+        this.state.method = method;
+        this.state.step = 0;
+        this.stopPlay();
+        this.renderMethod();
+      }
 
-    document.querySelectorAll(".mode-toggle button").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".mode-toggle button").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        state.mode = btn.dataset.mode;
-        runCipher();
-      });
-    });
+      applyDetection(apply) {
+        if (!apply) return;
+        if (apply.method && apply.method !== this.state.method) {
+          this.selectMethod(apply.method);
+        }
+        this.state.mode = apply.mode || "decrypt";
+        document.querySelectorAll(".mode-toggle button").forEach((b) => {
+          b.classList.toggle("active", b.dataset.mode === this.state.mode);
+        });
+        this.els.messageInput.value = apply.text || "";
+        if (apply.key != null) this.els.keyInput.value = String(apply.key);
+        if (apply.keyword != null) this.els.keywordInput.value = apply.keyword;
+        this.state.step = 0;
+        this.runCipher();
+        document.getElementById("workshopBox")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      }
 
-    ["input", "change"].forEach((evt) => {
-      els.messageInput.addEventListener(evt, runCipher);
-      els.keyInput.addEventListener(evt, runCipher);
-      els.keywordInput.addEventListener(evt, runCipher);
-    });
+      runDetect() {
+        const result = CipherDetector.inspect(this.els.detectInput.value);
+        if (result.error) {
+          this.detectGuesses = [];
+          this.els.detectResults.innerHTML = `<p class="hint">${escapeHtml(result.error)}</p>`;
+          return;
+        }
+        this.detectGuesses = result.guesses || [];
+        if (!this.detectGuesses.length) {
+          this.els.detectResults.innerHTML = `<p class="hint">No strong pattern. Try a longer sample, or a hex / Base64 / classroom ciphertext.</p>`;
+          return;
+        }
+        this.els.detectResults.innerHTML = this.detectGuesses.map((guess, i) => `
+          <article class="guess-card">
+            <header>
+              <h4>${escapeHtml(guess.title)}</h4>
+              <span class="badge ${escapeHtml(guess.confidence)}">${escapeHtml(guess.confidence)} guess</span>
+              ${guess.family ? `<span class="badge family">${escapeHtml(guess.family)}</span>` : ""}
+            </header>
+            <p class="why">${escapeHtml(guess.reason)}</p>
+            <div class="preview">${escapeHtml(guess.preview || "—")}</div>
+            ${guess.apply
+              ? `<button type="button" class="apply-btn" data-apply="${i}">Apply in workshop</button>`
+              : `<p class="hint">This guess cannot be loaded into the classroom ciphers.</p>`}
+          </article>
+        `).join("");
+      }
 
-    renderMethod();
+      renderMethod() {
+        const m = METHODS[this.state.method];
+        this.els.knowledgeTitle.textContent = m.title;
+        this.els.knowledgeBody.innerHTML = m.knowledge;
+        this.els.workshopHint.textContent = m.workshopHint;
+        this.els.interactHint.textContent = m.interactHint;
+        this.els.logicIntro.textContent = m.logicIntro;
+        this.els.codePanel.innerHTML = m.code;
+        this.els.analysisTitle.textContent = m.analysisTitle;
+        this.els.analysisIntro.textContent = m.analysisIntro;
+        this.els.mapTitle.textContent = this.state.method === "mono"
+          ? "Plain alphabet → mixed cipher alphabet"
+          : this.state.method === "modified"
+            ? "Map for the current key letter (the stream changes per letter)"
+            : "Plain letter → shifted letter";
+
+        const isKeyword = m.keyMode === "keyword";
+        this.els.keyField.hidden = isKeyword;
+        this.els.keywordField.hidden = !isKeyword;
+        this.renderChallenge();
+        this.runCipher();
+      }
+
+      renderChallenge() {
+        const ch = METHODS[this.state.method].challenge;
+        this.els.challengeBox.innerHTML = `
+          <div class="challenge-card">
+            <strong>${escapeHtml(ch.title)}</strong>
+            <p>${escapeHtml(ch.body)}</p>
+            <div class="prompt">${escapeHtml(ch.cipher)}</div>
+            <label>
+              <span>Your plaintext guess</span>
+              <input id="challengeGuess" type="text" autocomplete="off" placeholder="Type the decoded message" />
+            </label>
+            <div class="challenge-actions">
+              <button type="button" id="loadChallengeBtn">Load into workshop</button>
+              <button type="button" id="hintBtn">Show hint</button>
+              <button type="button" id="checkBtn">Check</button>
+            </div>
+            <p class="hint" id="hintLine" hidden>${escapeHtml(ch.hint)}</p>
+            <p class="feedback" id="challengeFeedback"></p>
+          </div>
+        `;
+        this.els.challengeBox.querySelector("#loadChallengeBtn").addEventListener("click", () => this.loadChallenge());
+        this.els.challengeBox.querySelector("#hintBtn").addEventListener("click", () => {
+          this.els.challengeBox.querySelector("#hintLine").hidden = false;
+        });
+        this.els.challengeBox.querySelector("#checkBtn").addEventListener("click", () => {
+          const guess = lettersOnly(this.els.challengeBox.querySelector("#challengeGuess").value);
+          const answer = lettersOnly(ch.answer);
+          const feedback = this.els.challengeBox.querySelector("#challengeFeedback");
+          const ok = guess === answer;
+          feedback.className = `feedback ${ok ? "ok" : "no"}`;
+          feedback.textContent = ok
+            ? "Correct — you recovered the plaintext."
+            : "Not yet. Load it into the workshop and step through the letters.";
+        });
+      }
+
+      runCipher() {
+        const text = this.els.messageInput.value;
+        const decrypt = this.state.mode === "decrypt";
+        this.els.inputLabel.textContent = decrypt ? "Ciphertext" : "Plaintext";
+
+        if (this.state.method === "traditional") {
+          this.result = CipherEngine.traditional(text, this.els.keyInput.value || 0, decrypt);
+        } else if (this.state.method === "modified") {
+          this.result = CipherEngine.modified(text, this.els.keywordInput.value, decrypt);
+        } else {
+          this.result = CipherEngine.mono(text, this.els.keywordInput.value, decrypt);
+        }
+
+        this.els.previewMeta.value = this.result.meta;
+        if (this.state.step >= this.result.tokens.length) this.state.step = 0;
+        this.paintOutput();
+        this.paintMapping();
+        this.paintStep();
+        this.paintAnalysis();
+        this.paintHud();
+        this.setMotion();
+        this.paintWheel();
+      }
+
+      paintOutput() {
+        const text = this.els.messageInput.value;
+        if (!text.trim()) {
+          this.els.outputBox.innerHTML = '<span class="placeholder">Your result will appear here…</span>';
+          return;
+        }
+        const hi = this.state.highlight;
+        if (!hi) {
+          this.els.outputBox.textContent = this.result.out;
+          return;
+        }
+        const marked = [...this.result.out].map((ch, i) => {
+          const src = text[i]?.toUpperCase();
+          return src === hi ? `<mark>${escapeHtml(ch)}</mark>` : escapeHtml(ch);
+        }).join("");
+        this.els.outputBox.innerHTML = marked;
+      }
+
+      paintMapping() {
+        let { mapFrom, mapTo } = this.result;
+        if (this.state.method === "modified") {
+          const token = this.result.tokens[this.state.step];
+          const shift = token?.kind === "letter" ? wrap26(token.k) : wrap26(this.result.accent);
+          mapFrom = ALPHA;
+          mapTo = ALPHA.slice(shift) + ALPHA.slice(0, shift);
+        }
+        const hi = this.state.highlight;
+        this.els.mappingGrid.innerHTML = [...mapFrom].map((from, i) => {
+          const to = mapTo[i];
+          const on = hi === from ? " active" : "";
+          return `<button type="button" class="map-col${on}" data-from="${from}" aria-label="${from} maps to ${to}">
+            <span class="from">${from}</span>
+            <span class="arrow">↓</span>
+            <span class="to">${to}</span>
+          </button>`;
+        }).join("");
+      }
+
+      paintStep() {
+        const tokens = this.result.tokens;
+        const total = tokens.length;
+        const step = tokens[this.state.step];
+        this.els.stepCount.textContent = `${total ? this.state.step + 1 : 0} / ${total}`;
+
+        if (!step) {
+          this.els.stepGlyph.textContent = "?";
+          this.els.stepFrom.textContent = "?";
+          this.els.stepHeadline.textContent = "Type a message to begin";
+          this.els.stepMath.textContent = METHODS[this.state.method].logicIntro;
+          this.els.wrapPill.hidden = true;
+          this.els.logicSteps.innerHTML = `<div class="logic-step"><span class="idx">00</span><div>Letters will line up here with the exact arithmetic.</div></div>`;
+          this.paintTapes();
+          this.paintRail(null);
+          return;
+        }
+
+        this.els.stepFrom.textContent = step.original || "·";
+        this.els.stepGlyph.textContent = step.mapped || "·";
+        this.els.stepHeadline.textContent = step.headline;
+        this.els.stepMath.textContent = step.math;
+        this.els.wrapPill.hidden = !step.wrap;
+        this.state.highlight = step.kind === "letter" ? step.original : this.state.highlight;
+        this.paintMapping();
+        this.paintOutput();
+        this.paintTapes();
+        this.paintRail(step);
+        this.paintHud();
+        this.paintWheel();
+
+        this.els.logicSteps.innerHTML = tokens.map((token, i) => `
+          <div class="logic-step${i === this.state.step ? " current" : ""}">
+            <span class="idx">${String(i + 1).padStart(2, "0")}</span>
+            <div>${token.html}</div>
+          </div>
+        `).join("");
+
+        const current = this.els.logicSteps.querySelector(".current");
+        current?.scrollIntoView({ block: "nearest" });
+      }
+
+      paintTapes() {
+        const source = this.els.messageInput.value;
+        const out = this.result.out || "";
+        if (!source) {
+          this.els.tapes.innerHTML = "";
+          return;
+        }
+        const idx = this.state.step;
+        const cells = (text, cls) => [...text].map((ch, i) =>
+          `<i class="${i === idx ? "on" : ""}">${escapeHtml(ch === " " ? "␣" : ch)}</i>`
+        ).join("");
+        this.els.tapes.innerHTML = `
+          <div class="tape"><span class="tag">P</span>${cells(source, "p")}</div>
+          <div class="tape cipher"><span class="tag">C</span>${cells(out, "c")}</div>
+        `;
+      }
+
+      paintRail(step) {
+        const buttons = this.els.modRail.querySelectorAll("button");
+        buttons.forEach((btn) => btn.className = "");
+        if (!step || step.kind !== "letter" || step.p == null) return;
+        const start = buttons[step.p];
+        const end = buttons[step.c];
+        if (start) start.classList.add("start");
+        if (end) end.classList.add("end");
+        if (step.wrap) {
+          [...buttons].slice(step.p).forEach((btn) => btn.classList.add("wrap"));
+          [...buttons].slice(0, (step.c ?? 0) + 1).forEach((btn) => btn.classList.add("wrap"));
+        } else if (step.p != null && step.c != null) {
+          const a = Math.min(step.p, step.c);
+          const b = Math.max(step.p, step.c);
+          [...buttons].slice(a, b + 1).forEach((btn) => btn.classList.add("wrap"));
+        }
+      }
+
+      paintHud() {
+        const names = { traditional: "Caesar", modified: "Modified", mono: "Mono" };
+        const letters = this.result.tokens.filter((t) => t.kind === "letter").length;
+        const wraps = this.result.tokens.filter((t) => t.wrap).length;
+        const keyword = lettersOnly(this.els.keywordInput.value);
+        const strength = this.state.method === "traditional"
+          ? "26 keys"
+          : this.state.method === "modified"
+            ? `${Math.max(1, keyword.length)}-letter stream`
+            : "mixed alphabet";
+        this.els.hudMethod.textContent = names[this.state.method];
+        this.els.hudMode.textContent = this.state.mode === "encrypt" ? "Encrypt" : "Decrypt";
+        this.els.hudKey.textContent = this.state.method === "traditional"
+          ? String(wrap26(this.els.keyInput.value))
+          : (keyword || "—");
+        this.els.hudLetters.textContent = String(letters);
+        this.els.hudWraps.textContent = String(wraps);
+        this.els.hudStrength.textContent = strength;
+      }
+
+      paintAnalysis() {
+        const method = this.state.method;
+        const text = this.result.out || this.els.messageInput.value;
+
+        if (method === "traditional") {
+          const source = this.els.messageInput.value;
+          if (!lettersOnly(source)) {
+            this.els.analysisBody.innerHTML = `<p class="hint">Type a sentence, then every shift 0–25 appears here. Click a row to apply it.</p>`;
+            return;
+          }
+          const rows = Array.from({ length: 26 }, (_, k) => {
+            const plain = CipherEngine.traditional(source, k, true).out;
+            return { k, plain, score: chiSquared(plain) };
+          }).sort((a, b) => a.score - b.score);
+
+          this.els.analysisBody.innerHTML = `
+            <p class="hint">Best English fit is highlighted. Click any row to set that shift and switch to decrypt.</p>
+            <div class="crack-list">
+              ${rows.map((row, idx) => `
+                <button type="button" class="crack-row${idx === 0 ? " best" : ""}" data-shift="${row.k}">
+                  <span class="k">K=${row.k}</span>
+                  <span class="preview">${escapeHtml(row.plain.slice(0, 42))}</span>
+                  <span>${row.score.toFixed(0)}</span>
+                </button>
+              `).join("")}
+            </div>
+          `;
+          this.els.analysisBody.querySelectorAll(".crack-row").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              this.els.keyInput.value = btn.dataset.shift;
+              this.state.mode = "decrypt";
+              document.querySelectorAll(".mode-toggle button").forEach((b) => {
+                b.classList.toggle("active", b.dataset.mode === "decrypt");
+              });
+              this.runCipher();
+            });
+          });
+          return;
+        }
+
+        if (method === "modified") {
+          const stream = this.result.stream || [];
+          if (!stream.length) {
+            this.els.analysisBody.innerHTML = `<p class="hint">Add a keyword and some letters to see P / K / C line up.</p>`;
+            return;
+          }
+          const current = this.result.tokens[this.state.step];
+          const onIndex = current?.letterIndex;
+          const cells = (key, cls) => stream.map((cell) =>
+            `<td class="${cls}${cell.i === onIndex ? " on" : ""}">${cell[key]}</td>`
+          ).join("");
+          this.els.analysisBody.innerHTML = `
+            <div class="stream">
+              <table>
+                <tr><th>P</th>${cells("p", "p")}</tr>
+                <tr><th>K</th>${cells("k", "k")}</tr>
+                <tr><th>C</th>${cells("c", "c")}</tr>
+              </table>
+            </div>
+            ${this.#freqHtml(text)}
+          `;
+          return;
+        }
+
+        const keyword = lettersOnly(this.els.keywordInput.value);
+        const seen = new Set();
+        const buildSpans = [...keyword].map((ch) => {
+          const dup = seen.has(ch);
+          seen.add(ch);
+          return `<span class="${dup ? "dup" : "kw"}">${ch}</span>`;
+        }).join("");
+        const rest = [...ALPHA].filter((ch) => !seen.has(ch)).map((ch) => `<span>${ch}</span>`).join("");
+        this.els.analysisBody.innerHTML = `
+          <p class="hint">Keyword letters first (duplicates struck through), then leftover alphabet.</p>
+          <div class="build-row">${buildSpans || "<span>?</span>"}</div>
+          <div class="build-row">${rest}</div>
+          <p class="hint" style="margin-top:0.85rem">Mixed alphabet: <strong>${escapeHtml(this.result.cipher || "")}</strong></p>
+          ${this.#freqHtml(text)}
+        `;
+      }
+
+      #freqHtml(text) {
+        const letters = lettersOnly(text);
+        if (!letters.length) return "";
+        const counts = Object.fromEntries([...ALPHA].map((ch) => [ch, 0]));
+        for (const ch of letters) counts[ch] += 1;
+        const ranked = [...ALPHA]
+          .map((ch) => ({ ch, n: counts[ch], pct: (counts[ch] / letters.length) * 100 }))
+          .filter((row) => row.n)
+          .sort((a, b) => b.n - a.n)
+          .slice(0, 8);
+        const max = ranked[0]?.pct || 1;
+        return `
+          <p class="hint" style="margin-top:0.9rem">Top frequencies in this text vs English (E is usually ~12.7%).</p>
+          <div class="freq-list">
+            ${ranked.map((row) => `
+              <div class="freq-row">
+                <span>${row.ch}</span>
+                <div class="bar"><i style="width:${(row.pct / max) * 100}%"></i></div>
+                <span>${row.pct.toFixed(0)}%</span>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      paintWheel() {
+        const token = this.result.tokens[this.state.step];
+        const shift = this.state.method === "traditional"
+          ? wrap26(this.els.keyInput.value)
+          : this.state.method === "modified"
+            ? wrap26(token?.k ?? this.result.accent)
+            : wrap26(this.result.accent);
+
+        document.documentElement.style.setProperty("--disk-rot", `${-shift * (360 / 26)}deg`);
+        this.els.ringMap.textContent = token?.kind === "letter"
+          ? `${token.original}→${token.mapped}`
+          : `A→${this.result.mapTo?.[0] || ALPHA[shift]}`;
+        this.els.ringCaption.textContent = this.state.method === "traditional"
+          ? `shift ${shift} · drag to turn`
+          : this.state.method === "modified"
+            ? "inner disk follows the key stream"
+            : "inner disk shows mixed alphabet";
+
+        const innerLetters = [...this.els.innerDisk.querySelectorAll(".disk-letter")];
+        if (this.state.method === "mono" && this.result.cipher) {
+          innerLetters.forEach((node, i) => {
+            node.textContent = this.result.cipher[i];
+          });
+          document.documentElement.style.setProperty("--disk-rot", "0deg");
+        } else {
+          innerLetters.forEach((node, i) => {
+            node.textContent = ALPHA[i];
+          });
+        }
+
+        const hi = this.state.highlight;
+        this.els.outerDisk.querySelectorAll(".disk-letter").forEach((node) => {
+          node.classList.toggle("active", node.textContent === hi);
+        });
+        innerLetters.forEach((node) => {
+          const token = this.result.tokens[this.state.step];
+          node.classList.toggle("active", token?.mapped === node.textContent);
+        });
+      }
+
+      setMotion() {
+        const n = Number(this.result.accent) || 0;
+        const source = this.els.messageInput.value + (this.els.keywordInput.value || "");
+        const pulse = Math.min(6, source.length * 0.15 + (n % 26) * 0.08);
+        const root = document.documentElement.style;
+        root.setProperty("--shift", `${(n % 26) * (360 / 26)}deg`);
+        root.setProperty("--grid-drift", `${(n % 26) * 3.2}px`);
+        root.setProperty("--nudge-x", `${((n % 7) - 3) * 2.2}px`);
+        root.setProperty("--nudge-y", `${((n % 5) - 2) * 1.8}px`);
+        root.setProperty("--pulse", String(pulse));
+      }
+    }
+
+    new CipherLab();
   </script>
 </body>
 </html>
