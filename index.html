@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advance Cipher Lab — गुप्तलेख</title>
-  <meta name="description" content="Interactive lab for traditional Caesar, modified Caesar, and monoalphabetic ciphers — encrypt live, watch every letter, crack weak keys, and practice." />
+  <title>Guptlekh — गुप्तलेख</title>
+  <meta name="description" content="Guptlekh is a night lab for traditional Caesar, modified Caesar, and monoalphabetic ciphers — encrypt live, watch every letter, crack weak keys, and practice." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Rajdhani:wght@500;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #d7f0e4;
-      --ink-soft: #7fa896;
-      --paper: #070c0a;
-      --void: #04110e;
-      --line: rgba(141, 255, 196, 0.1);
-      --teal: #3dcca8;
-      --teal-deep: #8dffc4;
-      --sand: #e4b45c;
-      --sand-hot: #f0c56d;
-      --white: #e8fff4;
-      --box: rgba(6, 18, 14, 0.78);
-      --shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
-      --radius: 4px;
-      --ok: #6ee7b7;
-      --font-display: "Rajdhani", sans-serif;
-      --font-body: "Rajdhani", sans-serif;
+      --ink: #c8d4cc;
+      --ink-soft: #8b9890;
+      --paper: #0c0f0d;
+      --void: #080b09;
+      --line: rgba(176, 188, 180, 0.1);
+      --teal: #6a9a84;
+      --teal-deep: #9fb8ab;
+      --sand: #c2b394;
+      --sand-hot: #d4c4a4;
+      --white: #e6ebe8;
+      --box: rgba(14, 18, 16, 0.88);
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+      --radius: 8px;
+      --ok: #8fbfa6;
+      --font-display: "IBM Plex Sans", sans-serif;
+      --font-body: "IBM Plex Sans", sans-serif;
       --font-mono: "IBM Plex Mono", monospace;
       --font-indic: "Tiro Devanagari Hindi", serif;
       --shift: 0deg;
@@ -34,9 +34,9 @@
       --pulse: 0;
       --grid-drift: 0px;
       --disk-rot: 0deg;
-      --brass: #e4b45c;
-      --panel: #050c0a;
-      --phosphor: #8dffc4;
+      --brass: #b9ab8c;
+      --panel: #101412;
+      --phosphor: #9fb8ab;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,18 +44,18 @@
 
     body {
       font-family: var(--font-body);
-      font-weight: 500;
+      font-weight: 400;
       color: var(--ink);
       background: var(--paper);
       min-height: 100vh;
       overflow-x: hidden;
-      line-height: 1.55;
+      line-height: 1.65;
       letter-spacing: 0.01em;
     }
 
     ::selection {
-      background: rgba(228, 180, 92, 0.35);
-      color: #fff8ea;
+      background: rgba(176, 168, 140, 0.28);
+      color: #f4f1ea;
     }
 
     body::before {
@@ -64,10 +64,7 @@
       inset: 0;
       pointer-events: none;
       z-index: 8;
-      opacity: 0.45;
-      background:
-        radial-gradient(ellipse 70% 50% at 50% -8%, rgba(61, 204, 168, 0.08), transparent 50%),
-        repeating-linear-gradient(0deg, transparent 0 2px, rgba(0, 0, 0, 0.12) 3px);
+      background: radial-gradient(ellipse 80% 70% at 50% 0%, transparent 40%, rgba(0, 0, 0, 0.22) 100%);
     }
 
     .stage {
@@ -75,10 +72,9 @@
       inset: 0;
       z-index: -2;
       background:
-        radial-gradient(ellipse 70% 50% at 12% 8%, rgba(61, 204, 168, 0.14), transparent 52%),
-        radial-gradient(ellipse 55% 40% at 92% 12%, rgba(228, 180, 92, 0.1), transparent 48%),
-        radial-gradient(circle at 50% 80%, rgba(8, 40, 32, 0.8), transparent 55%),
-        #070c0a;
+        radial-gradient(ellipse 60% 45% at 18% 8%, rgba(90, 110, 98, 0.12), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 88% 10%, rgba(160, 140, 100, 0.06), transparent 50%),
+        #0c0f0d;
       transform: translate3d(var(--nudge-x), var(--nudge-y), 0);
       transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
@@ -90,12 +86,11 @@
       background-image:
         linear-gradient(var(--line) 1px, transparent 1px),
         linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 56px 56px;
-      transform: translateX(var(--grid-drift)) rotate(var(--shift));
-      opacity: 0.4;
-      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      background-size: 72px 72px;
+      transform: translateX(var(--grid-drift));
+      opacity: 0.22;
       pointer-events: none;
-      mask-image: radial-gradient(ellipse at center, black 30%, transparent 78%);
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
     }
 
     .float-letters {
@@ -111,14 +106,14 @@
       font-family: var(--font-display);
       font-weight: 700;
       font-size: clamp(2rem, 5vw, 4.5rem);
-      color: rgba(141, 255, 196, 0.07);
+      color: rgba(159, 184, 171, 0.045);
       transform: translateY(calc(var(--pulse) * -8px)) rotate(calc(var(--shift) * 0.4));
       transition: transform 0.4s ease, color 0.4s ease;
     }
 
     .float-letters span.indic {
       font-family: var(--font-indic);
-      color: rgba(228, 180, 92, 0.1);
+      color: rgba(194, 179, 148, 0.07);
     }
 
     .topbar {
@@ -126,38 +121,23 @@
       justify-content: space-between;
       align-items: baseline;
       gap: 1rem;
-      padding: 0.85rem 0 0.2rem;
+      padding: 1.1rem 0 0.15rem;
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       color: var(--ink-soft);
     }
 
     .topbar .prompt {
-      color: var(--phosphor);
-    }
-
-    .topbar .prompt::after {
-      content: "▍";
-      margin-left: 0.2rem;
-      animation: blink 1.1s steps(1) infinite;
-      color: var(--sand);
+      color: var(--ink-soft);
     }
 
     .topbar .script {
       font-family: var(--font-indic);
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       letter-spacing: 0;
       color: var(--sand);
       font-style: italic;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-
-    @keyframes sweep {
-      to { transform: rotate(360deg); }
     }
 
     .wrap {
@@ -177,31 +157,19 @@
 
     .machine {
       position: relative;
-      width: min(92vw, 480px);
+      width: min(92vw, 440px);
       margin: 0 auto;
       aspect-ratio: 1;
       border-radius: 50%;
       background:
-        repeating-conic-gradient(from 0.4deg, rgba(228, 180, 92, 0.42) 0 0.55deg, transparent 0.55deg 13.846deg),
-        radial-gradient(circle at 50% 42%, #1a3a2e 0 18%, #0c1c16 42%, #06110e 72%);
+        repeating-conic-gradient(from 0.35deg, rgba(185, 171, 140, 0.28) 0 0.35deg, transparent 0.35deg 13.846deg),
+        radial-gradient(circle at 50% 42%, #1c2420 0 18%, #121816 42%, #0c100e 72%);
       box-shadow:
-        0 0 0 8px #07140f,
-        0 0 0 9px rgba(228, 180, 92, 0.62),
-        0 0 90px rgba(61, 204, 168, 0.16),
-        0 40px 80px rgba(0, 0, 0, 0.55);
+        0 0 0 7px #0e1210,
+        0 0 0 8px rgba(185, 171, 140, 0.35),
+        0 28px 60px rgba(0, 0, 0, 0.45);
       user-select: none;
       touch-action: none;
-    }
-
-    .machine::before {
-      content: "";
-      position: absolute;
-      inset: 3%;
-      border-radius: 50%;
-      background: conic-gradient(from 210deg, transparent 0 86%, rgba(141, 255, 196, 0.22) 93%, transparent 100%);
-      animation: sweep 14s linear infinite;
-      pointer-events: none;
-      z-index: 1;
     }
 
     .disk-window {
@@ -211,10 +179,9 @@
       width: 2.4rem;
       height: 3.1rem;
       margin-left: -1.2rem;
-      border: 2px solid var(--sand-hot);
-      border-radius: 8px;
-      background: rgba(201, 123, 58, 0.12);
-      box-shadow: 0 0 18px rgba(201, 123, 58, 0.35);
+      border: 1px solid var(--brass);
+      border-radius: 4px;
+      background: rgba(185, 171, 140, 0.08);
       z-index: 4;
       pointer-events: none;
     }
@@ -238,16 +205,16 @@
 
     .disk.outer {
       inset: 6%;
-      border: 1px solid rgba(228, 180, 92, 0.38);
-      background: conic-gradient(from 0deg, rgba(61, 204, 168, 0.16), rgba(228, 180, 92, 0.12), rgba(61, 204, 168, 0.16));
+      border: 1px solid rgba(185, 171, 140, 0.28);
+      background: conic-gradient(from 0deg, rgba(106, 154, 132, 0.08), rgba(185, 171, 140, 0.08), rgba(106, 154, 132, 0.08));
       z-index: 2;
     }
 
     .disk.inner {
       inset: 22%;
-      border: 1.5px solid rgba(141, 255, 196, 0.32);
+      border: 1px solid rgba(159, 184, 171, 0.22);
       background:
-        radial-gradient(circle at center, #163328 0 46%, #0a1a14 47%);
+        radial-gradient(circle at center, #1a221e 0 46%, #101612 47%);
       transform: rotate(var(--disk-rot));
       transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
       cursor: grab;
@@ -277,7 +244,7 @@
     }
 
     .disk.outer .disk-letter {
-      color: #f3e2b8;
+      color: #d2cbb8;
       transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(36vw, 198px))) rotate(calc(var(--i) * -13.846deg));
     }
 
@@ -288,8 +255,8 @@
 
     .disk-letter:hover,
     .disk-letter.active {
-      background: var(--sand-hot);
-      color: white;
+      background: rgba(185, 171, 140, 0.35);
+      color: #f4f1ea;
     }
 
     .ring-core {
@@ -300,19 +267,19 @@
       text-align: center;
       z-index: 3;
       pointer-events: none;
-      background: radial-gradient(circle, #0a1813, #071410);
+      background: radial-gradient(circle, #141a17, #0e1311);
       border-radius: 50%;
-      border: 1px solid rgba(141, 255, 196, 0.22);
+      border: 1px solid rgba(185, 171, 140, 0.18);
     }
 
     .ring-core strong {
       display: block;
       font-family: var(--font-display);
-      font-size: clamp(1.7rem, 4.6vw, 2.5rem);
-      letter-spacing: 0.02em;
+      font-size: clamp(1.5rem, 4vw, 2.15rem);
+      letter-spacing: 0.04em;
+      font-weight: 500;
       line-height: 0.95;
-      color: var(--phosphor);
-      text-shadow: 0 0 16px rgba(127, 227, 211, 0.35);
+      color: var(--ink);
     }
 
     .ring-core span {
@@ -333,27 +300,27 @@
 
     .eyebrow {
       font-family: var(--font-mono);
-      font-size: 0.78rem;
-      letter-spacing: 0.14em;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--teal-deep);
+      color: var(--ink-soft);
       margin-bottom: 0.85rem;
     }
 
     .brand {
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(3.2rem, 10vw, 5.6rem);
-      line-height: 0.92;
-      letter-spacing: -0.02em;
+      font-weight: 500;
+      font-size: clamp(2.6rem, 7vw, 4.4rem);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
       margin-bottom: 1rem;
+      color: var(--white);
     }
 
     .brand em {
       font-style: normal;
-      color: var(--teal);
-      display: block;
-      text-shadow: 0 0 24px rgba(61, 204, 168, 0.25);
+      color: var(--sand);
+      font-weight: 500;
     }
 
     .script-line {
@@ -385,36 +352,39 @@
 
     .chip {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      padding: 0.38rem 0.65rem;
-      border-radius: 2px;
-      background: rgba(61, 204, 168, 0.08);
-      color: var(--teal-deep);
+      font-size: 0.7rem;
+      letter-spacing: 0.02em;
+      padding: 0.32rem 0.55rem;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--ink-soft);
       border: 1px solid var(--line);
     }
 
     .cta {
       display: inline-flex;
       align-items: center;
-      gap: 0.65rem;
-      padding: 0.85rem 1.25rem;
+      gap: 0.55rem;
+      padding: 0.7rem 1.05rem;
       background: transparent;
-      color: var(--phosphor);
+      color: var(--ink);
       text-decoration: none;
-      font-weight: 600;
-      border-radius: 2px;
-      border: 1px solid var(--phosphor);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      font-size: 0.86rem;
-      transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+      font-weight: 500;
+      border-radius: 6px;
+      border: 1px solid rgba(185, 171, 140, 0.45);
+      letter-spacing: 0.02em;
+      font-size: 0.92rem;
+      text-transform: none;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      appearance: none;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     .cta:hover {
-      background: var(--phosphor);
-      color: var(--void);
-      transform: translateY(-2px);
+      background: rgba(185, 171, 140, 0.12);
+      color: var(--white);
+      border-color: var(--brass);
     }
 
     .cta svg { width: 18px; height: 18px; }
@@ -451,28 +421,25 @@
 
     .method-btn {
       appearance: none;
-      border: 1.5px solid var(--line);
-      background: rgba(8, 22, 18, 0.7);
-      border-radius: 4px;
-      padding: 1rem 0.9rem;
+      border: 1px solid var(--line);
+      background: rgba(16, 20, 18, 0.7);
+      border-radius: var(--radius);
+      padding: 1rem 0.95rem;
       text-align: left;
       cursor: pointer;
-      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+      transition: border-color 0.2s ease, background 0.2s ease;
       font: inherit;
       color: inherit;
     }
 
     .method-btn:hover {
-      transform: translateY(-3px);
-      border-color: rgba(141, 255, 196, 0.35);
+      border-color: rgba(185, 171, 140, 0.35);
     }
 
     .method-btn.active {
-      background: var(--void);
-      color: var(--phosphor);
-      border-color: var(--phosphor);
-      box-shadow: var(--shadow);
-      transform: translateY(-3px) scale(1.01);
+      background: rgba(20, 26, 22, 0.95);
+      color: var(--ink);
+      border-color: rgba(185, 171, 140, 0.45);
     }
 
     .method-btn .step {
@@ -510,35 +477,21 @@
 
     .box {
       background-color: var(--box);
-      background-image:
-        linear-gradient(var(--sand), var(--sand)),
-        linear-gradient(var(--sand), var(--sand)),
-        linear-gradient(var(--phosphor), var(--phosphor)),
-        linear-gradient(var(--phosphor), var(--phosphor)),
-        linear-gradient(var(--sand), var(--sand)),
-        linear-gradient(var(--sand), var(--sand)),
-        linear-gradient(var(--phosphor), var(--phosphor)),
-        linear-gradient(var(--phosphor), var(--phosphor));
-      background-size: 12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px;
-      background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
-      background-repeat: no-repeat;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 1.15rem 1.2rem 1.25rem;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      transform: translate3d(calc(var(--nudge-x) * 0.35), calc(var(--nudge-y) * 0.35), 0);
-      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+      padding: 1.2rem 1.25rem 1.3rem;
+      box-shadow: none;
+      backdrop-filter: blur(10px);
     }
 
-    .box:hover { border-color: rgba(141, 255, 196, 0.28); }
+    .box:hover { border-color: rgba(176, 188, 180, 0.18); }
 
     .box-label {
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--teal-deep);
+      color: var(--brass);
       margin-bottom: 0.55rem;
     }
 
@@ -555,22 +508,22 @@
     .formula {
       margin-top: 0.9rem;
       padding: 0.75rem 0.85rem;
-      border-radius: 4px;
-      background: rgba(61, 204, 168, 0.1);
+      border-radius: 6px;
+      background: rgba(106, 154, 132, 0.08);
       font-family: var(--font-mono);
       font-size: 0.82rem;
       color: var(--teal-deep);
-      border-left: 2px solid var(--phosphor);
+      border-left: 1px solid var(--teal);
     }
 
     .worked {
       margin-top: 0.75rem;
       padding: 0.75rem 0.85rem;
-      border-radius: 4px;
-      background: rgba(228, 180, 92, 0.1);
+      border-radius: 6px;
+      background: rgba(185, 171, 140, 0.08);
       font-size: 0.9rem;
       color: var(--ink);
-      border-left: 2px solid var(--sand);
+      border-left: 1px solid var(--brass);
     }
 
     .worked strong { font-family: var(--font-mono); }
@@ -589,9 +542,9 @@
     input[type="number"],
     textarea {
       width: 100%;
-      border: 1px solid rgba(141, 255, 196, 0.16);
-      background: rgba(8, 24, 20, 0.9);
-      border-radius: 4px;
+      border: 1px solid var(--line);
+      background: rgba(10, 13, 12, 0.9);
+      border-radius: 6px;
       padding: 0.75rem 0.85rem;
       font: inherit;
       color: var(--ink);
@@ -609,9 +562,8 @@
     input:focus,
     textarea:focus {
       outline: none;
-      border-color: var(--teal);
-      box-shadow: 0 0 0 3px rgba(61, 204, 168, 0.18);
-      transform: translateY(-1px);
+      border-color: var(--brass);
+      box-shadow: 0 0 0 2px rgba(185, 171, 140, 0.12);
     }
 
     .mode-toggle {
@@ -626,22 +578,21 @@
     .player button,
     .challenge-actions button {
       appearance: none;
-      border: 1px solid rgba(141, 255, 196, 0.18);
+      border: 1px solid var(--line);
       background: transparent;
-      border-radius: 2px;
-      padding: 0.7rem 0.8rem;
+      border-radius: 6px;
+      padding: 0.65rem 0.8rem;
       font: inherit;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       color: var(--ink-soft);
       transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
     }
 
     .mode-toggle button.active {
-      background: var(--phosphor);
-      border-color: var(--phosphor);
-      color: var(--void);
-      transform: scale(1.02);
+      background: rgba(185, 171, 140, 0.16);
+      border-color: rgba(185, 171, 140, 0.4);
+      color: var(--white);
     }
 
     .toolbar {
@@ -753,10 +704,10 @@
       gap: 0.5rem;
       margin-bottom: 1.1rem;
       padding: 0.7rem 0.8rem;
-      border-radius: 16px;
+      border-radius: 8px;
       background: var(--panel);
       color: var(--ink);
-      box-shadow: var(--shadow);
+      box-shadow: none;
       border: 1px solid var(--line);
     }
 
@@ -1078,7 +1029,7 @@
       padding: 0.95rem 1rem;
       overflow: auto;
       margin-top: 0.75rem;
-      max-height: 280px;
+      max-height: 360px;
     }
 
     .code-panel .kw { color: #7fd4c8; }
@@ -1116,6 +1067,27 @@
       flex-wrap: wrap;
       gap: 0.45rem;
       margin-top: 0.75rem;
+      align-items: center;
+    }
+    .detect-actions .cta { padding: 0.72rem 1.15rem; }
+    .detect-catalog {
+      margin-top: 0.85rem;
+      font-size: 0.82rem;
+      color: var(--ink-soft);
+    }
+    .detect-catalog summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+    }
+    .detect-catalog p { margin-top: 0.55rem; line-height: 1.55; }
+    .badge.family {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
     }
     .detect-results {
       display: grid;
@@ -1234,7 +1206,7 @@
 
   <div class="wrap">
     <div class="topbar">
-      <span class="prompt">root@cipher-lab:~ night</span>
+      <span class="prompt">Guptlekh · classical cryptography</span>
       <span class="script">गुप्तलेख</span>
     </div>
   </div>
@@ -1251,12 +1223,12 @@
     </div>
 
     <div class="hero-copy">
-      <p class="eyebrow">// night lab · classical crypto · IST</p>
+      <p class="eyebrow">Classical cryptography</p>
       <p class="script-line"><span>गुप्तलेख</span> secret writing, made visible</p>
-      <h1 class="brand">Advance<em>Cipher Lab</em></h1>
+      <h1 class="brand">Gupt<em>lekh</em></h1>
       <p class="lede">
-        A quiet night bench for classroom ciphers. Outer ring is plaintext, inner ring is ciphertext.
-        Turn the disk, watch a letter wrap past Z, then sniff unknown text — the same ideas, without the noisy matrix look.
+        A quiet bench for classroom ciphers. The outer ring is plaintext; the inner ring is ciphertext.
+        Turn the disk, watch a letter wrap past Z, then ask what an unknown sample might be.
       </p>
       <div class="learn-chips">
         <span class="chip">cipher disk</span>
@@ -1265,7 +1237,7 @@
         <span class="chip">Base64 / hex sniff</span>
       </div>
       <a class="cta" href="#lab">
-        Enter the lab
+        Open the bench
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
           <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -1275,23 +1247,36 @@
 
   <main class="lab wrap" id="lab">
     <section class="box detect-box" id="detectBox">
-      <p class="box-label">Detect // sniff</p>
+      <p class="box-label">Detect</p>
       <h3>What is this text?</h3>
       <p>
-        Paste unknown ciphertext or encoded data. The lab ranks hypotheses the way CyberChef Magic does —
-        encodings are often sure; classical ciphers are statistical; modern algorithms are
-        <strong>not</strong> identifiable from a blob of high-entropy data.
+        Paste unknown ciphertext, a hash, or encoded data. Guptlekh ranks every format it can actually
+        see — encodings, hash lengths, PEM/PGP wrappers, and classroom ciphers.
+        AES-class algorithms stay a <strong>family guess</strong>: they are designed to look like noise.
       </p>
       <div class="field-row">
         <label>
           <span>Unknown text</span>
-          <textarea id="detectInput" placeholder="Paste hex, Base64, or a classical ciphertext…"></textarea>
+          <textarea id="detectInput" placeholder="Paste hex, Base64, a hash, PEM, Morse, or a classical ciphertext…"></textarea>
         </label>
       </div>
       <div class="detect-actions">
-        <button type="button" class="ghost-btn" id="detectBtn">Detect</button>
+        <button type="button" class="cta" id="detectBtn">Detect</button>
         <button type="button" class="ghost-btn" id="detectSampleBtn">Try a sample</button>
       </div>
+      <details class="detect-catalog">
+        <summary>Sniff list · 90+ names</summary>
+        <p>
+          AES, DES, Triple DES, Blowfish, RC2, RC4, RC4 Drop, RC6, SM4, GOST, Fernet, LS47, ChaCha, Salsa20, Rabbit, RSA,
+          PGP, OpenPGP, X.509, PEM, MD2, MD4, MD5, SHA-1, SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224, SHA-512/256,
+          SHA-3-224, SHA-3-256, SHA-3-384, SHA-3-512, SHAKE-128, SHAKE-256, RIPEMD-128, RIPEMD-160, RIPEMD-256, RIPEMD-320,
+          HAS-160, Whirlpool, NT Hash, LM Hash, Bcrypt, Scrypt, PBKDF2, EVP, HKDF, HMAC, CRC-8, CRC-16, CRC-24, CRC-32, CRC-64,
+          Fletcher-16, Fletcher-32, Enigma, Bombe, Typex, Caesar Box, Affine, ROT13, ROT47, ROT8000, XOR, Vigenère, Rail Fence,
+          Bacon, Atbash, Columnar Transposition, Playfair, Substitution, Base64, Base32, Base58, Base62, Base85, Base91,
+          Hex, Binary, Octal, Decimal, URL, HTML Entity, Unicode, UTF-8, Punycode, Quoted-printable, Morse, Braille, CharCode,
+          ASN.1, TLV, P-list, Citrix CTX1, HASSH, EXIF, LSB, RGBA, Shannon Entropy, PRNG.
+        </p>
+      </details>
       <div class="detect-results" id="detectResults"></div>
     </section>
 
@@ -1434,9 +1419,9 @@
         </section>
 
         <section class="box">
-          <p class="box-label">Code</p>
+          <p class="box-label">Code · C++</p>
           <h3>How to build it</h3>
-          <p>The same rules the lab is using, written as beginner-friendly JavaScript.</p>
+          <p>The same rules the lab is using, written as beginner-friendly C++ — a language you can take to contests, college labs, and systems work.</p>
           <pre class="code-panel" id="codePanel"></pre>
         </section>
 
@@ -1450,7 +1435,7 @@
   </main>
 
   <footer class="footer wrap">
-    <p><strong>Advance Cipher Lab</strong> — night bench for classical crypto. <span class="script">गुप्त लेख, साफ़ सबक.</span></p>
+    <p><strong>Guptlekh</strong> — night bench for classical crypto. <span class="script">गुप्त लेख, साफ़ सबक.</span></p>
     <p>Host this folder on GitHub Pages from the <code>main</code> branch.</p>
   </footer>
 
@@ -1766,50 +1751,199 @@
       }
     }
 
+    function compactBits(raw) {
+      return String(raw).replace(/\s/g, "");
+    }
+
+    const MORSE_AZ = ".-|-...|-.-.|-..|.|..-.|--.|....|..|.---|-.-|.-..|--|-.|---|.--.|--.-|.-.|...|-|..-|...-|.--|-.--|-.--|--..".split("|");
+    const MORSE_MAP = Object.fromEntries(MORSE_AZ.map((code, i) => [code, ALPHA[i]]));
+    MORSE_MAP["-----"] = "0"; MORSE_MAP[".----"] = "1"; MORSE_MAP["..---"] = "2";
+    MORSE_MAP["...--"] = "3"; MORSE_MAP["....-"] = "4"; MORSE_MAP["....."] = "5";
+    MORSE_MAP["-...."] = "6"; MORSE_MAP["--..."] = "7"; MORSE_MAP["---.."] = "8";
+    MORSE_MAP["----."] = "9"; MORSE_MAP["/"] = " ";
+
+    function decodeMorse(raw) {
+      const tokens = String(raw).trim().split(/\s+/);
+      if (tokens.length < 4) return null;
+      let out = "";
+      for (const t of tokens) {
+        if (!(t in MORSE_MAP)) return null;
+        out += MORSE_MAP[t];
+      }
+      return out;
+    }
+
+    function decodeBinary(raw) {
+      const bits = compactBits(raw);
+      if (bits.length < 16 || bits.length % 8 !== 0 || /[^01]/.test(bits)) return null;
+      let out = "";
+      for (let i = 0; i < bits.length; i += 8) {
+        out += String.fromCharCode(parseInt(bits.slice(i, i + 8), 2));
+      }
+      return out;
+    }
+
+    function decodeOctal(raw) {
+      const parts = String(raw).trim().split(/[\s,]+/).filter(Boolean);
+      if (parts.length < 4 || parts.some((p) => /[^0-7]/.test(p) || p.length > 3)) return null;
+      return parts.map((p) => String.fromCharCode(parseInt(p, 8))).join("");
+    }
+
+    function decodeCharCodes(raw) {
+      const parts = String(raw).trim().split(/[\s,;]+/).filter(Boolean);
+      if (parts.length < 4 || parts.some((p) => !/^\d{1,3}$/.test(p))) return null;
+      const nums = parts.map(Number);
+      if (nums.some((n) => n > 255)) return null;
+      return nums.map((n) => String.fromCharCode(n)).join("");
+    }
+
+    function atbash(text) {
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        return String.fromCharCode(base + (25 - (ch.charCodeAt(0) - base)));
+      });
+    }
+
+    function rot47(text) {
+      return [...String(text)].map((ch) => {
+        const c = ch.charCodeAt(0);
+        if (c < 33 || c > 126) return ch;
+        return String.fromCharCode(33 + ((c - 33 + 47) % 94));
+      }).join("");
+    }
+
+    function affineDecrypt(text, a, b) {
+      let inv = 0;
+      for (let x = 1; x < 26; x += 1) if ((a * x) % 26 === 1) inv = x;
+      if (!inv) return text;
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        const p = (inv * ((ch.charCodeAt(0) - base - b) % 26 + 26)) % 26;
+        return String.fromCharCode(base + p);
+      });
+    }
+
+    function railFenceDecrypt(cipher, rails) {
+      const n = cipher.length;
+      if (rails < 2 || rails >= n) return cipher;
+      const pattern = [];
+      let r = 0;
+      let dir = 1;
+      for (let i = 0; i < n; i += 1) {
+        pattern.push(r);
+        r += dir;
+        if (r === 0 || r === rails - 1) dir *= -1;
+      }
+      const counts = Array(rails).fill(0);
+      for (const p of pattern) counts[p] += 1;
+      const rows = [];
+      let idx = 0;
+      for (let i = 0; i < rails; i += 1) {
+        rows.push(cipher.slice(idx, idx + counts[i]).split(""));
+        idx += counts[i];
+      }
+      const pos = Array(rails).fill(0);
+      let out = "";
+      for (const p of pattern) out += rows[p][pos[p]++];
+      return out;
+    }
+
+    function baconDecode(raw) {
+      const bits = String(raw).toUpperCase().replace(/[^AB]/g, "");
+      if (bits.length < 20 || bits.length % 5 !== 0) return null;
+      let out = "";
+      for (let i = 0; i < bits.length; i += 5) {
+        const n = parseInt(bits.slice(i, i + 5).replace(/A/g, "0").replace(/B/g, "1"), 2);
+        if (n > 25) return null;
+        out += ALPHA[n];
+      }
+      return out;
+    }
+
+    function xorKey(text, key) {
+      return [...String(text)].map((ch) => String.fromCharCode(ch.charCodeAt(0) ^ key)).join("");
+    }
+
+    const HASH_LEN = {
+      2: ["CRC-8"],
+      4: ["CRC-16", "Fletcher-16"],
+      6: ["CRC-24"],
+      8: ["CRC-32", "Fletcher-32"],
+      16: ["CRC-64"],
+      32: ["MD5", "MD4", "MD2", "NT Hash", "LM Hash", "RIPEMD-128"],
+      40: ["SHA-1", "RIPEMD-160", "HAS-160", "HASSH"],
+      56: ["SHA-224", "SHA-512/224", "SHA-3-224"],
+      64: ["SHA-256", "SHA-512/256", "SHA-3-256", "RIPEMD-256", "GOST"],
+      80: ["RIPEMD-320"],
+      96: ["SHA-384", "SHA-3-384"],
+      128: ["SHA-512", "SHA-3-512", "Whirlpool", "SHAKE-256"]
+    };
+
+    const MODERN_FAMILY = "AES, DES, Triple DES, Blowfish, RC2, RC4, RC4 Drop, RC6, SM4, ChaCha, Salsa20, Rabbit, LS47, RSA ciphertext, PRNG";
+
     class CipherDetector {
       static inspect(raw) {
         const text = String(raw || "");
         const trimmed = text.trim();
-        if (!trimmed) {
-          return { error: "Paste some text first." };
-        }
+        if (!trimmed) return { error: "Paste some text first." };
 
         const letters = lettersOnly(trimmed);
         const guesses = [];
+        const entropy = shannonEntropy(trimmed);
 
+        this.#magic(trimmed, guesses);
         this.#encodings(trimmed, guesses);
+        this.#hashes(trimmed, guesses);
+        const structured = guesses.some((g) =>
+          (g.confidence === "high" && ["encoding", "format", "kdf", "modern"].includes(g.family))
+          || (g.family === "hash" && g.confidence !== "weak")
+        );
+        if (!structured) {
+          this.#classics(trimmed, letters, guesses);
+          this.#xor(trimmed, guesses);
+        }
 
         const hexRaw = decodeHex(trimmed);
         const hexIsBinary = Boolean(hexRaw && !looksPrintable(hexRaw));
-
-        if (letters.length && letters.length < 16 && !guesses.length && !hexIsBinary) {
-          return {
-            guesses: [{
-              id: "short",
-              title: "Too short to score a cipher",
-              confidence: "weak",
-              reason: "Index of coincidence and chi-squared need about 16 letters. Encodings can still match below that.",
-              preview: previewText(trimmed),
-              apply: null
-            }]
-          };
-        }
-
         if (letters.length >= 16 && !hexIsBinary) {
-          this.#classics(trimmed, letters, guesses);
+          const englishScore = chiSquared(trimmed);
+          if (englishScore < 45 && indexOfCoincidence(trimmed) > 0.058) {
+            guesses.push({
+              id: "plaintext",
+              title: "Already looks like English",
+              family: "metric",
+              confidence: "medium",
+              reason: `Chi-squared ${englishScore.toFixed(0)} and IOC ${indexOfCoincidence(trimmed).toFixed(3)} match plaintext more than ciphertext.`,
+              preview: previewText(trimmed),
+              apply: { method: "traditional", mode: "encrypt", text: trimmed, key: 0 }
+            });
+          }
         }
 
         this.#modern(trimmed, letters, guesses);
 
-        const englishScore = chiSquared(trimmed);
-        if (letters.length >= 16 && englishScore < 45 && indexOfCoincidence(trimmed) > 0.058) {
+        guesses.push({
+          id: "entropy",
+          title: `Shannon entropy ${entropy.toFixed(2)} bits/char`,
+          family: "metric",
+          confidence: entropy >= 4.5 ? "medium" : "weak",
+          reason: entropy >= 4.5
+            ? "High entropy: compressed data, a hash, a modern cipher, or a PRNG all look like this."
+            : "Low-to-mid entropy: encodings and classical ciphers usually live here.",
+          preview: previewText(trimmed),
+          score: 90,
+          apply: null
+        });
+
+        if (!guesses.some((g) => g.id !== "entropy") && letters.length && letters.length < 16) {
           guesses.push({
-            id: "plaintext",
-            title: "Already looks like English",
-            confidence: "medium",
-            reason: `Chi-squared ${englishScore.toFixed(0)} and IOC ${indexOfCoincidence(trimmed).toFixed(3)} match plaintext more than ciphertext.`,
+            id: "short",
+            title: "Too short to name a cipher",
+            family: "metric",
+            confidence: "weak",
+            reason: "Classroom ciphers need ~16 letters. Hashes, PEM headers, Morse, and encodings can still match below that.",
             preview: previewText(trimmed),
-            apply: { method: "traditional", mode: "encrypt", text: trimmed, key: 0 }
+            apply: null
           });
         }
 
@@ -1821,19 +1955,151 @@
           seen.add(g.id);
           return true;
         });
-        return { guesses: unique.slice(0, 6) };
+        return { guesses: unique.slice(0, 12) };
+      }
+
+      static #magic(text, guesses) {
+        const u = text.trim();
+        const head = u.slice(0, 80).toUpperCase();
+
+        if (/-----BEGIN PGP/.test(head)) {
+          guesses.push({
+            id: "pgp", title: "PGP / OpenPGP armor", family: "format", confidence: "high",
+            reason: "ASCII armor header -----BEGIN PGP. This is a wrapper, not a guess at the inner cipher.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        } else if (/-----BEGIN CERTIFICATE/.test(head) || /-----BEGIN X509/.test(head)) {
+          guesses.push({
+            id: "x509", title: "X.509 certificate · PEM", family: "format", confidence: "high",
+            reason: "PEM certificate header. The body is Base64 DER.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        } else if (/-----BEGIN/.test(head)) {
+          const kind = (u.match(/-----BEGIN ([^-]+)-----/) || [])[1] || "PEM";
+          guesses.push({
+            id: "pem", title: `PEM · ${kind.trim()}`, family: "format", confidence: "high",
+            reason: "PEM wrapper. RSA keys, CSRs, and certs all use this envelope.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+
+        if (/^\$2[abxy]\$\d{2}\$/.test(u)) {
+          guesses.push({
+            id: "bcrypt", title: "Bcrypt", family: "kdf", confidence: "high",
+            reason: "Modular crypt prefix $2a$ / $2b$ / $2y$.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^\$(s0|7)\$/i.test(u) || /^\$scrypt\$/i.test(u)) {
+          guesses.push({
+            id: "scrypt", title: "Scrypt", family: "kdf", confidence: "high",
+            reason: "Modular crypt / $scrypt$ prefix.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^\$pbkdf2/i.test(u)) {
+          guesses.push({
+            id: "pbkdf2", title: "PBKDF2", family: "kdf", confidence: "high",
+            reason: "PHC / modular crypt string. HKDF has no single dump format — it looks like the inner hash.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (u.startsWith("U2FsdGVkX1") || u.startsWith("Salted__")) {
+          guesses.push({
+            id: "evp", title: "OpenSSL EVP · Salted__", family: "format", confidence: "high",
+            reason: "OpenSSL enc default prefix. Cipher inside is still unnamed.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^gAAAAA/.test(u) && u.length > 40) {
+          guesses.push({
+            id: "fernet", title: "Fernet", family: "modern", confidence: "high",
+            reason: "Version 0x80 + timestamp Base64 (gAAAAA…). AES-128-CBC sits under the token.",
+            preview: previewText(u), score: 2, apply: null
+          });
+        }
+        if (/^bplist/i.test(u) || /<plist[\s>]/i.test(u)) {
+          guesses.push({
+            id: "plist", title: "P-list", family: "format", confidence: "high",
+            reason: "Apple property list magic (bplist) or XML <plist>.",
+            preview: previewText(u), score: 1, apply: null
+          });
+        }
+        if (/^C1[A-Za-z0-9+/=]{8,}/.test(compactBits(u))) {
+          guesses.push({
+            id: "citrix", title: "Citrix CTX1", family: "encoding", confidence: "medium",
+            reason: "CTX1 strings commonly start with C1 and a Base64-like body.",
+            preview: previewText(u), score: 12, apply: null
+          });
+        }
+        if (/^xn--/i.test(u)) {
+          guesses.push({
+            id: "punycode", title: "Punycode", family: "encoding", confidence: "high",
+            reason: "IDNA prefix xn--.",
+            preview: previewText(u), score: 2,
+            apply: { method: "traditional", mode: "encrypt", text: u, key: 0 }
+          });
+        }
+        if (/^=[\dA-F]{2}/i.test(u) && (u.match(/=[0-9A-F]{2}/gi) || []).length >= 3) {
+          guesses.push({
+            id: "qp", title: "Quoted-printable", family: "encoding", confidence: "high",
+            reason: "MIME =XX bytes.",
+            preview: previewText(u.replace(/=([0-9A-F]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))),
+            score: 3, apply: null
+          });
+        }
+        if (/\\u[0-9a-f]{4}/i.test(u) || /\\x[0-9a-f]{2}/i.test(u)) {
+          guesses.push({
+            id: "unicode", title: "Unicode / UTF-8 escapes", family: "encoding", confidence: "high",
+            reason: "\\uXXXX or \\xHH escapes.",
+            preview: previewText(u), score: 3, apply: null
+          });
+        }
+        if (/&(#\d+|#x[0-9a-f]+|[a-z]+);/i.test(u)) {
+          const decoded = u.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m) => {
+            const ta = document.createElement("textarea");
+            ta.innerHTML = m;
+            return ta.value;
+          });
+          guesses.push({
+            id: "html", title: "HTML entity", family: "encoding", confidence: "high",
+            reason: "Named or numeric HTML entities.",
+            preview: previewText(decoded), score: 3,
+            apply: { method: "traditional", mode: "encrypt", text: decoded, key: 0 }
+          });
+        }
+
+        const hexHead = compactBits(u).slice(0, 8).toUpperCase();
+        if (hexHead.startsWith("FFD8FF") || compactBits(u).toUpperCase().includes("45786966")) {
+          guesses.push({
+            id: "exif", title: "JPEG / EXIF", family: "format", confidence: "medium",
+            reason: "JPEG SOI (FF D8) or ASCII Exif in the hex. LSB/RGBA stego is not proven from a dump alone.",
+            preview: previewText(u), score: 8, apply: null
+          });
+        }
+        if (hexHead.startsWith("89504E47")) {
+          guesses.push({
+            id: "png", title: "PNG · possible LSB/RGBA payload", family: "format", confidence: "medium",
+            reason: "PNG signature. Pixel LSB is a hiding method, not a named cipher.",
+            preview: previewText(u), score: 8, apply: null
+          });
+        }
+        if (hexHead.startsWith("3082") || hexHead.startsWith("3081")) {
+          guesses.push({
+            id: "asn1", title: "ASN.1 / TLV (DER)", family: "format", confidence: "medium",
+            reason: "Hex starts with SEQUENCE (0x30). X.509 and RSA blobs are DER TLV trees.",
+            preview: previewText(u), score: 9, apply: null
+          });
+        }
       }
 
       static #encodings(text, guesses) {
         const hex = decodeHex(text);
         if (hex && looksPrintable(hex) && hex !== text) {
           guesses.push({
-            id: "hex",
-            title: "Hex encoding",
-            confidence: "high",
+            id: "hex", title: "Hex encoding", family: "encoding", confidence: "high",
             reason: "Even-length 0–9/A–F digits decode to printable text.",
-            preview: previewText(hex),
-            score: chiSquared(hex),
+            preview: previewText(hex), score: chiSquared(hex),
             apply: { method: "traditional", mode: "encrypt", text: hex, key: 3 }
           });
         }
@@ -1841,32 +2107,153 @@
         const b64 = decodeBase64(text);
         if (b64 && looksPrintable(b64)) {
           guesses.push({
-            id: "base64",
-            title: "Base64 encoding",
-            confidence: "high",
+            id: "base64", title: "Base64 encoding", family: "encoding", confidence: "high",
             reason: "Charset and padding match Base64, and decoding yields printable characters.",
-            preview: previewText(b64),
-            score: chiSquared(b64),
+            preview: previewText(b64), score: chiSquared(b64),
             apply: { method: "traditional", mode: "encrypt", text: b64, key: 3 }
+          });
+        }
+
+        const compact = compactBits(text);
+        if (compact.length >= 8 && compact.length % 8 === 0 && /^[A-Z2-7=]+$/i.test(compact) && /[2-7]/.test(compact)) {
+          guesses.push({
+            id: "base32", title: "Base32 encoding", family: "encoding", confidence: "medium",
+            reason: "A–Z and 2–7 with length a multiple of 8 (RFC 4648).",
+            preview: previewText(text), score: 20, apply: null
+          });
+        }
+        if (compact.length >= 16 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(compact) && !/[0OIl]/.test(compact)) {
+          guesses.push({
+            id: "base58", title: "Base58 encoding", family: "encoding", confidence: "medium",
+            reason: "Bitcoin-style alphabet (no 0, O, I, l).",
+            preview: previewText(text), score: 22, apply: null
+          });
+        }
+        if (compact.length >= 16 && /^[0-9A-Za-z]+$/.test(compact) && /[0-9]/.test(compact) && /[a-z]/.test(compact) && /[A-Z]/.test(compact) && compact.length % 4 !== 0) {
+          guesses.push({
+            id: "base62", title: "Base62 encoding", family: "encoding", confidence: "weak",
+            reason: "0–9 plus mixed-case letters, not padded like Base64.",
+            preview: previewText(text), score: 40, apply: null
+          });
+        }
+        if (/^<~[\s\S]*~>$/.test(text.trim())) {
+          guesses.push({
+            id: "base85", title: "Base85 / Ascii85", family: "encoding", confidence: "high",
+            reason: "Ascii85 framed with <~ ~>.",
+            preview: previewText(text), score: 18, apply: null
+          });
+        } else if (compact.length >= 16 && /[~{}]/.test(compact) && !/^[A-Za-z0-9+/=]+$/.test(compact)) {
+          guesses.push({
+            id: "base91", title: "Base91 encoding", family: "encoding", confidence: "weak",
+            reason: "Dense printable alphabet including braces — typical of Base91, not Base64.",
+            preview: previewText(text), score: 35, apply: null
           });
         }
 
         const url = decodeUrl(text);
         if (url && url !== text && looksPrintable(url)) {
           guesses.push({
-            id: "url",
-            title: "URL encoding",
-            confidence: "high",
+            id: "url", title: "URL encoding", family: "encoding", confidence: "high",
             reason: "Percent-encoded bytes decode to readable text.",
-            preview: previewText(url),
-            score: chiSquared(url),
+            preview: previewText(url), score: chiSquared(url),
             apply: { method: "traditional", mode: "encrypt", text: url, key: 3 }
+          });
+        }
+
+        const bin = decodeBinary(text);
+        if (bin && looksPrintable(bin)) {
+          guesses.push({
+            id: "binary", title: "Binary encoding", family: "encoding", confidence: "high",
+            reason: "Groups of 8 bits decode to printable characters.",
+            preview: previewText(bin), score: chiSquared(bin),
+            apply: { method: "traditional", mode: "encrypt", text: bin, key: 3 }
+          });
+        }
+        const oct = decodeOctal(text);
+        if (oct && looksPrintable(oct)) {
+          guesses.push({
+            id: "octal", title: "Octal encoding", family: "encoding", confidence: "high",
+            reason: "Space-separated octal codes decode to printable text.",
+            preview: previewText(oct), score: chiSquared(oct),
+            apply: { method: "traditional", mode: "encrypt", text: oct, key: 3 }
+          });
+        }
+        const codes = decodeCharCodes(text);
+        if (codes && looksPrintable(codes) && !oct) {
+          guesses.push({
+            id: "charcode", title: "CharCode / decimal bytes", family: "encoding", confidence: "high",
+            reason: "Decimal 0–255 list (JS charCode / UTF-8 bytes).",
+            preview: previewText(codes), score: chiSquared(codes),
+            apply: { method: "traditional", mode: "encrypt", text: codes, key: 3 }
+          });
+        }
+
+        const morse = decodeMorse(text);
+        if (morse && /[A-Z]/.test(morse)) {
+          guesses.push({
+            id: "morse", title: "Morse code", family: "encoding", confidence: "high",
+            reason: "Dots, dashes, and spaces map onto A–Z.",
+            preview: previewText(morse), score: chiSquared(morse),
+            apply: { method: "traditional", mode: "encrypt", text: morse, key: 0 }
+          });
+        }
+
+        const chars = [...text];
+        const visible = chars.filter((ch) => ch.trim());
+        const braille = visible.filter((ch) => {
+          const c = ch.codePointAt(0);
+          return c >= 0x2800 && c <= 0x28FF;
+        }).length;
+        if (visible.length >= 4 && braille / visible.length > 0.7) {
+          guesses.push({
+            id: "braille", title: "Braille", family: "encoding", confidence: "high",
+            reason: "Most glyphs sit in U+2800–U+28FF.",
+            preview: previewText(text), score: 4, apply: null
+          });
+        }
+
+        const cjk = chars.filter((ch) => {
+          const c = ch.codePointAt(0);
+          return c >= 0x4E00 && c <= 0x9FFF;
+        }).length;
+        if (cjk >= 8 && cjk / chars.length > 0.5) {
+          guesses.push({
+            id: "rot8000", title: "ROT8000 (possible)", family: "classical", confidence: "weak",
+            reason: "Dense CJK block — ROT8000 rotates the BMP. Not proven without a known pair.",
+            preview: previewText(text), score: 50, apply: null
+          });
+        }
+      }
+
+      static #hashes(text, guesses) {
+        const hex = compactBits(text);
+        if (/^[0-9a-f]+$/i.test(hex) && HASH_LEN[hex.length]) {
+          const names = HASH_LEN[hex.length];
+          guesses.push({
+            id: `hash-${hex.length}`,
+            title: names.slice(0, 3).join(" / "),
+            family: "hash",
+            confidence: hex.length >= 32 ? "medium" : "weak",
+            reason: `${hex.length} hex chars match ${names.join(", ")}. Length is not a proof. HMAC / HKDF / SHAKE squeeze to the same width as the inner digest.`,
+            preview: previewText(text), score: 15, apply: null
           });
         }
       }
 
       static #classics(text, letters, guesses) {
+        if (letters.length < 12) return;
         const ioc = indexOfCoincidence(text);
+
+        const rot13 = CipherEngine.traditional(text, 13, true).out;
+        if (chiSquared(rot13) < 50 && chiSquared(text) > 70) {
+          guesses.push({
+            id: "rot13", title: "ROT13", family: "classical", confidence: "high",
+            reason: "Caesar shift 13 reads as English.",
+            preview: previewText(rot13), score: chiSquared(rot13),
+            apply: { method: "traditional", mode: "decrypt", text, key: 13 }
+          });
+        }
+
         const caesar = [];
         for (let k = 0; k < 26; k += 1) {
           const plain = CipherEngine.traditional(text, k, true).out;
@@ -1876,48 +2263,120 @@
         const best = caesar[0];
         const second = caesar[1];
         const gap = (second?.score ?? 999) - best.score;
-        const caesarWin = best.k !== 0 && best.score < 70 && gap > 18;
-        const alreadyPlain = best.k === 0 && best.score < 50;
-
-        if (caesarWin) {
+        if (best.k !== 0 && best.k !== 13 && best.score < 70 && gap > 18) {
           guesses.push({
-            id: "caesar",
-            title: `Traditional Caesar · shift ${best.k}`,
+            id: "caesar", title: `Traditional Caesar · shift ${best.k}`, family: "classical",
             confidence: best.score < 40 ? "high" : "medium",
-            reason: `IOC ${ioc.toFixed(3)} is in the English band, and shift ${best.k} is the clear chi-squared winner (${best.score.toFixed(0)} vs next ${second.score.toFixed(0)}).`,
-            preview: previewText(best.plain),
-            score: best.score,
+            reason: `IOC ${ioc.toFixed(3)} is in the English band, and shift ${best.k} is the clear chi-squared winner.`,
+            preview: previewText(best.plain), score: best.score,
             apply: { method: "traditional", mode: "decrypt", text, key: best.k }
           });
-          return;
         }
 
-        if (alreadyPlain) return;
-
-        if (ioc >= 0.055) {
+        const ab = atbash(text);
+        if (chiSquared(ab) < 55 && chiSquared(text) > 80) {
           guesses.push({
-            id: "mono",
-            title: "Monoalphabetic substitution",
-            confidence: "medium",
-            reason: `IOC ${ioc.toFixed(3)} stays near English (letter frequencies survive), but no single Caesar shift reads as English.`,
-            preview: previewText(text),
-            score: best.score,
+            id: "atbash", title: "Atbash", family: "classical", confidence: "high",
+            reason: "A↔Z, B↔Y fold reads as English.",
+            preview: previewText(ab), score: chiSquared(ab),
+            apply: { method: "mono", mode: "decrypt", text, keyword: "ZYXWVUTSRQPONMLKJIHGFEDCBA" }
+          });
+        }
+
+        const r47 = rot47(text);
+        if (/[!-~]/.test(text) && looksPrintable(r47) && chiSquared(r47) < 55 && chiSquared(text) > 90) {
+          guesses.push({
+            id: "rot47", title: "ROT47", family: "classical", confidence: "medium",
+            reason: "ASCII 33–126 rotated by 47 becomes readable English.",
+            preview: previewText(r47), score: chiSquared(r47),
+            apply: { method: "traditional", mode: "encrypt", text: r47, key: 0 }
+          });
+        }
+
+        if (letters.length >= 16 && best.score > 80) {
+          let affBest = { score: 1e9, a: 1, b: 0, plain: text };
+          const as = [3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
+          for (const a of as) {
+            for (let b = 0; b < 26; b += 1) {
+              const plain = affineDecrypt(text, a, b);
+              const score = chiSquared(plain);
+              if (score < affBest.score) affBest = { score, a, b, plain };
+            }
+          }
+          if (affBest.score < 50 && affBest.score + 20 < best.score) {
+            guesses.push({
+              id: "affine", title: `Affine cipher · a=${affBest.a}, b=${affBest.b}`, family: "classical",
+              confidence: "medium",
+              reason: "Brute force of coprime (a, b) mod 26 beat a simple Caesar shift.",
+              preview: previewText(affBest.plain), score: affBest.score,
+              apply: { method: "traditional", mode: "encrypt", text: affBest.plain, key: 0 }
+            });
+          }
+        }
+
+        if (letters.length >= 16) {
+          let railBest = { score: 1e9, rails: 0, plain: letters };
+          for (let rails = 2; rails <= 8; rails += 1) {
+            const plain = railFenceDecrypt(letters, rails);
+            const score = chiSquared(plain);
+            if (score < railBest.score) railBest = { score, rails, plain };
+          }
+          if (railBest.score < 45 && railBest.rails && railBest.score + 25 < best.score) {
+            guesses.push({
+              id: "rail", title: `Rail Fence / Caesar Box · ${railBest.rails} rails`, family: "classical",
+              confidence: "medium",
+              reason: "Zig-zag transposition unscrambles into English-like frequencies. Columnar transposition is the same family.",
+              preview: previewText(railBest.plain), score: railBest.score,
+              apply: { method: "traditional", mode: "encrypt", text: railBest.plain, key: 0 }
+            });
+          }
+        }
+
+        const bacon = baconDecode(text);
+        if (bacon && chiSquared(bacon) < 80) {
+          guesses.push({
+            id: "bacon", title: "Bacon cipher", family: "classical", confidence: "high",
+            reason: "A/B groups of 5 decode to letters.",
+            preview: previewText(bacon), score: chiSquared(bacon),
+            apply: { method: "traditional", mode: "encrypt", text: bacon, key: 0 }
+          });
+        }
+
+        if (letters.length >= 16 && letters.length % 2 === 0 && !letters.includes("J") && ioc >= 0.055 && best.score > 70) {
+          guesses.push({
+            id: "playfair", title: "Playfair (possible)", family: "classical", confidence: "weak",
+            reason: "Even letter count, no J, English-like IOC — Playfair-shaped, not proven.",
+            preview: previewText(text), score: 55,
             apply: { method: "mono", mode: "decrypt", text, keyword: "" }
           });
-          return;
         }
 
-        if (ioc >= 0.041 && ioc < 0.055) {
+        if (letters.length >= 16 && /^([A-Z]{4,5}[\s/]*)+$/.test(text.trim()) && ioc < 0.048) {
+          guesses.push({
+            id: "enigma", title: "Enigma / Typex-style groups", family: "classical", confidence: "weak",
+            reason: "5-letter groups and low IOC match machine ciphers. A Bombe is an attack machine, not a dump format.",
+            preview: previewText(text), score: 48,
+            apply: { method: "modified", mode: "decrypt", text, keyword: "" }
+          });
+        }
+
+        if (letters.length >= 16 && ioc >= 0.055 && best.score > 70 && !guesses.some((g) => g.id === "caesar" || g.id === "rot13")) {
+          guesses.push({
+            id: "mono", title: "Monoalphabetic substitution", family: "classical", confidence: "medium",
+            reason: `IOC ${ioc.toFixed(3)} stays near English, but no single Caesar shift reads as English.`,
+            preview: previewText(text), score: best.score,
+            apply: { method: "mono", mode: "decrypt", text, keyword: "" }
+          });
+        } else if (letters.length >= 16 && ioc >= 0.041 && ioc < 0.055) {
           const period = this.#bestPeriod(letters);
           guesses.push({
             id: "modified",
             title: period
-              ? `Modified Caesar · key length ≈ ${period}`
-              : "Modified Caesar (repeating key stream)",
-            confidence: "medium",
-            reason: `IOC ${ioc.toFixed(3)} is below English, which fits a changing shift (Vigenère-style). Keyword is not recovered — only the likely length.`,
-            preview: previewText(text),
-            score: 60,
+              ? `Vigenère / modified Caesar · key length ≈ ${period}`
+              : "Vigenère / modified Caesar (repeating key stream)",
+            family: "classical", confidence: "medium",
+            reason: `IOC ${ioc.toFixed(3)} is below English, which fits a changing shift. Keyword is not recovered — only the likely length.`,
+            preview: previewText(text), score: 60,
             apply: { method: "modified", mode: "decrypt", text, keyword: "" }
           });
         }
@@ -1943,10 +2402,33 @@
         return bestIoc > 0.052 ? bestLen : 0;
       }
 
+      static #xor(text, guesses) {
+        const raw = decodeHex(text) || decodeBase64(text);
+        const blob = raw && !looksPrintable(raw) ? raw : null;
+        if (!blob || blob.length < 8) return;
+        let best = { score: 1e9, key: 0, plain: "" };
+        for (let k = 1; k < 256; k += 1) {
+          const plain = xorKey(blob, k);
+          if (!looksPrintable(plain)) continue;
+          const score = chiSquared(plain);
+          if (score < best.score) best = { score, key: k, plain };
+        }
+        if (best.plain && best.score < 80) {
+          guesses.push({
+            id: "xor",
+            title: `Single-byte XOR · 0x${best.key.toString(16).padStart(2, "0")}`,
+            family: "classical", confidence: "medium",
+            reason: "A repeating 8-bit XOR key turns the blob into printable English-like text.",
+            preview: previewText(best.plain), score: best.score,
+            apply: { method: "traditional", mode: "encrypt", text: best.plain, key: 0 }
+          });
+        }
+      }
+
       static #modern(text, letters, guesses) {
         const entropy = shannonEntropy(text);
         const ioc = letters.length >= 16 ? indexOfCoincidence(text) : 1;
-        const compact = text.replace(/\s/g, "");
+        const compact = compactBits(text);
         const hex = decodeHex(text);
         const b64 = decodeBase64(text);
         const readableEncoding = (hex && looksPrintable(hex)) || (b64 && looksPrintable(b64));
@@ -1954,12 +2436,11 @@
         if (randomish && compact.length >= 16 && !readableEncoding) {
           guesses.push({
             id: "modern",
-            title: "High entropy — modern crypto, hash, or compressed data",
+            title: "High entropy · modern crypto / PRNG",
+            family: "modern",
             confidence: "weak",
-            reason: `Entropy ${entropy.toFixed(2)} bits/char and low IOC. AES, RSA, hashes, and gzip all look like this. Not identified as a named algorithm.`,
-            preview: previewText(text),
-            score: 200,
-            apply: null
+            reason: `Entropy ${entropy.toFixed(2)} bits/char. ${MODERN_FAMILY} are indistinguishable from random bits without a header (PEM, Fernet, EVP Salted__). Not identified as a named algorithm.`,
+            preview: previewText(text), score: 200, apply: null
           });
         }
       }
@@ -1994,13 +2475,21 @@
           setup: { mode: "decrypt", key: 3, text: "WKH HDJOH KDV ODQGHG" }
         },
         code: `<span class="cm">// Traditional Caesar — one shift, wrap with mod 26</span>
-<span class="kw">function</span> <span class="fn">caesar</span>(text, key, decrypt = <span class="kw">false</span>) {
-  <span class="kw">const</span> k = decrypt ? (26 - (key % 26)) % 26 : key % 26;
-  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) => {
-    <span class="kw">const</span> base = ch &lt;= <span class="st">'Z'</span> ? 65 : 97;
-    <span class="kw">const</span> code = ch.charCodeAt(0) - base;
-    <span class="kw">return</span> String.fromCharCode(((code + k) % 26) + base);
-  });
+<span class="cm">#include &lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">string</span> <span class="fn">caesar</span>(<span class="kw">string</span> text, <span class="kw">int</span> key, <span class="kw">bool</span> decrypt = <span class="kw">false</span>) {
+  <span class="kw">int</span> k = key % 26;
+  <span class="kw">if</span> (decrypt) k = (26 - k) % 26;
+
+  <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; (<span class="kw">int</span>)text.size(); i++) {
+    <span class="kw">char</span> ch = text[i], base = 0;
+    <span class="kw">if</span> (ch &gt;= <span class="st">'A'</span> &amp;&amp; ch &lt;= <span class="st">'Z'</span>) base = <span class="st">'A'</span>;
+    <span class="kw">else if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) base = <span class="st">'a'</span>;
+    <span class="kw">else continue</span>;
+    text[i] = base + (ch - base + k) % 26;
+  }
+  <span class="kw">return</span> text;
 }`
       },
       modified: {
@@ -2031,16 +2520,28 @@
           setup: { mode: "decrypt", keyword: "KEY", text: "" }
         },
         code: `<span class="cm">// Modified Caesar — repeating keyword shifts</span>
-<span class="kw">function</span> <span class="fn">modifiedCaesar</span>(text, keyword, decrypt = <span class="kw">false</span>) {
-  <span class="kw">const</span> shifts = keyword.toUpperCase().replace(/[^A-Z]/g, <span class="st">""</span>)
-    .split(<span class="st">""</span>).map(c =&gt; c.charCodeAt(0) - 65);
-  <span class="kw">let</span> i = 0;
-  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) =&gt; {
-    <span class="kw">const</span> base = ch &lt;= <span class="st">'Z'</span> ? 65 : 97;
-    <span class="kw">let</span> k = shifts[i++ % shifts.length] || 0;
+<span class="cm">#include &lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">string</span> <span class="fn">modifiedCaesar</span>(<span class="kw">string</span> text, <span class="kw">string</span> keyword, <span class="kw">bool</span> decrypt = <span class="kw">false</span>) {
+  <span class="kw">string</span> key;
+  <span class="kw">for</span> (<span class="kw">char</span> ch : keyword) {
+    <span class="kw">if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) ch = ch - <span class="st">'a'</span> + <span class="st">'A'</span>;
+    <span class="kw">if</span> (ch &gt;= <span class="st">'A'</span> &amp;&amp; ch &lt;= <span class="st">'Z'</span>) key += ch;
+  }
+  <span class="kw">if</span> (key.empty()) <span class="kw">return</span> text;
+
+  <span class="kw">int</span> i = 0;
+  <span class="kw">for</span> (<span class="kw">int</span> n = 0; n &lt; (<span class="kw">int</span>)text.size(); n++) {
+    <span class="kw">char</span> ch = text[n], base = 0;
+    <span class="kw">if</span> (ch &gt;= <span class="st">'A'</span> &amp;&amp; ch &lt;= <span class="st">'Z'</span>) base = <span class="st">'A'</span>;
+    <span class="kw">else if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) base = <span class="st">'a'</span>;
+    <span class="kw">else continue</span>;
+    <span class="kw">int</span> k = key[i++ % key.size()] - <span class="st">'A'</span>;
     <span class="kw">if</span> (decrypt) k = (26 - k) % 26;
-    <span class="kw">return</span> String.fromCharCode(((ch.charCodeAt(0) - base + k) % 26) + base);
-  });
+    text[n] = base + (ch - base + k) % 26;
+  }
+  <span class="kw">return</span> text;
 }`
       },
       mono: {
@@ -2071,24 +2572,39 @@
           setup: { mode: "decrypt", keyword: "CIPHER", text: "" }
         },
         code: `<span class="cm">// Mixed alphabet from a keyword, then 1-to-1 substitute</span>
-<span class="kw">function</span> <span class="fn">buildAlphabet</span>(keyword) {
-  <span class="kw">const</span> seen = <span class="kw">new</span> Set();
-  <span class="kw">let</span> out = <span class="st">""</span>;
-  <span class="kw">for</span> (<span class="kw">const</span> ch of (keyword + <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>).toUpperCase()) {
-    <span class="kw">if</span> (/[A-Z]/.test(ch) &amp;&amp; !seen.has(ch)) { seen.add(ch); out += ch; }
+<span class="cm">#include &lt;string&gt;</span>
+<span class="kw">using namespace</span> std;
+
+<span class="kw">string</span> <span class="fn">buildAlphabet</span>(<span class="kw">string</span> keyword) {
+  <span class="kw">string</span> out;
+  <span class="kw">bool</span> seen[26] = {};
+  <span class="kw">string</span> source = keyword + <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;
+  <span class="kw">for</span> (<span class="kw">char</span> ch : source) {
+    <span class="kw">if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) ch = ch - <span class="st">'a'</span> + <span class="st">'A'</span>;
+    <span class="kw">if</span> (ch &lt; <span class="st">'A'</span> || ch &gt; <span class="st">'Z'</span>) <span class="kw">continue</span>;
+    <span class="kw">int</span> idx = ch - <span class="st">'A'</span>;
+    <span class="kw">if</span> (seen[idx]) <span class="kw">continue</span>;
+    seen[idx] = <span class="kw">true</span>;
+    out += ch;
   }
   <span class="kw">return</span> out;
 }
 
-<span class="kw">function</span> <span class="fn">mono</span>(text, keyword, decrypt = <span class="kw">false</span>) {
-  <span class="kw">const</span> cipher = buildAlphabet(keyword);
-  <span class="kw">const</span> from = decrypt ? cipher : <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;
-  <span class="kw">const</span> to = decrypt ? <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span> : cipher;
-  <span class="kw">return</span> text.replace(/[a-z]/gi, (ch) =&gt; {
-    <span class="kw">const</span> up = ch.toUpperCase();
-    <span class="kw">const</span> mapped = to[from.indexOf(up)];
-    <span class="kw">return</span> ch === up ? mapped : mapped.toLowerCase();
-  });
+<span class="kw">string</span> <span class="fn">mono</span>(<span class="kw">string</span> text, <span class="kw">string</span> keyword, <span class="kw">bool</span> decrypt = <span class="kw">false</span>) {
+  <span class="kw">string</span> cipher = buildAlphabet(keyword);
+  <span class="kw">string</span> plain  = <span class="st">"ABCDEFGHIJKLMNOPQRSTUVWXYZ"</span>;
+  <span class="kw">string</span> from = decrypt ? cipher : plain;
+  <span class="kw">string</span> to   = decrypt ? plain  : cipher;
+
+  <span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; (<span class="kw">int</span>)text.size(); i++) {
+    <span class="kw">char</span> ch = text[i], up = ch;
+    <span class="kw">if</span> (up &gt;= <span class="st">'a'</span> &amp;&amp; up &lt;= <span class="st">'z'</span>) up = up - <span class="st">'a'</span> + <span class="st">'A'</span>;
+    <span class="kw">if</span> (up &lt; <span class="st">'A'</span> || up &gt; <span class="st">'Z'</span>) <span class="kw">continue</span>;
+    <span class="kw">char</span> mapped = to[from.find(up)];
+    <span class="kw">if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) mapped = mapped - <span class="st">'A'</span> + <span class="st">'a'</span>;
+    text[i] = mapped;
+  }
+  <span class="kw">return</span> text;
 }`
       }
     };
@@ -2151,7 +2667,7 @@
         });
 
         const floatHost = document.getElementById("floatLetters");
-        [..."ADVANCECIPHERLAB", "अ", "क", "ष", "र", "आ"].forEach((ch, i) => {
+        [..."GUPTLEKH", "अ", "क", "ष", "र", "आ", "गु", "प्त"].forEach((ch, i) => {
           const span = document.createElement("span");
           span.textContent = ch;
           if (/[^A-Z]/.test(ch)) span.className = "indic";
@@ -2425,6 +2941,7 @@
             <header>
               <h4>${escapeHtml(guess.title)}</h4>
               <span class="badge ${escapeHtml(guess.confidence)}">${escapeHtml(guess.confidence)} guess</span>
+              ${guess.family ? `<span class="badge family">${escapeHtml(guess.family)}</span>` : ""}
             </header>
             <p class="why">${escapeHtml(guess.reason)}</p>
             <div class="preview">${escapeHtml(guess.preview || "—")}</div>
@@ -2639,7 +3156,7 @@
         const wraps = this.result.tokens.filter((t) => t.wrap).length;
         const keyword = lettersOnly(this.els.keywordInput.value);
         const strength = this.state.method === "traditional"
-          ? "26 keys · toy"
+          ? "26 keys"
           : this.state.method === "modified"
             ? `${Math.max(1, keyword.length)}-letter stream`
             : "mixed alphabet";
