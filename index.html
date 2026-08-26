@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Guptlekh — गुप्तलेख</title>
-  <meta name="description" content="Guptlekh is a night lab for traditional Caesar, modified Caesar, and monoalphabetic ciphers — encrypt live, watch every letter, crack weak keys, and practice." />
+  <meta name="description" content="Guptlekh reads unknown text, then lets you work classroom ciphers on a disk — paste, copy, encrypt, and decrypt in one quiet bench." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet" />
@@ -40,7 +40,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; color-scheme: dark; }
+    html { scroll-behavior: smooth; color-scheme: dark; scroll-padding-top: 3.4rem; }
 
     body {
       font-family: var(--font-body);
@@ -104,9 +104,9 @@
     .float-letters span {
       position: absolute;
       font-family: var(--font-display);
-      font-weight: 700;
-      font-size: clamp(2rem, 5vw, 4.5rem);
-      color: rgba(159, 184, 171, 0.045);
+      font-weight: 500;
+      font-size: clamp(1.5rem, 3.6vw, 3rem);
+      color: rgba(159, 184, 171, 0.032);
       transform: translateY(calc(var(--pulse) * -8px)) rotate(calc(var(--shift) * 0.4));
       transition: transform 0.4s ease, color 0.4s ease;
     }
@@ -116,12 +116,21 @@
       color: rgba(194, 179, 148, 0.07);
     }
 
+    .mast {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(12, 15, 13, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       gap: 1rem;
-      padding: 1.1rem 0 0.15rem;
+      padding: 0.8rem 0;
       font-family: var(--font-mono);
       font-size: 0.72rem;
       letter-spacing: 0.06em;
@@ -130,7 +139,21 @@
 
     .topbar .prompt {
       color: var(--ink-soft);
+      text-decoration: none;
     }
+
+    .jump {
+      display: flex;
+      gap: 1.1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .jump a {
+      color: var(--ink-soft);
+      text-decoration: none;
+    }
+
+    .jump a:hover { color: var(--sand); }
 
     .topbar .script {
       font-family: var(--font-indic);
@@ -146,11 +169,11 @@
     }
 
     .hero {
-      min-height: calc(100vh - 3.2rem);
+      min-height: auto;
       display: grid;
-      grid-template-columns: minmax(280px, 1.05fr) minmax(260px, 0.95fr);
-      align-items: center;
-      padding: 2rem 0 3rem;
+      grid-template-columns: minmax(280px, 1.05fr) minmax(280px, 0.95fr);
+      align-items: start;
+      padding: 1.35rem 0 2.2rem;
       position: relative;
       gap: 1.5rem;
     }
@@ -238,7 +261,7 @@
       font-family: var(--font-mono);
       font-size: 0.68rem;
       font-weight: 500;
-      color: #c9e8d8;
+      color: #c8d4cc;
       border-radius: 50%;
       cursor: pointer;
     }
@@ -249,7 +272,7 @@
     }
 
     .disk.inner .disk-letter {
-      color: var(--phosphor);
+      color: #b8c4bc;
       transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(24vw, 132px))) rotate(calc(var(--i) * -13.846deg - var(--disk-rot)));
     }
 
@@ -295,7 +318,8 @@
     .hero-copy {
       position: relative;
       z-index: 2;
-      max-width: 38rem;
+      max-width: 42rem;
+      padding-top: 0.35rem;
     }
 
     .eyebrow {
@@ -310,7 +334,7 @@
     .brand {
       font-family: var(--font-display);
       font-weight: 500;
-      font-size: clamp(2.6rem, 7vw, 4.4rem);
+      font-size: clamp(2.15rem, 5.5vw, 3.5rem);
       line-height: 1.02;
       letter-spacing: -0.03em;
       margin-bottom: 1rem;
@@ -337,10 +361,10 @@
     }
 
     .lede {
-      font-size: 1.08rem;
+      font-size: 1.02rem;
       color: var(--ink-soft);
       max-width: 34rem;
-      margin-bottom: 1.15rem;
+      margin-bottom: 1.05rem;
     }
 
     .learn-chips {
@@ -454,7 +478,7 @@
 
     .method-btn .name {
       font-family: var(--font-display);
-      font-weight: 600;
+      font-weight: 500;
       font-size: 1.05rem;
       display: block;
     }
@@ -540,6 +564,8 @@
 
     input[type="text"],
     input[type="number"],
+    input[type="search"],
+    select,
     textarea {
       width: 100%;
       border: 1px solid var(--line);
@@ -548,7 +574,7 @@
       padding: 0.75rem 0.85rem;
       font: inherit;
       color: var(--ink);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
       resize: vertical;
     }
 
@@ -560,6 +586,7 @@
     }
 
     input:focus,
+    select:focus,
     textarea:focus {
       outline: none;
       border-color: var(--brass);
@@ -586,7 +613,7 @@
       font-weight: 500;
       cursor: pointer;
       color: var(--ink-soft);
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     }
 
     .mode-toggle button.active {
@@ -605,34 +632,33 @@
     .ghost-btn {
       padding: 0.5rem 0.8rem;
       font-size: 0.82rem;
-      background: rgba(8, 22, 18, 0.55);
+      background: rgba(16, 20, 18, 0.55);
     }
 
     .ghost-btn:hover {
-      border-color: var(--teal);
-      color: var(--teal-deep);
+      border-color: var(--brass);
+      color: var(--sand);
     }
 
     .output-box {
       margin-top: 0.9rem;
       min-height: 96px;
       padding: 0.9rem 1rem;
-      border-radius: 4px;
+      border-radius: 6px;
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
       font-family: var(--font-mono);
       font-size: 0.92rem;
       white-space: pre-wrap;
       word-break: break-word;
-      transform: scale(calc(1 + (var(--pulse) * 0.012)));
-      transition: transform 0.3s ease;
+      border: 1px solid var(--line);
     }
 
-    .output-box .placeholder { color: rgba(215, 236, 236, 0.45); }
+    .output-box .placeholder { color: var(--ink-soft); }
     .output-box mark {
-      background: var(--sand-hot);
-      color: white;
-      border-radius: 4px;
+      background: rgba(185, 171, 140, 0.28);
+      color: var(--white);
+      border-radius: 3px;
       padding: 0 0.12em;
     }
 
@@ -666,14 +692,13 @@
       border-radius: 7px;
     }
 
-    .map-col .from { background: rgba(61, 204, 168, 0.12); color: var(--teal-deep); }
+    .map-col .from { background: rgba(106, 154, 132, 0.12); color: var(--teal-deep); }
     .map-col .arrow { font-size: 0.6rem; color: var(--ink-soft); padding: 0; }
-    .map-col .to { background: rgba(228, 180, 92, 0.16); color: var(--sand); }
+    .map-col .to { background: rgba(185, 171, 140, 0.16); color: var(--sand); }
     .map-col.active .from,
     .map-col.active .to {
-      background: var(--sand-hot);
-      color: white;
-      transform: translateY(-2px);
+      background: rgba(185, 171, 140, 0.38);
+      color: var(--white);
     }
 
     .step-hero {
@@ -683,19 +708,22 @@
       align-items: center;
       margin-top: 0.7rem;
       padding: 0.85rem;
-      border-radius: 4px;
-      background: rgba(61, 204, 168, 0.08);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.9);
+      border: 1px solid var(--line);
     }
 
     .glyph {
       width: 4.1rem;
       height: 4.1rem;
-      border-radius: 4px;
+      border-radius: 8px;
+      display: grid;
       place-items: center;
       font-family: var(--font-display);
       font-size: 1.85rem;
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
+      border: 1px solid var(--line);
     }
 
     .hud {
@@ -725,7 +753,7 @@
     .hud span {
       font-family: var(--font-display);
       font-size: 0.95rem;
-      color: var(--phosphor);
+      color: var(--ink);
     }
 
     .tapes {
@@ -753,15 +781,14 @@
       min-width: 1.55rem;
       text-align: center;
       padding: 0.3rem 0.12rem;
-      border-radius: 7px;
-      background: rgba(61, 204, 168, 0.1);
+      border-radius: 4px;
+      background: rgba(106, 154, 132, 0.12);
     }
 
-    .tape.cipher i { background: var(--void); color: var(--phosphor); }
+    .tape.cipher i { background: var(--void); color: var(--ink); }
     .tape i.on {
-      background: var(--sand-hot);
-      color: white;
-      transform: translateY(-2px);
+      background: rgba(185, 171, 140, 0.38);
+      color: var(--white);
     }
 
     .rail {
@@ -775,8 +802,8 @@
     .rail button {
       appearance: none;
       border: 0;
-      background: rgba(141, 255, 196, 0.07);
-      border-radius: 7px;
+      background: rgba(106, 154, 132, 0.1);
+      border-radius: 4px;
       padding: 0.22rem 0;
       font-family: var(--font-mono);
       font-size: 0.55rem;
@@ -785,9 +812,9 @@
       cursor: pointer;
     }
 
-    .rail button.start { background: var(--teal); color: white; }
-    .rail button.end { background: var(--sand-hot); color: white; }
-    .rail button.wrap { outline: 1px dashed var(--sand-hot); }
+    .rail button.start { background: var(--teal); color: #f4f1ea; }
+    .rail button.end { background: var(--brass); color: #14120e; }
+    .rail button.wrap { outline: 1px dashed var(--brass); }
 
     .pair {
       display: flex;
@@ -795,15 +822,15 @@
       gap: 0.45rem;
     }
 
-    .pair .glyph.from { background: var(--teal-deep); color: var(--void); }
-    .pair .arrow { font-family: var(--font-display); color: var(--sand-hot); font-size: 1.3rem; }
+    .pair .glyph.from { background: rgba(185, 171, 140, 0.18); color: var(--sand); }
+    .pair .arrow { font-family: var(--font-display); color: var(--brass); font-size: 1.3rem; }
 
     .wrap-pill {
       display: inline-block;
       margin-left: 0.35rem;
       padding: 0.1rem 0.4rem;
       border-radius: 999px;
-      background: rgba(201, 123, 58, 0.16);
+      background: rgba(185, 171, 140, 0.16);
       color: var(--sand);
       font-family: var(--font-mono);
       font-size: 0.68rem;
@@ -848,9 +875,9 @@
 
     .player button.active,
     .player button:hover {
-      background: var(--void);
-      color: var(--phosphor);
-      border-color: var(--phosphor);
+      background: rgba(185, 171, 140, 0.12);
+      color: var(--white);
+      border-color: rgba(185, 171, 140, 0.4);
     }
 
     .player .count {
@@ -874,30 +901,30 @@
       gap: 0.65rem;
       align-items: start;
       padding: 0.55rem 0.7rem;
-      border-radius: 12px;
-      background: rgba(8, 22, 18, 0.55);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.55);
       border: 1px solid var(--line);
       font-size: 0.88rem;
     }
 
     .logic-step.current {
-      border-color: var(--sand-hot);
-      background: rgba(201, 123, 58, 0.12);
+      border-color: rgba(185, 171, 140, 0.45);
+      background: rgba(185, 171, 140, 0.1);
     }
 
     .logic-step .idx {
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      color: var(--sand-hot);
+      color: var(--brass);
       padding-top: 0.15rem;
     }
 
     .logic-step code {
       font-family: var(--font-mono);
       font-size: 0.82rem;
-      background: rgba(61, 204, 168, 0.1);
+      background: rgba(106, 154, 132, 0.12);
       padding: 0.1rem 0.35rem;
-      border-radius: 5px;
+      border-radius: 4px;
     }
 
     .stream {
@@ -920,10 +947,10 @@
     }
 
     .stream th { color: var(--ink-soft); font-weight: 500; text-align: left; padding-right: 0.6rem; }
-    .stream .p { background: rgba(61, 204, 168, 0.12); }
-    .stream .k { background: rgba(201, 123, 58, 0.16); }
-    .stream .c { background: var(--void); color: var(--phosphor); }
-    .stream .on { outline: 2px solid var(--sand-hot); }
+    .stream .p { background: rgba(106, 154, 132, 0.12); }
+    .stream .k { background: rgba(185, 171, 140, 0.16); }
+    .stream .c { background: var(--void); color: var(--ink); }
+    .stream .on { outline: 1px solid var(--brass); }
 
     .freq-list { display: grid; gap: 0.28rem; margin-top: 0.7rem; }
     .freq-row {
@@ -936,16 +963,16 @@
     }
 
     .bar {
-      height: 8px;
-      border-radius: 99px;
-      background: rgba(141, 255, 196, 0.08);
+      height: 7px;
+      border-radius: 3px;
+      background: rgba(176, 188, 180, 0.08);
       overflow: hidden;
     }
 
     .bar > i {
       display: block;
       height: 100%;
-      background: linear-gradient(90deg, var(--teal), var(--sand-hot));
+      background: var(--teal);
       width: 0;
       transition: width 0.35s ease;
     }
@@ -964,8 +991,8 @@
       gap: 0.55rem;
       align-items: center;
       padding: 0.45rem 0.6rem;
-      border-radius: 10px;
-      background: rgba(8, 22, 18, 0.7);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.7);
       border: 1px solid transparent;
       cursor: pointer;
       font-size: 0.82rem;
@@ -976,13 +1003,13 @@
 
     .crack-row:hover,
     .crack-row.best {
-      border-color: var(--teal);
-      background: rgba(61, 204, 168, 0.08);
+      border-color: rgba(185, 171, 140, 0.4);
+      background: rgba(185, 171, 140, 0.08);
     }
 
     .crack-row .k {
       font-family: var(--font-mono);
-      color: var(--sand-hot);
+      color: var(--brass);
     }
 
     .crack-row .preview {
@@ -1007,53 +1034,55 @@
       min-width: 1.5rem;
       text-align: center;
       padding: 0.28rem 0.2rem;
-      border-radius: 7px;
-      background: rgba(61, 204, 168, 0.1);
+      border-radius: 4px;
+      background: rgba(106, 154, 132, 0.12);
     }
 
     .build-row span.dup {
-      background: rgba(141, 255, 196, 0.08);
-      color: #9aa6b1;
+      background: rgba(176, 188, 180, 0.08);
+      color: #8b9890;
       text-decoration: line-through;
     }
 
-    .build-row span.kw { background: var(--sand-hot); color: white; }
+    .build-row span.kw { background: rgba(185, 171, 140, 0.32); color: var(--white); }
 
     .code-panel {
       font-family: var(--font-mono);
       font-size: 0.78rem;
       line-height: 1.65;
-      background: #061410;
-      color: #b7e8d2;
-      border-radius: 12px;
+      background: #0d1110;
+      color: #c8d4cc;
+      border: 1px solid var(--line);
+      border-radius: 6px;
       padding: 0.95rem 1rem;
       overflow: auto;
       margin-top: 0.75rem;
       max-height: 360px;
     }
 
-    .code-panel .kw { color: #7fd4c8; }
-    .code-panel .fn { color: #f0b27a; }
-    .code-panel .cm { color: #6f8494; }
-    .code-panel .st { color: #e8c98a; }
+    .code-panel .kw { color: #9fb8ab; }
+    .code-panel .fn { color: #c2b394; }
+    .code-panel .cm { color: #6d7a74; }
+    .code-panel .st { color: #d4c4a4; }
 
     .hint { margin-top: 0.7rem; font-size: 0.85rem; color: var(--ink-soft); }
 
     .challenge-card {
       margin-top: 0.75rem;
       padding: 0.85rem;
-      border-radius: 12px;
-      background: rgba(8, 22, 18, 0.7);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.7);
     }
 
     .challenge-card .prompt {
       font-family: var(--font-mono);
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
       padding: 0.7rem 0.8rem;
-      border-radius: 10px;
+      border-radius: 6px;
       margin: 0.55rem 0;
       word-break: break-word;
+      border: 1px solid var(--line);
     }
 
     .challenge-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.65rem; }
@@ -1061,7 +1090,15 @@
     .feedback.ok { color: var(--ok); }
     .feedback.no { color: #f0a8a0; }
 
-    .detect-box { margin-bottom: 1.25rem; }
+    .detect-box {
+      margin-top: 0.35rem;
+      margin-bottom: 0;
+    }
+    .detect-box textarea { min-height: 88px; }
+    .detect-box #detectKey {
+      font-family: var(--font-mono);
+      min-height: 0;
+    }
     .detect-actions {
       display: flex;
       flex-wrap: wrap;
@@ -1069,21 +1106,202 @@
       margin-top: 0.75rem;
       align-items: center;
     }
-    .detect-actions .cta { padding: 0.72rem 1.15rem; }
-    .detect-catalog {
-      margin-top: 0.85rem;
-      font-size: 0.82rem;
-      color: var(--ink-soft);
+    .detect-actions .cta { padding: 0.62rem 1rem; }
+    .sample-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.65rem;
     }
-    .detect-catalog summary {
-      cursor: pointer;
+    .sample-pills button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink-soft);
+      border-radius: 4px;
+      padding: 0.28rem 0.55rem;
+      font: inherit;
       font-family: var(--font-mono);
       font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--teal-deep);
+      cursor: pointer;
     }
-    .detect-catalog p { margin-top: 0.55rem; line-height: 1.55; }
+    .sample-pills button:hover {
+      border-color: rgba(185, 171, 140, 0.4);
+      color: var(--sand);
+    }
+    .reading {
+      margin-top: 0.9rem;
+      padding: 0.95rem 1rem;
+      border-radius: 8px;
+      background: rgba(16, 20, 18, 0.72);
+      border: 1px solid rgba(185, 171, 140, 0.28);
+    }
+    .reading-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      color: var(--brass);
+      margin-bottom: 0.3rem;
+    }
+    .reading h4 {
+      font-family: var(--font-display);
+      font-size: 1.12rem;
+      margin: 0 0 0.35rem;
+    }
+    .reading .preview {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      background: var(--void);
+      color: var(--ink);
+      padding: 0.7rem 0.8rem;
+      border-radius: 6px;
+      margin: 0.55rem 0 0.7rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 8.5rem;
+      overflow: auto;
+      border: 1px solid var(--line);
+    }
+    .reading-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .reading-note {
+      margin-top: 0.7rem;
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+    }
+    .recipe-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 0.15rem 0 0.55rem;
+    }
+    .recipe-chain span {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.14rem 0.4rem;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--sand);
+    }
+    .xray {
+      margin-top: 0.9rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--line);
+    }
+    .xray-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--brass);
+      margin-bottom: 0.45rem;
+    }
+    .xray-stats, .xray-knobs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-bottom: 0.7rem;
+    }
+    .xray-stats span, .xray-knobs span {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 0.16rem 0.42rem;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--ink-soft);
+    }
+    .xray-knobs span { color: var(--sand); }
+    .xray-path {
+      position: relative;
+      display: grid;
+      gap: 0;
+      padding-left: 0.15rem;
+    }
+    .xray-path::before {
+      content: "";
+      position: absolute;
+      left: 0.28rem;
+      top: 0.45rem;
+      bottom: 0.45rem;
+      width: 1px;
+      background: var(--line);
+    }
+    .xray-gate {
+      display: grid;
+      grid-template-columns: 0.7rem 1fr;
+      gap: 0.55rem;
+      padding: 0.32rem 0;
+      position: relative;
+    }
+    .xray-gate i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brass);
+      margin-top: 0.38rem;
+      box-shadow: 0 0 0 3px var(--paper);
+    }
+    .xray-gate.dim { opacity: 0.36; }
+    .xray-gate.dim i { background: var(--ink-soft); }
+    .xray-gate.out i { background: var(--ok); }
+    .xray-gate .name { font-size: 0.86rem; }
+    .xray-gate .param {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--ink-soft);
+      margin-top: 0.08rem;
+    }
+    .xray-gate .peek {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink);
+      margin-top: 0.12rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .xray-miss {
+      margin-top: 0.55rem;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .xray-gate { animation: xrayIn 0.45s ease both; }
+      .xray-gate:nth-child(2) { animation-delay: 0.06s; }
+      .xray-gate:nth-child(3) { animation-delay: 0.12s; }
+      .xray-gate:nth-child(4) { animation-delay: 0.18s; }
+    }
+    @keyframes xrayIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
+    .other-readings {
+      margin-top: 0.7rem;
+      font-size: 0.9rem;
+    }
+    .other-readings summary {
+      cursor: pointer;
+      color: var(--ink-soft);
+      font-size: 0.84rem;
+    }
+    .other-readings .guess-card { margin-top: 0.55rem; }
+    .work-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-top: 0.85rem;
+    }
+    .work-split .result-label {
+      display: block;
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+    .work-split .output-box { margin-top: 0; min-height: 110px; }
     .badge.family {
       background: transparent;
       border: 1px solid var(--line);
@@ -1096,8 +1314,8 @@
     }
     .guess-card {
       padding: 0.85rem 0.95rem;
-      border-radius: 4px;
-      background: rgba(8, 22, 18, 0.7);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.7);
       border: 1px solid var(--line);
     }
     .guess-card header {
@@ -1115,37 +1333,38 @@
     .badge {
       font-family: var(--font-mono);
       font-size: 0.68rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      text-transform: none;
       padding: 0.18rem 0.45rem;
-      border-radius: 999px;
+      border-radius: 4px;
     }
-    .badge.high { background: rgba(27, 127, 90, 0.16); color: var(--ok); }
-    .badge.medium { background: rgba(61, 204, 168, 0.16); color: var(--teal-deep); }
-    .badge.weak { background: rgba(228, 180, 92, 0.16); color: var(--sand); }
+    .badge.high { background: rgba(143, 191, 166, 0.16); color: var(--ok); }
+    .badge.medium { background: rgba(106, 154, 132, 0.16); color: var(--teal-deep); }
+    .badge.weak { background: rgba(185, 171, 140, 0.16); color: var(--sand); }
     .guess-card .why { font-size: 0.9rem; color: var(--ink-soft); }
     .guess-card .preview {
       font-family: var(--font-mono);
       font-size: 0.8rem;
       background: var(--void);
-      color: var(--phosphor);
+      color: var(--ink);
       padding: 0.55rem 0.7rem;
-      border-radius: 10px;
+      border-radius: 6px;
       margin: 0.55rem 0 0.65rem;
       white-space: pre-wrap;
       word-break: break-word;
       max-height: 4.8rem;
       overflow: auto;
+      border: 1px solid var(--line);
     }
     .guess-card .apply-btn {
       appearance: none;
-      border: 1px solid var(--phosphor);
-      background: var(--void);
-      color: var(--phosphor);
-      border-radius: 2px;
+      border: 1px solid rgba(185, 171, 140, 0.4);
+      background: transparent;
+      color: var(--ink);
+      border-radius: 6px;
       padding: 0.48rem 0.85rem;
       font: inherit;
-      font-weight: 600;
+      font-weight: 500;
       font-size: 0.82rem;
       cursor: pointer;
     }
@@ -1168,14 +1387,220 @@
       color: var(--sand);
     }
 
+    .chef-section { padding: 0.4rem 0 3rem; }
+    .chef-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--brass);
+      margin-bottom: 0.25rem;
+    }
+    .chef {
+      display: grid;
+      grid-template-columns: minmax(200px, 0.82fr) minmax(230px, 1fr) minmax(250px, 1.2fr);
+      grid-template-rows: minmax(200px, 1fr) minmax(200px, 1fr);
+      gap: 0.55rem;
+      min-height: min(74vh, 780px);
+      margin-top: 0.85rem;
+    }
+    .chef-pane {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      background: var(--box);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .chef-ops { grid-column: 1; grid-row: 1 / 3; }
+    .chef-recipe { grid-column: 2; grid-row: 1 / 3; }
+    .chef-input { grid-column: 3; grid-row: 1; }
+    .chef-output { grid-column: 3; grid-row: 2; }
+    .chef-pane > header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.7rem;
+      border-bottom: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brass);
+    }
+    .chef-pane > header span { margin-right: auto; }
+    .chef-pane > header input[type="search"],
+    .chef-pane > header input[type="text"] {
+      width: 11rem;
+      max-width: 100%;
+      padding: 0.32rem 0.5rem;
+      font-size: 0.78rem;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .chef-auto {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28rem;
+      font-size: 0.7rem;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+    .chef-ops-list {
+      overflow: auto;
+      padding: 0.35rem 0.4rem 0.7rem;
+    }
+    .chef-cat {
+      margin-bottom: 0.2rem;
+      border: 1px solid transparent;
+      border-radius: 4px;
+    }
+    .chef-cat summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 0.38rem 0.45rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--sand);
+      display: flex;
+      justify-content: space-between;
+      gap: 0.4rem;
+    }
+    .chef-cat summary::-webkit-details-marker { display: none; }
+    .chef-cat summary em {
+      font-style: normal;
+      color: var(--ink-soft);
+    }
+    .chef-cat summary:hover { color: var(--white); }
+    .chef-op {
+      display: block;
+      width: 100%;
+      text-align: left;
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: var(--ink-soft);
+      font: inherit;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      padding: 0.28rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .chef-op.ready { color: var(--ink); }
+    .chef-op.ready:hover {
+      background: rgba(185, 171, 140, 0.14);
+      color: var(--white);
+    }
+    .chef-op.ghost {
+      opacity: 0.48;
+      cursor: default;
+    }
+    .chef-recipe-list {
+      overflow: auto;
+      padding: 0.55rem;
+      display: grid;
+      gap: 0.45rem;
+      align-content: start;
+    }
+    .chef-empty {
+      color: var(--ink-soft);
+      font-size: 0.88rem;
+      padding: 0.6rem 0.2rem;
+    }
+    .chef-step {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(16, 20, 18, 0.7);
+      padding: 0.55rem 0.65rem 0.65rem;
+    }
+    .chef-step.off { opacity: 0.45; }
+    .chef-step-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.4rem;
+    }
+    .chef-step-bar strong {
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: 0.92rem;
+      margin-right: auto;
+    }
+    .chef-step-bar button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink-soft);
+      border-radius: 4px;
+      width: 1.7rem;
+      height: 1.55rem;
+      cursor: pointer;
+      font: inherit;
+    }
+    .chef-args {
+      display: grid;
+      gap: 0.35rem;
+    }
+    .chef-args label {
+      grid-template-columns: 7.2rem 1fr;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+    }
+    .chef-args input,
+    .chef-args select {
+      padding: 0.38rem 0.5rem;
+      font-size: 0.8rem;
+    }
+    .chef-io textarea {
+      flex: 1;
+      min-height: 0;
+      resize: none;
+      border: 0;
+      border-radius: 0;
+      background: var(--void);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+    .chef-io textarea:focus { box-shadow: none; }
+    #chefStatus {
+      font-size: 0.68rem;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--ink-soft);
+      max-width: 50%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #chefStatus.err { color: #f0a8a0; }
+    .chef-pane > header .ghost-btn {
+      padding: 0.28rem 0.5rem;
+      font-size: 0.72rem;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    .chef-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+    }
+
     label[hidden],
     #keywordField[hidden],
-    #keyField[hidden] { display: none !important; }
+    #keyField[hidden],
+    #wrapPill[hidden] { display: none !important; }
 
     @media (max-width: 860px) {
       .methods { grid-template-columns: 1fr; }
       .panels { grid-template-columns: 1fr; }
-      .field-row.two { grid-template-columns: 1fr; }
+      .field-row.two,
+      .work-split { grid-template-columns: 1fr; }
       .hero {
         min-height: auto;
         grid-template-columns: 1fr;
@@ -1189,6 +1614,21 @@
       .disk.inner .disk-letter {
         transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(26vw, 108px))) rotate(calc(var(--i) * -13.846deg - var(--disk-rot)));
       }
+      .chef {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        min-height: 0;
+      }
+      .chef-ops,
+      .chef-recipe,
+      .chef-input,
+      .chef-output {
+        grid-column: auto;
+        grid-row: auto;
+        min-height: 240px;
+      }
+      .chef-pane > header input[type="search"] { width: 100%; }
+      .chef-args label { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1204,9 +1644,15 @@
   <div class="grid-layer" aria-hidden="true"></div>
   <div class="float-letters" id="floatLetters" aria-hidden="true"></div>
 
-  <div class="wrap">
-    <div class="topbar">
-      <span class="prompt">Guptlekh · classical cryptography</span>
+  <div class="mast">
+    <div class="wrap topbar">
+      <a class="prompt" href="#">Guptlekh</a>
+      <nav class="jump" aria-label="On this page">
+        <a href="#read">Read</a>
+        <a href="#kitchen">Kitchen</a>
+        <a href="#work">Work</a>
+        <a href="#learn">Learn</a>
+      </nav>
       <span class="script">गुप्तलेख</span>
     </div>
   </div>
@@ -1223,66 +1669,102 @@
     </div>
 
     <div class="hero-copy">
-      <p class="eyebrow">Classical cryptography</p>
+      <p class="eyebrow">A bench you can keep open</p>
       <p class="script-line"><span>गुप्तलेख</span> secret writing, made visible</p>
       <h1 class="brand">Gupt<em>lekh</em></h1>
       <p class="lede">
-        A quiet bench for classroom ciphers. The outer ring is plaintext; the inner ring is ciphertext.
-        Turn the disk, watch a letter wrap past Z, then ask what an unknown sample might be.
+        Paste a string you found. Guptlekh names what it can see, then you work it on the disk —
+        or stack encrypt, decrypt, and encode steps in the kitchen, the way CyberChef does.
       </p>
-      <div class="learn-chips">
-        <span class="chip">cipher disk</span>
-        <span class="chip">detect · chi² · ioc</span>
-        <span class="chip">mod 26 wrap</span>
-        <span class="chip">Base64 / hex sniff</span>
-      </div>
-      <a class="cta" href="#lab">
-        Open the bench
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-          <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
+
+      <section class="box detect-box" id="read">
+        <p class="box-label">Read</p>
+        <h3>Paste anything unknown</h3>
+        <p>
+          Magic unwraps encodings, then names the classroom cipher if the inner text reads as English.
+          Optional key: if you already know it, Detect tries that first.
+        </p>
+        <div class="field-row">
+          <label>
+            <span>Unknown text</span>
+            <textarea id="detectInput" placeholder="Paste here. Reading starts as you type…"></textarea>
+          </label>
+          <label>
+            <span>Key (optional)</span>
+            <input type="text" id="detectKey" placeholder="Leave empty to guess · or a shift, keyword, XOR, AES…" autocomplete="off" />
+          </label>
+        </div>
+        <div class="detect-actions">
+          <button type="button" class="cta" id="detectBtn">Read this</button>
+        </div>
+        <div class="sample-pills" id="detectSamples">
+          <button type="button" data-sample="caesar">Try Caesar</button>
+          <button type="button" data-sample="nested">Try nested</button>
+          <button type="button" data-sample="b64">Try Base64</button>
+          <button type="button" data-sample="hex">Try hex</button>
+          <button type="button" data-sample="rot13">Try ROT13</button>
+          <button type="button" data-sample="hash">Try a hash</button>
+        </div>
+        <div class="detect-results" id="detectResults"></div>
+      </section>
     </div>
   </header>
 
-  <main class="lab wrap" id="lab">
-    <section class="box detect-box" id="detectBox">
-      <p class="box-label">Detect</p>
-      <h3>What is this text?</h3>
-      <p>
-        Paste unknown ciphertext, a hash, or encoded data. Guptlekh ranks every format it can actually
-        see — encodings, hash lengths, PEM/PGP wrappers, and classroom ciphers.
-        AES-class algorithms stay a <strong>family guess</strong>: they are designed to look like noise.
-      </p>
-      <div class="field-row">
-        <label>
-          <span>Unknown text</span>
-          <textarea id="detectInput" placeholder="Paste hex, Base64, a hash, PEM, Morse, or a classical ciphertext…"></textarea>
-        </label>
-      </div>
-      <div class="detect-actions">
-        <button type="button" class="cta" id="detectBtn">Detect</button>
-        <button type="button" class="ghost-btn" id="detectSampleBtn">Try a sample</button>
-      </div>
-      <details class="detect-catalog">
-        <summary>Sniff list · 90+ names</summary>
-        <p>
-          AES, DES, Triple DES, Blowfish, RC2, RC4, RC4 Drop, RC6, SM4, GOST, Fernet, LS47, ChaCha, Salsa20, Rabbit, RSA,
-          PGP, OpenPGP, X.509, PEM, MD2, MD4, MD5, SHA-1, SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224, SHA-512/256,
-          SHA-3-224, SHA-3-256, SHA-3-384, SHA-3-512, SHAKE-128, SHAKE-256, RIPEMD-128, RIPEMD-160, RIPEMD-256, RIPEMD-320,
-          HAS-160, Whirlpool, NT Hash, LM Hash, Bcrypt, Scrypt, PBKDF2, EVP, HKDF, HMAC, CRC-8, CRC-16, CRC-24, CRC-32, CRC-64,
-          Fletcher-16, Fletcher-32, Enigma, Bombe, Typex, Caesar Box, Affine, ROT13, ROT47, ROT8000, XOR, Vigenère, Rail Fence,
-          Bacon, Atbash, Columnar Transposition, Playfair, Substitution, Base64, Base32, Base58, Base62, Base85, Base91,
-          Hex, Binary, Octal, Decimal, URL, HTML Entity, Unicode, UTF-8, Punycode, Quoted-printable, Morse, Braille, CharCode,
-          ASN.1, TLV, P-list, Citrix CTX1, HASSH, EXIF, LSB, RGBA, Shannon Entropy, PRNG.
-        </p>
-      </details>
-      <div class="detect-results" id="detectResults"></div>
-    </section>
-
+  <section class="chef-section wrap" id="kitchen">
+    <p class="chef-kicker">Encrypt · decrypt · encode</p>
     <div class="section-head">
-      <h2>The bench</h2>
-      <p>Same shift → changing shift → mixed alphabet. Each method reuses the last idea and adds one new rule.</p>
+      <h2>Kitchen</h2>
+      <p>
+        Same four panes as CyberChef: operations, recipe, input, output.
+        Every name in the list is from CyberChef. Bright ones bake here; faded ones stay in the catalog.
+      </p>
+    </div>
+    <div class="chef-pills" id="chefSamples">
+      <button type="button" class="ghost-btn" data-sample="rot13">Try ROT13</button>
+      <button type="button" class="ghost-btn" data-sample="b64">Try Base64</button>
+      <button type="button" class="ghost-btn" data-sample="aes">Try AES</button>
+      <button type="button" class="ghost-btn" data-sample="vig">Try Vigenère</button>
+    </div>
+    <div class="chef" aria-label="CyberChef-style workbench">
+      <aside class="chef-pane chef-ops">
+        <header>
+          <span>Operations</span>
+          <input type="search" id="chefSearch" placeholder="Search algorithms…" autocomplete="off" />
+        </header>
+        <div class="chef-ops-list" id="chefOpsList"></div>
+      </aside>
+      <section class="chef-pane chef-recipe">
+        <header>
+          <span>Recipe</span>
+          <label class="chef-auto"><input type="checkbox" id="chefAuto" checked /> Auto Bake</label>
+          <button type="button" class="ghost-btn" id="chefBake">Bake</button>
+          <button type="button" class="ghost-btn" id="chefClearRecipe">Clear</button>
+        </header>
+        <div class="chef-recipe-list" id="chefRecipe"></div>
+      </section>
+      <section class="chef-pane chef-io chef-input">
+        <header>
+          <span>Input</span>
+          <button type="button" class="ghost-btn" id="chefClearIn">Clear</button>
+        </header>
+        <textarea id="chefInput" placeholder="Paste text, hex, Base64, or ciphertext…"></textarea>
+      </section>
+      <section class="chef-pane chef-io chef-output">
+        <header>
+          <span>Output</span>
+          <span id="chefStatus"></span>
+          <button type="button" class="ghost-btn" id="chefCopyOut">Copy</button>
+        </header>
+        <textarea id="chefOutput" readonly placeholder="Baked result appears here…"></textarea>
+      </section>
+    </div>
+  </section>
+
+  <main class="lab wrap" id="lab">
+    <div id="work">
+    <div class="section-head">
+      <h2>Work the cipher</h2>
+      <p>Same shift → changing shift → mixed alphabet. Type on the left, copy from the right. The disk follows.</p>
     </div>
 
     <div class="hud" aria-label="Lab status">
@@ -1314,12 +1796,6 @@
 
     <div class="panels">
       <div class="stack">
-        <section class="box" id="knowledgeBox">
-          <p class="box-label">Lesson</p>
-          <h3 id="knowledgeTitle">Traditional Caesar Cipher</h3>
-          <div id="knowledgeBody"></div>
-        </section>
-
         <section class="box" id="workshopBox">
           <p class="box-label">Workshop</p>
           <h3>Encrypt &amp; decrypt live</h3>
@@ -1330,11 +1806,17 @@
             <button type="button" data-mode="decrypt">Decrypt</button>
           </div>
 
-          <div class="field-row">
+          <div class="work-split">
             <label>
               <span id="inputLabel">Plaintext</span>
               <textarea id="messageInput" placeholder="Try ATTACK AT DAWN"></textarea>
             </label>
+            <div>
+              <span class="result-label">Result</span>
+              <div class="output-box" id="outputBox" aria-live="polite">
+                <span class="placeholder">Your result will appear here…</span>
+              </div>
+            </div>
           </div>
 
           <div class="field-row two">
@@ -1369,12 +1851,10 @@
           </div>
         </section>
 
-        <section class="box">
-          <p class="box-label">Output</p>
-          <h3>Result</h3>
-          <div class="output-box" id="outputBox" aria-live="polite">
-            <span class="placeholder">Your result will appear here…</span>
-          </div>
+        <section class="box" id="learn">
+          <p class="box-label">Lesson</p>
+          <h3 id="knowledgeTitle">Traditional Caesar Cipher</h3>
+          <div id="knowledgeBody"></div>
         </section>
       </div>
 
@@ -1419,7 +1899,7 @@
         </section>
 
         <section class="box">
-          <p class="box-label">Code · C++</p>
+          <p class="box-label">C++ sample</p>
           <h3>How to build it</h3>
           <p>The same rules the lab is using, written as beginner-friendly C++ — a language you can take to contests, college labs, and systems work.</p>
           <pre class="code-panel" id="codePanel"></pre>
@@ -1432,10 +1912,11 @@
         </section>
       </div>
     </div>
+    </div>
   </main>
 
   <footer class="footer wrap">
-    <p><strong>Guptlekh</strong> — night bench for classical crypto. <span class="script">गुप्त लेख, साफ़ सबक.</span></p>
+    <p><strong>Guptlekh</strong> — paste, read, work, copy. <span class="script">गुप्त लेख, साफ़ सबक.</span></p>
     <p>Host this folder on GitHub Pages from the <code>main</code> branch.</p>
   </footer>
 
@@ -1446,6 +1927,26 @@
       I: 7.0, J: 0.15, K: 0.77, L: 4.0, M: 2.4, N: 6.7, O: 7.5, P: 1.9,
       Q: 0.1, R: 6.0, S: 6.3, T: 9.1, U: 2.8, V: 1.0, W: 2.4, X: 0.15,
       Y: 2.0, Z: 0.07
+    };
+
+    const SAMPLES = {
+      caesar: "WKH HDJOH KDV ODQGHG RQ WKH PRRQ",
+      nested: "V0tIIEhESk9IIEtEViBPRFFHSEcgUlEgV0tIIFBSUlE=",
+      b64: "VGhlIGVhZ2xlIGhhcyBsYW5kZWQgb24gdGhlIG1vb24=",
+      hex: "546865206561676c6520686173206c616e646564206f6e20746865206d6f6f6e",
+      rot13: "Gur rntyr unf ynaqrq ba gur zbba",
+      hash: "5d41402abc4b2a76b9719d911017c592"
+    };
+    const CONF_LABEL = { high: "Likely", medium: "Possible", weak: "Uncertain" };
+    const FAMILY_LABEL = {
+      encoding: "encoding",
+      hash: "hash",
+      classical: "classroom cipher",
+      kdf: "password hash",
+      format: "file format",
+      modern: "modern crypto",
+      metric: "plain reading",
+      xor: "xor"
     };
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1509,6 +2010,7 @@
             const c = (p + shift) % 26;
             const mapped = String.fromCharCode(65 + c);
             out += ch === upper ? mapped : mapped.toLowerCase();
+            const wrap = (decrypt ? c : p) + k >= 26;
             tokens.push({
               kind: "letter",
               original: upper,
@@ -1517,8 +2019,8 @@
               k,
               c,
               letterIndex,
-              wrap: p + shift >= 26,
-              html: `<code>${upper}</code> → (${p} ${decrypt ? "−" : "+"} ${k}) mod 26 = <code>${mapped}</code>${p + shift >= 26 ? " · wrapped past Z" : ""}`,
+              wrap,
+              html: `<code>${upper}</code> → (${p} ${decrypt ? "−" : "+"} ${k}) mod 26 = <code>${mapped}</code>${wrap ? " · wrapped past Z" : ""}`,
               headline: `${upper} becomes ${mapped}`,
               math: decrypt
                 ? `(${p} − ${k}) mod 26 = ${c} → ${mapped}`
@@ -1584,6 +2086,7 @@
             const c = (p + k) % 26;
             const mapped = String.fromCharCode(65 + c);
             out += ch === upper ? mapped : mapped.toLowerCase();
+            const wrap = (decrypt ? c : p) + shown >= 26;
             tokens.push({
               kind: "letter",
               original: upper,
@@ -1593,8 +2096,8 @@
               c,
               keyLetter,
               letterIndex: i,
-              wrap: p + k >= 26,
-              html: `<code>${upper}</code> pairs with key <code>${keyLetter}</code> (${shown}) → <code>${mapped}</code>${p + k >= 26 ? " · wrapped" : ""}`,
+              wrap,
+              html: `<code>${upper}</code> pairs with key <code>${keyLetter}</code> (${shown}) → <code>${mapped}</code>${wrap ? " · wrapped" : ""}`,
               headline: `${upper} + ${keyLetter} → ${mapped}`,
               math: decrypt
                 ? `(${p} − ${shown}) mod 26 = ${c}`
@@ -1719,9 +2222,90 @@
       return s.length > limit ? `${s.slice(0, limit)}…` : s;
     }
 
+    const ENGLISH_WORDS = new Set(`
+      THE AND FOR ARE BUT NOT YOU ALL CAN HER WAS ONE OUR OUT DAY GET HAS HIM HIS HOW
+      MAN NEW NOW OLD SEE TWO WAY WHO DID ITS LET PUT SAY SHE TOO USE THAT THIS WITH
+      HAVE FROM THEY WILL BEEN WERE SAID EACH WHICH THEIR WHAT WHEN WHERE YOUR WE HE
+      ABOUT INTO OVER AFTER BEFORE ALSO JUST ONLY THEN HERE THERE HELLO WORLD SECRET
+      MESSAGE CIPHER ATTACK DAWN EAGLE LANDED MOON MEET NOON PLEASE HELP FLAG CRYPTO
+      KEY CODE PASSWORD ENCRYPT DECRYPT PLAIN TEXT QUICK BROWN FOX JUMPS LAZY DOG
+      LANDING HASNT DONT CANT WONT LETTER SHIFT ALPHABET CLASSICAL UNKNOWN PASTE
+    `.trim().split(/\s+/));
+
+    const COMMON_VIGENERE_KEYS = ["KEY", "CIPHER", "SECRET", "LEMON", "PASSWORD", "CODE", "CRYPTO", "ATTACK", "GUPTLEKH"];
+
+    function wordHits(text) {
+      const tokens = String(text || "").toUpperCase().match(/[A-Z']{3,}/g) || [];
+      if (!tokens.length) return { hits: 0, ratio: 0, tokens: 0 };
+      const hits = tokens.filter((t) => ENGLISH_WORDS.has(t.replace(/'/g, ""))).length;
+      return { hits, ratio: hits / tokens.length, tokens: tokens.length };
+    }
+
+    const ENGLISH_CACHE = new Map();
+
+    function looksEnglish(text) {
+      const s = String(text || "");
+      const key = s.length > 240 ? `${s.slice(0, 240)}#${s.length}` : s;
+      const hit = ENGLISH_CACHE.get(key);
+      if (hit) return hit;
+      const letters = lettersOnly(s);
+      const words = wordHits(s);
+      const chi = chiSquared(s);
+      const ioc = letters.length >= 8 ? indexOfCoincidence(s) : 0;
+      let result;
+      if (words.hits >= 2 && words.ratio >= 0.3) {
+        result = { ok: true, score: Math.max(2, 18 - words.hits * 4), why: `${words.hits} English words` };
+      } else if (words.hits >= 1 && letters.length >= 10 && chi < 45) {
+        result = { ok: true, score: chi, why: "word + letter frequencies" };
+      } else {
+        result = { ok: false, score: chi, why: "" };
+      }
+      if (ENGLISH_CACHE.size > 250) ENGLISH_CACHE.clear();
+      ENGLISH_CACHE.set(key, result);
+      return result;
+    }
+
+    function caesarShift(text, amount) {
+      const k = wrap26(amount);
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        return String.fromCharCode(base + wrap26(ch.charCodeAt(0) - base + k));
+      });
+    }
+
+    function vigenereDecodeFast(text, key) {
+      const k = lettersOnly(key);
+      if (!k) return String(text);
+      let i = 0;
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        const shift = k.charCodeAt(i % k.length) - 65;
+        i += 1;
+        return String.fromCharCode(base + wrap26(ch.charCodeAt(0) - base - shift));
+      });
+    }
+
+    function isHexBlob(text) {
+      const hex = String(text).replace(/[\s:]/g, "");
+      return hex.length >= 4 && hex.length % 2 === 0 && /^[0-9a-f]+$/i.test(hex);
+    }
+
+    function isBase64Blob(text) {
+      const compact = String(text).replace(/\s/g, "").replace(/-/g, "+").replace(/_/g, "/");
+      if (compact.length < 12) return false;
+      const hadPad = /=$/.test(compact);
+      const padded = compact + "=".repeat((4 - (compact.length % 4)) % 4);
+      if (!/^[A-Za-z0-9+/]+={0,2}$/.test(padded)) return false;
+      const body = compact.replace(/=+$/, "");
+      const mixed = /[a-z]/.test(body) && /[A-Z]/.test(body);
+      const digit = /[0-9]/.test(body);
+      const punct = /[+/]/.test(body) || hadPad;
+      return (mixed && (digit || punct)) || (punct && body.length >= 12);
+    }
+
     function decodeHex(raw) {
       const hex = String(raw).replace(/[\s:]/g, "");
-      if (hex.length < 8 || hex.length % 2 !== 0 || /[^0-9a-f]/i.test(hex)) return null;
+      if (hex.length < 4 || hex.length % 2 !== 0 || /[^0-9a-f]/i.test(hex)) return null;
       let out = "";
       for (let i = 0; i < hex.length; i += 2) {
         const n = parseInt(hex.slice(i, i + 2), 16);
@@ -1732,14 +2316,112 @@
     }
 
     function decodeBase64(raw) {
-      const compact = String(raw).replace(/\s/g, "");
-      if (compact.length < 8 || compact.length % 4 !== 0) return null;
+      let compact = String(raw).replace(/\s/g, "").replace(/-/g, "+").replace(/_/g, "/");
+      if (compact.length < 8) return null;
+      compact += "=".repeat((4 - (compact.length % 4)) % 4);
       if (!/^[A-Za-z0-9+/]+={0,2}$/.test(compact)) return null;
       try {
-        return atob(compact);
+        const bin = atob(compact);
+        try {
+          const utf = decodeURIComponent(escape(bin));
+          if (looksPrintable(utf) || /[^\x00-\x7f]/.test(utf)) return utf;
+        } catch { /* keep latin1 */ }
+        return bin;
       } catch {
         return null;
       }
+    }
+
+    function decodeBase32(raw) {
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+      const clean = String(raw).toUpperCase().replace(/[\s=]+/g, "").replace(/[^A-Z2-7]/g, "");
+      if (clean.length < 8 || !/[2-7]/.test(clean)) return null;
+      let bits = "";
+      for (const ch of clean) bits += alphabet.indexOf(ch).toString(2).padStart(5, "0");
+      const bytes = [];
+      for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i + 8), 2));
+      const out = bytes.map((b) => String.fromCharCode(b)).join("");
+      return out || null;
+    }
+
+    const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
+    function decodeBase58(raw) {
+      const compact = String(raw).replace(/\s/g, "");
+      if (compact.length < 8 || compact.length > 256) return null;
+      if (/[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]/.test(compact)) return null;
+      if (!/[a-z]/.test(compact) || !/[A-Z]/.test(compact)) return null;
+      let n = 0n;
+      for (const ch of compact) {
+        const i = BASE58_ALPHABET.indexOf(ch);
+        if (i < 0) return null;
+        n = n * 58n + BigInt(i);
+      }
+      const bytes = [];
+      while (n > 0n) {
+        bytes.unshift(Number(n % 256n));
+        n /= 256n;
+      }
+      for (const ch of compact) {
+        if (ch !== "1") break;
+        bytes.unshift(0);
+      }
+      return bytes.length ? bytes.map((b) => String.fromCharCode(b)).join("") : null;
+    }
+
+    function decodeBase85(raw) {
+      const s = String(raw).trim();
+      const wrapped = /^<~/.test(s) && /~>$/.test(s);
+      const body = wrapped ? s.replace(/^<~/, "").replace(/~>$/, "") : s;
+      const compact = body.replace(/\s/g, "");
+      if (compact.length < 5 || compact.length > 400) return null;
+      if (!/^[!-uz]+$/.test(compact)) return null;
+      if (!wrapped) {
+        const punct = [...compact].filter((ch) => {
+          const c = ch.charCodeAt(0);
+          return c >= 33 && c <= 47;
+        }).length;
+        if (punct < 2 || compact.length < 10) return null;
+      }
+      const bytes = [];
+      let i = 0;
+      while (i < compact.length) {
+        if (compact[i] === "z") {
+          bytes.push(0, 0, 0, 0);
+          i += 1;
+          continue;
+        }
+        const chunk = compact.slice(i, i + 5);
+        if (chunk.length < 2) break;
+        let n = 0;
+        for (let j = 0; j < 5; j += 1) {
+          const ch = chunk[j] || "u";
+          const v = ch.charCodeAt(0) - 33;
+          if (v < 0 || v > 84) return null;
+          n = n * 85 + v;
+        }
+        bytes.push((n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255);
+        i += 5;
+        if (chunk.length < 5) bytes.splice(bytes.length - (5 - chunk.length));
+      }
+      const out = bytes.map((b) => String.fromCharCode(b)).join("");
+      return out || null;
+    }
+
+    function decodeA1z26(raw) {
+      const words = String(raw).trim().split(/\s{2,}/);
+      const decoded = words.map((word) => {
+        const parts = word.split(/[\s,;:-]+/).filter(Boolean);
+        if (!parts.length || parts.some((p) => !/^\d{1,2}$/.test(p))) return null;
+        const nums = parts.map(Number);
+        if (nums.some((n) => n < 1 || n > 26)) return null;
+        return nums.map((n) => ALPHA[n - 1]).join("");
+      });
+      if (decoded.some((w) => w == null)) return null;
+      const joined = decoded.join(" ").replace(/ +/g, " ").trim();
+      const letters = joined.replace(/[^A-Z]/g, "");
+      if (letters.length < 4) return null;
+      return joined;
     }
 
     function decodeUrl(raw) {
@@ -1879,49 +2561,51 @@
       128: ["SHA-512", "SHA-3-512", "Whirlpool", "SHAKE-256"]
     };
 
-    const MODERN_FAMILY = "AES, DES, Triple DES, Blowfish, RC2, RC4, RC4 Drop, RC6, SM4, ChaCha, Salsa20, Rabbit, LS47, RSA ciphertext, PRNG";
+    const MODERN_FAMILY = "AES, DES, Triple DES, Blowfish, Twofish, RC2, RC4, RC4 Drop, RC6, SM4, ChaCha, Salsa20, XSalsa20, Rabbit, LS47, PRESENT, Ascon, TEA, XTEA, XXTEA, GOST, CipherSaber2, RSA ciphertext, SM2, PRNG";
 
     class CipherDetector {
-      static inspect(raw) {
-        const text = String(raw || "");
-        const trimmed = text.trim();
-        if (!trimmed) return { error: "Paste some text first." };
+      static #freshTrace() {
+        return {
+          steps: [],
+          passed: [],
+          stats: {
+            encodingsTried: 0,
+            encodingsKept: 0,
+            shiftsTried: 0,
+            affineTried: 0,
+            railTried: 0,
+            xorTried: 0,
+            vigKeysTried: 0,
+            depth: 0,
+            entropy: 0,
+            ioc: 0,
+            chi: 0
+          },
+          recipe: []
+        };
+      }
 
-        const letters = lettersOnly(trimmed);
-        const guesses = [];
-        const entropy = shannonEntropy(trimmed);
+      static #note(step) {
+        const t = this._trace;
+        if (!t || !step) return;
+        t.steps.push(step);
+        if (step.depth != null) t.stats.depth = Math.max(t.stats.depth, step.depth);
+      }
 
-        this.#magic(trimmed, guesses);
-        this.#encodings(trimmed, guesses);
-        this.#hashes(trimmed, guesses);
-        const structured = guesses.some((g) =>
-          (g.confidence === "high" && ["encoding", "format", "kdf", "modern"].includes(g.family))
-          || (g.family === "hash" && g.confidence !== "weak")
-        );
-        if (!structured) {
-          this.#classics(trimmed, letters, guesses);
-          this.#xor(trimmed, guesses);
-        }
+      static async inspect(raw, hintKey) {
+        const text = String(raw || "").trim();
+        if (!text) return { error: "Paste some text first." };
+        const hint = String(hintKey || "").trim();
 
-        const hexRaw = decodeHex(trimmed);
-        const hexIsBinary = Boolean(hexRaw && !looksPrintable(hexRaw));
-        if (letters.length >= 16 && !hexIsBinary) {
-          const englishScore = chiSquared(trimmed);
-          if (englishScore < 45 && indexOfCoincidence(trimmed) > 0.058) {
-            guesses.push({
-              id: "plaintext",
-              title: "Already looks like English",
-              family: "metric",
-              confidence: "medium",
-              reason: `Chi-squared ${englishScore.toFixed(0)} and IOC ${indexOfCoincidence(trimmed).toFixed(3)} match plaintext more than ciphertext.`,
-              preview: previewText(trimmed),
-              apply: { method: "traditional", mode: "encrypt", text: trimmed, key: 0 }
-            });
-          }
-        }
+        this._trace = this.#freshTrace();
+        this._trace.hint = hint;
+        this._trace.stats.entropy = shannonEntropy(text);
+        this._trace.stats.ioc = lettersOnly(text).length >= 2 ? indexOfCoincidence(text) : 0;
+        this._trace.stats.chi = chiSquared(text);
 
-        this.#modern(trimmed, letters, guesses);
-
+        const guesses = this.#search(text, 0, [], new Set(), hint);
+        if (hint) await this.#aesHint(text, hint, guesses, []);
+        const entropy = this._trace.stats.entropy;
         guesses.push({
           id: "entropy",
           title: `Shannon entropy ${entropy.toFixed(2)} bits/char`,
@@ -1930,272 +2614,548 @@
           reason: entropy >= 4.5
             ? "High entropy: compressed data, a hash, a modern cipher, or a PRNG all look like this."
             : "Low-to-mid entropy: encodings and classical ciphers usually live here.",
-          preview: previewText(trimmed),
+          preview: previewText(text),
+          decoded: text,
           score: 90,
-          apply: null
+          apply: null,
+          recipe: []
         });
 
-        if (!guesses.some((g) => g.id !== "entropy") && letters.length && letters.length < 16) {
+        if (!guesses.some((g) => g.id !== "entropy") && lettersOnly(text).length && lettersOnly(text).length < 8) {
           guesses.push({
             id: "short",
             title: "Too short to name a cipher",
             family: "metric",
             confidence: "weak",
-            reason: "Classroom ciphers need ~16 letters. Hashes, PEM headers, Morse, and encodings can still match below that.",
-            preview: previewText(trimmed),
+            reason: "Classroom ciphers need a handful of letters. Hashes, PEM, Morse, and encodings can still match below that.",
+            preview: previewText(text),
+            decoded: text,
+            recipe: [],
             apply: null
           });
         }
 
         const rank = { high: 0, medium: 1, weak: 2 };
-        guesses.sort((a, b) => rank[a.confidence] - rank[b.confidence] || (a.score ?? 99) - (b.score ?? 99));
+        guesses.sort((a, b) => {
+          const englishBoost = (g) => (g.readable || (g.decoded && looksEnglish(g.decoded).ok) ? 0 : 1);
+          return (englishBoost(a) - englishBoost(b))
+            || ((b.hintUsed ? 1 : 0) - (a.hintUsed ? 1 : 0))
+            || rank[a.confidence] - rank[b.confidence]
+            || (a.score ?? 99) - (b.score ?? 99)
+            || (b.recipe?.length || 0) - (a.recipe?.length || 0);
+        });
         const seen = new Set();
         const unique = guesses.filter((g) => {
-          if (seen.has(g.id)) return false;
-          seen.add(g.id);
+          const key = `${g.id}|${g.title}|${g.preview || ""}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
           return true;
-        });
-        return { guesses: unique.slice(0, 12) };
+        }).slice(0, 14);
+        const primary = unique.find((g) => g.family !== "metric") || unique[0];
+        this._trace.recipe = primary?.recipe || [];
+        this._trace.winner = primary?.title || "";
+        return { guesses: unique, trace: this._trace };
       }
 
-      static #magic(text, guesses) {
+      static #search(text, depth, path, seen, hint) {
+        const guesses = [];
+        const stamp = `${depth}:${text.slice(0, 96)}:${text.length}:${hint || ""}`;
+        if (!text || depth > 3 || seen.has(stamp)) return guesses;
+        seen.add(stamp);
+        if (this._trace) this._trace.stats.depth = Math.max(this._trace.stats.depth, depth);
+
+        const hintHits = hint ? this.#applyHint(text, hint, path, depth) : [];
+        guesses.push(...hintHits);
+        const hintWon = hintHits.some((g) => g.readable && g.confidence === "high");
+
+        this.#magic(text, guesses, path);
+        const namedHeader = guesses.some((g) => g.confidence === "high" && (g.family === "format" || g.family === "kdf" || /fernet/i.test(g.title || "")));
+
+        const layers = this.#tryEncodings(text);
+        for (const layer of layers) {
+          if (!layer.decoded || layer.decoded === text) continue;
+          const innerPath = path.concat(layer.step);
+          const innerEnglish = looksEnglish(layer.decoded);
+          this.#note({
+            title: layer.title,
+            param: innerEnglish.ok ? "inner text reads as English" : "unwrapped",
+            tried: 1,
+            kept: true,
+            preview: previewText(layer.decoded),
+            depth
+          });
+          let nested = [];
+          if (!innerEnglish.ok) {
+            nested = this.#search(layer.decoded, depth + 1, innerPath, seen, hint);
+          } else if (hint) {
+            nested = this.#applyHint(layer.decoded, hint, innerPath, depth + 1);
+          }
+          const bestNested = nested.find((g) => g.hintUsed && g.readable)
+            || nested.find((g) => g.family === "classical" && g.confidence !== "weak")
+            || nested.find((g) => g.family === "encoding" && g.confidence === "high" && looksEnglish(g.decoded || "").ok)
+            || nested.find((g) => g.family === "hash" && g.confidence !== "weak")
+            || nested.find((g) => g.apply || (g.recipe && g.recipe.length));
+
+          if (bestNested) {
+            guesses.push({
+              ...bestNested,
+              reason: bestNested.family === "classical" || bestNested.family === "encoding"
+                ? `Unwrapped ${layer.title}, then ${bestNested.reason}`
+                : bestNested.reason,
+              score: Math.max(0, (bestNested.score ?? 20) - path.length)
+            });
+          }
+
+          guesses.push({
+            id: this.#id(innerPath, layer.id),
+            title: this.#title(path, layer.title),
+            family: "encoding",
+            confidence: innerEnglish.ok || layer.strong ? "high" : "medium",
+            reason: innerEnglish.ok
+              ? `${layer.title} decodes to readable English (${innerEnglish.why}).`
+              : looksPrintable(layer.decoded)
+                ? `${layer.title} matches the alphabet; inner text is printable but not clearly English.`
+                : `${layer.title} matches the alphabet; inner bytes look binary (cipher, hash, or file).`,
+            preview: previewText(layer.decoded),
+            decoded: layer.decoded,
+            score: innerEnglish.ok ? innerEnglish.score : (looksPrintable(layer.decoded) ? 28 : 45),
+            readable: innerEnglish.ok,
+            recipe: innerPath.map((s) => s.op).filter(Boolean),
+            apply: looksPrintable(layer.decoded)
+              ? { method: "traditional", mode: "encrypt", text: layer.decoded, key: 0 }
+              : null
+          });
+        }
+
+        this.#hashes(text, guesses, path);
+        const skipClassics = hintWon || namedHeader
+          || (isBase64Blob(text) && !/\s/.test(text.trim()) && compactBits(text).length >= 16)
+          || (isHexBlob(text) && compactBits(text).length >= 24);
+        if (!skipClassics) {
+          this.#classics(text, lettersOnly(text), guesses, path, depth);
+        }
+        if (!namedHeader && !hintWon) this.#xor(text, guesses, path, depth);
+        this.#modern(text, lettersOnly(text), guesses, path);
+        return guesses;
+      }
+
+      static #applyHint(text, hint, path, depth) {
+        const guesses = [];
+        const wrap = (g) => {
+          guesses.push({
+            ...g,
+            id: this.#id(path, g.id),
+            title: this.#title(path, g.title),
+            recipe: [...path.map((s) => s.op).filter(Boolean), ...(g.recipe || [])],
+            preview: previewText(g.decoded),
+            readable: g.readable !== false,
+            hintUsed: true
+          });
+        };
+        const consider = (plain, spec) => {
+          if (plain == null || plain === text) return false;
+          const eng = looksEnglish(plain);
+          if (!eng.ok && !spec.allowPrintable) return false;
+          if (!eng.ok && !looksPrintable(plain)) return false;
+          wrap({
+            ...spec,
+            decoded: plain,
+            confidence: eng.ok ? "high" : "medium",
+            readable: !!eng.ok,
+            score: eng.ok ? 0 : 12,
+            reason: `${spec.reason}${eng.ok ? ` (${eng.why})` : " — printable with the supplied key, not clearly English"}.`
+          });
+          this.#note({
+            title: spec.noteTitle,
+            param: spec.noteParam,
+            tried: 1,
+            kept: true,
+            preview: previewText(plain),
+            depth
+          });
+          return !!eng.ok;
+        };
+
+        const n = /^-?\d+$/.test(hint) ? Number(hint) : NaN;
+        if (Number.isInteger(n) && n >= 0 && n <= 25) {
+          consider(caesarShift(text, -n), {
+            id: "hint-caesar",
+            title: n === 13 ? "ROT13" : `ROT13 / Caesar · shift ${n}`,
+            family: "classical",
+            reason: `Tried with key: shift ${n}`,
+            recipe: [{ name: "ROT13", args: { amount: wrap26(-n) } }],
+            apply: { method: "traditional", mode: "decrypt", text, key: n },
+            noteTitle: n === 13 ? "ROT13" : "Caesar",
+            noteParam: `tried with key · shift ${n}`
+          });
+        }
+
+        const letters = lettersOnly(hint);
+        if (letters.length >= 1) {
+          consider(vigenereDecodeFast(text, letters), {
+            id: "hint-vig",
+            title: `Vigenère Decode · key ${letters}`,
+            family: "classical",
+            reason: `Tried with key ${letters} as a Vigenère / modified Caesar keyword`,
+            recipe: [{ name: "Vigenère Decode", args: { key: letters } }],
+            apply: { method: "modified", mode: "decrypt", text, keyword: letters },
+            noteTitle: "Vigenère",
+            noteParam: `tried with key ${letters}`
+          });
+          consider(chefSubstitute(text, letters, true), {
+            id: "hint-mono",
+            title: `Substitute · keyword ${letters}`,
+            family: "classical",
+            reason: `Tried with key ${letters} as a mixed-alphabet keyword`,
+            recipe: [],
+            apply: { method: "mono", mode: "decrypt", text, keyword: letters },
+            noteTitle: "Substitute",
+            noteParam: `tried with key ${letters}`
+          });
+        }
+
+        const xorKeys = [hint];
+        const hintHex = compactBits(hint);
+        if (hintHex.length >= 2 && hintHex.length % 2 === 0 && /^[0-9a-f]+$/i.test(hintHex)) {
+          const asBytes = decodeHex(hintHex);
+          if (asBytes) xorKeys.push(asBytes);
+        }
+        if (Number.isInteger(n) && n >= 0 && n <= 255) xorKeys.push(String.fromCharCode(n));
+
+        const xorTargets = [{ blob: text, prefix: [] }];
+        const hexBlob = decodeHex(text);
+        if (hexBlob && hexBlob !== text) xorTargets.push({ blob: hexBlob, prefix: [{ name: "From Hex" }] });
+        const b64Blob = decodeBase64(text);
+        if (b64Blob && b64Blob !== text && !isHexBlob(text)) xorTargets.push({ blob: b64Blob, prefix: [{ name: "From Base64" }] });
+
+        outer: for (const target of xorTargets.slice(0, 2)) {
+          for (const xk of xorKeys.slice(0, 3)) {
+            if (!xk) continue;
+            try {
+              const plain = chefXorRepeat(target.blob, xk);
+              if (consider(plain, {
+                id: `hint-xor-${target.prefix.length}-${xk.length}`,
+                title: `XOR · key ${previewText(xk, 18)}`,
+                family: "classical",
+                reason: `Tried with key ${previewText(xk, 18)} as repeating XOR`,
+                recipe: [...target.prefix, { name: "XOR", args: { key: xk } }],
+                apply: { method: "traditional", mode: "encrypt", text: plain, key: 0 },
+                allowPrintable: lettersOnly(target.blob).length < 8,
+                noteTitle: "XOR",
+                noteParam: `tried with key ${previewText(xk, 24)}`
+              })) break outer;
+            } catch { /* bad xor key */ }
+          }
+        }
+        return guesses;
+      }
+
+      static async #aesHint(text, hint, guesses, path) {
+        if (typeof crypto === "undefined" || !crypto.subtle) return;
+        const hexish = compactBits(text);
+        if (!/^[0-9a-f]+$/i.test(hexish) || hexish.length < 64 || hexish.length % 2 !== 0) return;
+        const candidates = [{ hex: hexish, prefix: [] }];
+        for (const cand of candidates.slice(0, 2)) {
+          try {
+            const plain = await chefAesDecrypt(cand.hex, hint, "");
+            if (!plain || plain === text || (!looksPrintable(plain) && !looksEnglish(plain).ok)) continue;
+            const eng = looksEnglish(plain);
+            guesses.push({
+              id: this.#id(path, "hint-aes"),
+              title: this.#title(path, "AES Decrypt"),
+              family: "modern",
+              confidence: eng.ok ? "high" : "medium",
+              reason: eng.ok
+                ? `Tried with key as AES-CBC passphrase (${eng.why}).`
+                : "AES-CBC opened with the supplied key; inner text is printable.",
+              preview: previewText(plain),
+              decoded: plain,
+              readable: !!eng.ok,
+              hintUsed: true,
+              score: eng.ok ? 0 : 8,
+              recipe: [...path.map((s) => s.op).filter(Boolean), ...cand.prefix.filter((s) => s.name !== "To Hex"), { name: "AES Decrypt", args: { key: hint } }],
+              apply: { method: "traditional", mode: "encrypt", text: plain, key: 0 }
+            });
+            this.#note({
+              title: "AES Decrypt",
+              param: `tried with key ${previewText(hint, 24)}`,
+              tried: 1,
+              kept: true,
+              preview: previewText(plain),
+              depth: path.length
+            });
+            break;
+          } catch { /* wrong key or not AES-CBC */ }
+        }
+      }
+
+      static #id(path, id) {
+        return [...path.map((s) => s.id), id].join(">");
+      }
+
+      static #title(path, title) {
+        const names = [...path.map((s) => s.title), title].filter(Boolean);
+        return names.join(" → ");
+      }
+
+      static #magic(text, guesses, path) {
         const u = text.trim();
         const head = u.slice(0, 80).toUpperCase();
+        const push = (g) => guesses.push({
+          ...g,
+          id: this.#id(path, g.id),
+          title: this.#title(path, g.title),
+          recipe: g.recipe || path.map((s) => s.op).filter(Boolean),
+          decoded: g.decoded ?? u,
+          preview: g.preview || previewText(u)
+        });
 
         if (/-----BEGIN PGP/.test(head)) {
-          guesses.push({
+          push({
             id: "pgp", title: "PGP / OpenPGP armor", family: "format", confidence: "high",
             reason: "ASCII armor header -----BEGIN PGP. This is a wrapper, not a guess at the inner cipher.",
-            preview: previewText(u), score: 1, apply: null
+            score: 1, apply: null
           });
         } else if (/-----BEGIN CERTIFICATE/.test(head) || /-----BEGIN X509/.test(head)) {
-          guesses.push({
+          push({
             id: "x509", title: "X.509 certificate · PEM", family: "format", confidence: "high",
             reason: "PEM certificate header. The body is Base64 DER.",
-            preview: previewText(u), score: 1, apply: null
+            score: 1, apply: null
           });
         } else if (/-----BEGIN/.test(head)) {
           const kind = (u.match(/-----BEGIN ([^-]+)-----/) || [])[1] || "PEM";
-          guesses.push({
+          push({
             id: "pem", title: `PEM · ${kind.trim()}`, family: "format", confidence: "high",
             reason: "PEM wrapper. RSA keys, CSRs, and certs all use this envelope.",
-            preview: previewText(u), score: 1, apply: null
+            score: 1, apply: null
           });
         }
 
         if (/^\$2[abxy]\$\d{2}\$/.test(u)) {
-          guesses.push({
+          push({
             id: "bcrypt", title: "Bcrypt", family: "kdf", confidence: "high",
             reason: "Modular crypt prefix $2a$ / $2b$ / $2y$.",
-            preview: previewText(u), score: 1, apply: null
+            score: 1, apply: null
           });
         }
         if (/^\$(s0|7)\$/i.test(u) || /^\$scrypt\$/i.test(u)) {
-          guesses.push({
+          push({
             id: "scrypt", title: "Scrypt", family: "kdf", confidence: "high",
             reason: "Modular crypt / $scrypt$ prefix.",
-            preview: previewText(u), score: 1, apply: null
+            score: 1, apply: null
           });
         }
         if (/^\$pbkdf2/i.test(u)) {
-          guesses.push({
+          push({
             id: "pbkdf2", title: "PBKDF2", family: "kdf", confidence: "high",
-            reason: "PHC / modular crypt string. HKDF has no single dump format — it looks like the inner hash.",
-            preview: previewText(u), score: 1, apply: null
+            reason: "PHC / modular crypt string.",
+            score: 1, apply: null
+          });
+        }
+        if (/^\$argon2(id|i|d)\$/i.test(u)) {
+          push({
+            id: "argon2", title: "Argon2", family: "kdf", confidence: "high",
+            reason: "PHC string $argon2id$ / $argon2i$ / $argon2d$.",
+            score: 1, apply: null
+          });
+        }
+        if (/^(bc1|tb1|bcrt1)[02-9ac-hj-np-z]{20,}$/i.test(u)) {
+          push({
+            id: "bech32", title: "Bech32", family: "format", confidence: "high",
+            reason: "SegWit / Bech32 prefix (bc1 / tb1). Not a classical cipher.",
+            score: 2, apply: null
           });
         }
         if (u.startsWith("U2FsdGVkX1") || u.startsWith("Salted__")) {
-          guesses.push({
+          push({
             id: "evp", title: "OpenSSL EVP · Salted__", family: "format", confidence: "high",
             reason: "OpenSSL enc default prefix. Cipher inside is still unnamed.",
-            preview: previewText(u), score: 1, apply: null
+            score: 1, apply: null
           });
         }
         if (/^gAAAAA/.test(u) && u.length > 40) {
-          guesses.push({
+          push({
             id: "fernet", title: "Fernet", family: "modern", confidence: "high",
             reason: "Version 0x80 + timestamp Base64 (gAAAAA…). AES-128-CBC sits under the token.",
-            preview: previewText(u), score: 2, apply: null
+            score: 2, apply: null
+          });
+        }
+        const jwtParts = u.split(".");
+        if (jwtParts.length === 3 && /^eyJ/.test(jwtParts[0]) && jwtParts[1].length > 4) {
+          try {
+            const b64url = (p) => decodeURIComponent(escape(atob(p.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - p.length % 4) % 4))));
+            const header = JSON.parse(b64url(jwtParts[0]));
+            const payload = JSON.parse(b64url(jwtParts[1]));
+            push({
+              id: "jwt", title: "JWT", family: "format", confidence: "high",
+              reason: `Three Base64url parts. Header alg=${header.alg || "?"}.`,
+              preview: previewText(JSON.stringify({ header, payload })),
+              decoded: JSON.stringify({ header, payload }, null, 2),
+              score: 1,
+              recipe: [...path.map((s) => s.op).filter(Boolean), { name: "JWT Decode" }],
+              apply: null
+            });
+          } catch { /* not jwt json */ }
+        }
+        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(u)) {
+          push({
+            id: "uuid", title: "UUID", family: "format", confidence: "high",
+            reason: "8-4-4-4-12 hex groups with a version nibble.",
+            score: 2, apply: null
           });
         }
         if (/^bplist/i.test(u) || /<plist[\s>]/i.test(u)) {
-          guesses.push({
+          push({
             id: "plist", title: "P-list", family: "format", confidence: "high",
             reason: "Apple property list magic (bplist) or XML <plist>.",
-            preview: previewText(u), score: 1, apply: null
-          });
-        }
-        if (/^C1[A-Za-z0-9+/=]{8,}/.test(compactBits(u))) {
-          guesses.push({
-            id: "citrix", title: "Citrix CTX1", family: "encoding", confidence: "medium",
-            reason: "CTX1 strings commonly start with C1 and a Base64-like body.",
-            preview: previewText(u), score: 12, apply: null
+            score: 1, apply: null
           });
         }
         if (/^xn--/i.test(u)) {
-          guesses.push({
+          push({
             id: "punycode", title: "Punycode", family: "encoding", confidence: "high",
             reason: "IDNA prefix xn--.",
-            preview: previewText(u), score: 2,
+            score: 2,
+            recipe: [...path.map((s) => s.op).filter(Boolean), { name: "From Punycode" }],
             apply: { method: "traditional", mode: "encrypt", text: u, key: 0 }
           });
         }
         if (/^=[\dA-F]{2}/i.test(u) && (u.match(/=[0-9A-F]{2}/gi) || []).length >= 3) {
-          guesses.push({
+          const decoded = u.replace(/=\r?\n/g, "").replace(/=([0-9A-F]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+          push({
             id: "qp", title: "Quoted-printable", family: "encoding", confidence: "high",
             reason: "MIME =XX bytes.",
-            preview: previewText(u.replace(/=([0-9A-F]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))),
-            score: 3, apply: null
+            preview: previewText(decoded), decoded, score: 3,
+            recipe: [...path.map((s) => s.op).filter(Boolean), { name: "From Quoted Printable" }],
+            apply: looksPrintable(decoded) ? { method: "traditional", mode: "encrypt", text: decoded, key: 0 } : null
           });
         }
         if (/\\u[0-9a-f]{4}/i.test(u) || /\\x[0-9a-f]{2}/i.test(u)) {
-          guesses.push({
+          const decoded = u.replace(/\\u([0-9a-f]{4})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+            .replace(/\\x([0-9a-f]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+          push({
             id: "unicode", title: "Unicode / UTF-8 escapes", family: "encoding", confidence: "high",
             reason: "\\uXXXX or \\xHH escapes.",
-            preview: previewText(u), score: 3, apply: null
+            preview: previewText(decoded), decoded, score: 3,
+            recipe: [...path.map((s) => s.op).filter(Boolean), { name: "Unescape Unicode Characters" }],
+            apply: { method: "traditional", mode: "encrypt", text: decoded, key: 0 }
           });
         }
         if (/&(#\d+|#x[0-9a-f]+|[a-z]+);/i.test(u)) {
-          const decoded = u.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m) => {
+          const named = { nbsp: " ", amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
+          const decoded = u.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, body) => {
+            const key = String(body || "").toLowerCase();
+            if (named[key]) return named[key];
+            if (key.startsWith("#x")) return String.fromCharCode(parseInt(key.slice(2), 16));
+            if (key.startsWith("#")) return String.fromCharCode(Number(key.slice(1)));
             const ta = document.createElement("textarea");
             ta.innerHTML = m;
-            return ta.value;
+            return ta.value || m;
           });
-          guesses.push({
+          push({
             id: "html", title: "HTML entity", family: "encoding", confidence: "high",
             reason: "Named or numeric HTML entities.",
-            preview: previewText(decoded), score: 3,
+            preview: previewText(decoded), decoded, score: 3,
+            recipe: [...path.map((s) => s.op).filter(Boolean), { name: "From HTML Entity" }],
             apply: { method: "traditional", mode: "encrypt", text: decoded, key: 0 }
           });
         }
 
         const hexHead = compactBits(u).slice(0, 8).toUpperCase();
+        if (hexHead.startsWith("1F8B08")) {
+          push({
+            id: "gzip", title: "Gzip", family: "format", confidence: "high",
+            reason: "Hex starts with 1F 8B 08, the gzip magic.",
+            score: 4, apply: null
+          });
+        }
         if (hexHead.startsWith("FFD8FF") || compactBits(u).toUpperCase().includes("45786966")) {
-          guesses.push({
+          push({
             id: "exif", title: "JPEG / EXIF", family: "format", confidence: "medium",
-            reason: "JPEG SOI (FF D8) or ASCII Exif in the hex. LSB/RGBA stego is not proven from a dump alone.",
-            preview: previewText(u), score: 8, apply: null
+            reason: "JPEG SOI (FF D8) or ASCII Exif in the hex.",
+            score: 8, apply: null
           });
         }
         if (hexHead.startsWith("89504E47")) {
-          guesses.push({
+          push({
             id: "png", title: "PNG · possible LSB/RGBA payload", family: "format", confidence: "medium",
             reason: "PNG signature. Pixel LSB is a hiding method, not a named cipher.",
-            preview: previewText(u), score: 8, apply: null
+            score: 8, apply: null
           });
         }
         if (hexHead.startsWith("3082") || hexHead.startsWith("3081")) {
-          guesses.push({
+          push({
             id: "asn1", title: "ASN.1 / TLV (DER)", family: "format", confidence: "medium",
             reason: "Hex starts with SEQUENCE (0x30). X.509 and RSA blobs are DER TLV trees.",
-            preview: previewText(u), score: 9, apply: null
+            score: 9, apply: null
           });
         }
       }
 
-      static #encodings(text, guesses) {
-        const hex = decodeHex(text);
-        if (hex && looksPrintable(hex) && hex !== text) {
-          guesses.push({
-            id: "hex", title: "Hex encoding", family: "encoding", confidence: "high",
-            reason: "Even-length 0–9/A–F digits decode to printable text.",
-            preview: previewText(hex), score: chiSquared(hex),
-            apply: { method: "traditional", mode: "encrypt", text: hex, key: 3 }
-          });
-        }
+      static #tryEncodings(text) {
+        const layers = [];
+        const t = this._trace;
+        const step = (id, title, decoded, op, strong) => {
+          if (t) t.stats.encodingsTried += 1;
+          if (decoded == null || decoded === text) {
+            if (t) t.passed.push(title);
+            return;
+          }
+          if (t) t.stats.encodingsKept += 1;
+          layers.push({ id, title, decoded, step: { id, title, op }, op, strong });
+        };
 
-        const b64 = decodeBase64(text);
-        if (b64 && looksPrintable(b64)) {
-          guesses.push({
-            id: "base64", title: "Base64 encoding", family: "encoding", confidence: "high",
-            reason: "Charset and padding match Base64, and decoding yields printable characters.",
-            preview: previewText(b64), score: chiSquared(b64),
-            apply: { method: "traditional", mode: "encrypt", text: b64, key: 3 }
-          });
-        }
-
-        const compact = compactBits(text);
-        if (compact.length >= 8 && compact.length % 8 === 0 && /^[A-Z2-7=]+$/i.test(compact) && /[2-7]/.test(compact)) {
-          guesses.push({
-            id: "base32", title: "Base32 encoding", family: "encoding", confidence: "medium",
-            reason: "A–Z and 2–7 with length a multiple of 8 (RFC 4648).",
-            preview: previewText(text), score: 20, apply: null
-          });
-        }
-        if (compact.length >= 16 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(compact) && !/[0OIl]/.test(compact)) {
-          guesses.push({
-            id: "base58", title: "Base58 encoding", family: "encoding", confidence: "medium",
-            reason: "Bitcoin-style alphabet (no 0, O, I, l).",
-            preview: previewText(text), score: 22, apply: null
-          });
-        }
-        if (compact.length >= 16 && /^[0-9A-Za-z]+$/.test(compact) && /[0-9]/.test(compact) && /[a-z]/.test(compact) && /[A-Z]/.test(compact) && compact.length % 4 !== 0) {
-          guesses.push({
-            id: "base62", title: "Base62 encoding", family: "encoding", confidence: "weak",
-            reason: "0–9 plus mixed-case letters, not padded like Base64.",
-            preview: previewText(text), score: 40, apply: null
-          });
-        }
-        if (/^<~[\s\S]*~>$/.test(text.trim())) {
-          guesses.push({
-            id: "base85", title: "Base85 / Ascii85", family: "encoding", confidence: "high",
-            reason: "Ascii85 framed with <~ ~>.",
-            preview: previewText(text), score: 18, apply: null
-          });
-        } else if (compact.length >= 16 && /[~{}]/.test(compact) && !/^[A-Za-z0-9+/=]+$/.test(compact)) {
-          guesses.push({
-            id: "base91", title: "Base91 encoding", family: "encoding", confidence: "weak",
-            reason: "Dense printable alphabet including braces — typical of Base91, not Base64.",
-            preview: previewText(text), score: 35, apply: null
-          });
+        const baconish = /^[AB\s]+$/i.test(text.trim()) && text.replace(/[^ABab]/g, "").length >= 20 && text.replace(/[^ABab]/g, "").length % 5 === 0;
+        if (isHexBlob(text) && !baconish) {
+          const hex = decodeHex(text);
+          const digest = HASH_LEN[compactBits(text).length] && hex && !looksPrintable(hex);
+          if (hex && !digest) step("hex", "From Hex", hex, { name: "From Hex" }, true);
+        } else {
+          const b64 = decodeBase64(text);
+          if (b64 && isBase64Blob(text) && (looksPrintable(b64) || b64.length >= 6)) {
+            step("base64", "From Base64", b64, { name: "From Base64" }, true);
+          }
+          const b32 = decodeBase32(text);
+          if (b32 && looksPrintable(b32)) {
+            step("base32", "From Base32", b32, { name: "From Base32" }, true);
+          }
+          const b58 = decodeBase58(text);
+          if (b58 && looksPrintable(b58) && (looksEnglish(b58).ok || wordHits(b58).hits >= 1)) {
+            step("base58", "From Base58", b58, { name: "From Base58" }, true);
+          }
+          const b85 = decodeBase85(text);
+          if (b85 && looksPrintable(b85)) {
+            step("base85", "From Base85", b85, { name: "From Base85" }, /^<~/.test(text.trim()));
+          }
         }
 
         const url = decodeUrl(text);
         if (url && url !== text && looksPrintable(url)) {
-          guesses.push({
-            id: "url", title: "URL encoding", family: "encoding", confidence: "high",
-            reason: "Percent-encoded bytes decode to readable text.",
-            preview: previewText(url), score: chiSquared(url),
-            apply: { method: "traditional", mode: "encrypt", text: url, key: 3 }
-          });
+          step("url", "URL Decode", url, { name: "URL Decode" }, true);
         }
-
         const bin = decodeBinary(text);
         if (bin && looksPrintable(bin)) {
-          guesses.push({
-            id: "binary", title: "Binary encoding", family: "encoding", confidence: "high",
-            reason: "Groups of 8 bits decode to printable characters.",
-            preview: previewText(bin), score: chiSquared(bin),
-            apply: { method: "traditional", mode: "encrypt", text: bin, key: 3 }
-          });
+          step("binary", "From Binary", bin, { name: "From Binary" }, true);
         }
         const oct = decodeOctal(text);
         if (oct && looksPrintable(oct)) {
-          guesses.push({
-            id: "octal", title: "Octal encoding", family: "encoding", confidence: "high",
-            reason: "Space-separated octal codes decode to printable text.",
-            preview: previewText(oct), score: chiSquared(oct),
-            apply: { method: "traditional", mode: "encrypt", text: oct, key: 3 }
-          });
+          step("octal", "From Octal", oct, { name: "From Octal" }, true);
         }
         const codes = decodeCharCodes(text);
         if (codes && looksPrintable(codes) && !oct) {
-          guesses.push({
-            id: "charcode", title: "CharCode / decimal bytes", family: "encoding", confidence: "high",
-            reason: "Decimal 0–255 list (JS charCode / UTF-8 bytes).",
-            preview: previewText(codes), score: chiSquared(codes),
-            apply: { method: "traditional", mode: "encrypt", text: codes, key: 3 }
-          });
+          step("charcode", "From Charcode", codes, { name: "From Charcode" }, true);
         }
-
+        const a1 = decodeA1z26(text);
+        if (a1 && (looksEnglish(a1).ok || wordHits(a1).hits >= 1)) {
+          step("a1z26", "A1Z26 Cipher Decode", a1, { name: "A1Z26 Cipher Decode" }, true);
+        }
         const morse = decodeMorse(text);
         if (morse && /[A-Z]/.test(morse)) {
-          guesses.push({
-            id: "morse", title: "Morse code", family: "encoding", confidence: "high",
-            reason: "Dots, dashes, and spaces map onto A–Z.",
-            preview: previewText(morse), score: chiSquared(morse),
-            apply: { method: "traditional", mode: "encrypt", text: morse, key: 0 }
-          });
+          step("morse", "From Morse Code", morse, { name: "From Morse Code" }, true);
+        }
+        const bacon = baconDecode(text);
+        if (bacon && (looksEnglish(bacon).ok || bacon.length >= 4)) {
+          step("bacon", "Bacon Cipher Decode", bacon, { name: "Bacon Cipher Decode" }, looksEnglish(bacon).ok);
         }
 
         const chars = [...text];
@@ -2205,178 +3165,241 @@
           return c >= 0x2800 && c <= 0x28FF;
         }).length;
         if (visible.length >= 4 && braille / visible.length > 0.7) {
-          guesses.push({
-            id: "braille", title: "Braille", family: "encoding", confidence: "high",
-            reason: "Most glyphs sit in U+2800–U+28FF.",
-            preview: previewText(text), score: 4, apply: null
-          });
+          step("braille", "Braille", text, null, true);
         }
-
-        const cjk = chars.filter((ch) => {
-          const c = ch.codePointAt(0);
-          return c >= 0x4E00 && c <= 0x9FFF;
-        }).length;
-        if (cjk >= 8 && cjk / chars.length > 0.5) {
-          guesses.push({
-            id: "rot8000", title: "ROT8000 (possible)", family: "classical", confidence: "weak",
-            reason: "Dense CJK block — ROT8000 rotates the BMP. Not proven without a known pair.",
-            preview: previewText(text), score: 50, apply: null
-          });
-        }
+        return layers;
       }
 
-      static #hashes(text, guesses) {
+      static #hashes(text, guesses, path) {
         const hex = compactBits(text);
-        if (/^[0-9a-f]+$/i.test(hex) && HASH_LEN[hex.length]) {
-          const names = HASH_LEN[hex.length];
-          guesses.push({
-            id: `hash-${hex.length}`,
-            title: names.slice(0, 3).join(" / "),
-            family: "hash",
-            confidence: hex.length >= 32 ? "medium" : "weak",
-            reason: `${hex.length} hex chars match ${names.join(", ")}. Length is not a proof. HMAC / HKDF / SHAKE squeeze to the same width as the inner digest.`,
-            preview: previewText(text), score: 15, apply: null
-          });
-        }
+        if (!/^[0-9a-f]+$/i.test(hex) || !HASH_LEN[hex.length]) return;
+        const decoded = decodeHex(hex);
+        if (decoded && looksPrintable(decoded) && looksEnglish(decoded).ok) return;
+        const names = HASH_LEN[hex.length];
+        guesses.push({
+          id: this.#id(path, `hash-${hex.length}`),
+          title: this.#title(path, names.slice(0, 3).join(" / ")),
+          family: "hash",
+          confidence: hex.length >= 32 ? "medium" : "weak",
+          reason: `${hex.length} hex chars match Analyse hash families ${names.join(", ")}. Length is not a proof — HMAC, HKDF, and modern ciphertext (AES/ChaCha/RSA) squeeze to the same width.`,
+          preview: previewText(text),
+          decoded: text,
+          score: 15,
+          recipe: path.map((s) => s.op).filter(Boolean),
+          apply: null
+        });
+        this.#note({
+          title: "Analyse hash",
+          param: `${hex.length} hex · ${names.slice(0, 3).join(" / ")}`,
+          tried: 1,
+          kept: true,
+          preview: previewText(text),
+          depth: path.length
+        });
       }
 
-      static #classics(text, letters, guesses) {
-        if (letters.length < 12) return;
+      static #classics(text, letters, guesses, path, depth = 0) {
         const ioc = indexOfCoincidence(text);
+        const cipherChi = chiSquared(text);
+        const wrap = (g) => guesses.push({
+          ...g,
+          id: this.#id(path, g.id),
+          title: this.#title(path, g.title),
+          recipe: [...path.map((s) => s.op).filter(Boolean), ...(g.recipe || [])],
+          decoded: g.decoded,
+          preview: previewText(g.decoded),
+          readable: g.readable !== false
+        });
 
-        const rot13 = CipherEngine.traditional(text, 13, true).out;
-        if (chiSquared(rot13) < 50 && chiSquared(text) > 70) {
-          guesses.push({
-            id: "rot13", title: "ROT13", family: "classical", confidence: "high",
-            reason: "Caesar shift 13 reads as English.",
-            preview: previewText(rot13), score: chiSquared(rot13),
-            apply: { method: "traditional", mode: "decrypt", text, key: 13 }
+        const r47 = rot47(text);
+        const r47Eng = looksEnglish(r47);
+        if (/[!-~]/.test(text) && /[\d!-/:-@[-`{-~]/.test(text) && looksPrintable(r47) && r47Eng.ok) {
+          wrap({
+            id: "rot47", title: "ROT47", family: "classical", confidence: "medium",
+            reason: "ASCII 33–126 rotated by 47 becomes readable English.",
+            decoded: r47, score: r47Eng.score,
+            recipe: [{ name: "ROT47" }],
+            apply: { method: "traditional", mode: "encrypt", text: r47, key: 0 }
           });
+          this.#note({ title: "ROT47", param: "ASCII 33–126 · +47", tried: 1, kept: true, preview: previewText(r47), depth });
+          return;
         }
+
+        if (letters.length < 8) return;
 
         const caesar = [];
         for (let k = 0; k < 26; k += 1) {
-          const plain = CipherEngine.traditional(text, k, true).out;
-          caesar.push({ k, plain, score: chiSquared(plain) });
+          const plain = caesarShift(text, -k);
+          const words = wordHits(plain);
+          const chi = chiSquared(plain);
+          caesar.push({ k, plain, chi, words, score: chi - words.hits * 42 });
         }
         caesar.sort((a, b) => a.score - b.score);
         const best = caesar[0];
         const second = caesar[1];
         const gap = (second?.score ?? 999) - best.score;
-        if (best.k !== 0 && best.k !== 13 && best.score < 70 && gap > 18) {
-          guesses.push({
-            id: "caesar", title: `Traditional Caesar · shift ${best.k}`, family: "classical",
-            confidence: best.score < 40 ? "high" : "medium",
-            reason: `IOC ${ioc.toFixed(3)} is in the English band, and shift ${best.k} is the clear chi-squared winner.`,
-            preview: previewText(best.plain), score: best.score,
+        const english = looksEnglish(best.plain);
+        const clearWin = english.ok && best.words.hits >= 1 && (best.words.hits >= 2 || gap > 12 || best.chi + 15 < cipherChi);
+        if (this._trace) this._trace.stats.shiftsTried += 26;
+        if (clearWin && best.k !== 0) {
+          this.#note({
+            title: best.k === 13 ? "ROT13" : "Caesar",
+            param: `shift ${best.k} of 26`,
+            tried: 26,
+            kept: true,
+            preview: previewText(best.plain),
+            depth
+          });
+        }
+
+        if (best.k === 13 && clearWin) {
+          wrap({
+            id: "rot13",
+            title: "ROT13",
+            family: "classical",
+            confidence: "high",
+            reason: `Shift 13 reads as English (${english.why}).`,
+            decoded: best.plain,
+            score: best.score,
+            recipe: [{ name: "ROT13", args: { amount: 13 } }],
+            apply: { method: "traditional", mode: "decrypt", text, key: 13 }
+          });
+        } else if (best.k !== 0 && clearWin) {
+          wrap({
+            id: "caesar",
+            title: `ROT13 / Caesar · shift ${best.k}`,
+            family: "classical",
+            confidence: best.words.hits >= 2 || best.chi < 40 ? "high" : "medium",
+            reason: `Trying all 26 shifts, ${best.k} is the winner (${english.why || `chi-squared ${best.chi.toFixed(0)}`}). IOC ${ioc.toFixed(3)}.`,
+            decoded: best.plain,
+            score: best.score,
+            recipe: [{ name: "ROT13", args: { amount: wrap26(-best.k) } }],
             apply: { method: "traditional", mode: "decrypt", text, key: best.k }
           });
+        } else if (best.k === 0 && english.ok && letters.length >= 12) {
+          wrap({
+            id: "plaintext",
+            title: "Already looks like English",
+            family: "metric",
+            confidence: "medium",
+            reason: `Chi-squared ${best.chi.toFixed(0)} and ${english.why} match plaintext more than ciphertext.`,
+            decoded: text,
+            score: best.chi,
+            recipe: [],
+            apply: { method: "traditional", mode: "encrypt", text, key: 0 }
+          });
         }
+
+        if (english.ok) return;
 
         const ab = atbash(text);
-        if (chiSquared(ab) < 55 && chiSquared(text) > 80) {
-          guesses.push({
-            id: "atbash", title: "Atbash", family: "classical", confidence: "high",
-            reason: "A↔Z, B↔Y fold reads as English.",
-            preview: previewText(ab), score: chiSquared(ab),
+        const abEng = looksEnglish(ab);
+        if (abEng.ok && wordHits(ab).hits > best.words.hits) {
+          wrap({
+            id: "atbash", title: "Atbash Cipher", family: "classical", confidence: "high",
+            reason: `A↔Z fold reads as English (${abEng.why}).`,
+            decoded: ab, score: abEng.score,
+            recipe: [{ name: "Atbash Cipher" }],
             apply: { method: "mono", mode: "decrypt", text, keyword: "ZYXWVUTSRQPONMLKJIHGFEDCBA" }
           });
+          this.#note({ title: "Atbash", param: "A↔Z fold", tried: 1, kept: true, preview: previewText(ab), depth });
+          return;
         }
 
-        const r47 = rot47(text);
-        if (/[!-~]/.test(text) && looksPrintable(r47) && chiSquared(r47) < 55 && chiSquared(text) > 90) {
-          guesses.push({
-            id: "rot47", title: "ROT47", family: "classical", confidence: "medium",
-            reason: "ASCII 33–126 rotated by 47 becomes readable English.",
-            preview: previewText(r47), score: chiSquared(r47),
-            apply: { method: "traditional", mode: "encrypt", text: r47, key: 0 }
-          });
-        }
-
-        if (letters.length >= 16 && best.score > 80) {
+        if (depth === 0 && letters.length >= 12 && letters.length <= 400) {
+          if (this._trace) this._trace.stats.affineTried += 11 * 26;
           let affBest = { score: 1e9, a: 1, b: 0, plain: text };
           const as = [3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
           for (const a of as) {
             for (let b = 0; b < 26; b += 1) {
+              if (a === 1 && b === 0) continue;
               const plain = affineDecrypt(text, a, b);
-              const score = chiSquared(plain);
-              if (score < affBest.score) affBest = { score, a, b, plain };
+              const words = wordHits(plain);
+              const score = chiSquared(plain) - words.hits * 42;
+              if (score < affBest.score) affBest = { score, a, b, plain, words };
             }
           }
-          if (affBest.score < 50 && affBest.score + 20 < best.score) {
-            guesses.push({
-              id: "affine", title: `Affine cipher · a=${affBest.a}, b=${affBest.b}`, family: "classical",
-              confidence: "medium",
+          const affEng = looksEnglish(affBest.plain);
+          if (affEng.ok && affBest.score + 8 < best.score) {
+            wrap({
+              id: "affine", title: `Affine Cipher Decode · a=${affBest.a}, b=${affBest.b}`,
+              family: "classical", confidence: "medium",
               reason: "Brute force of coprime (a, b) mod 26 beat a simple Caesar shift.",
-              preview: previewText(affBest.plain), score: affBest.score,
+              decoded: affBest.plain, score: affBest.score,
+              recipe: [{ name: "Affine Cipher Decode", args: { a: affBest.a, b: affBest.b } }],
               apply: { method: "traditional", mode: "encrypt", text: affBest.plain, key: 0 }
             });
+            this.#note({ title: "Affine", param: `a=${affBest.a}, b=${affBest.b} · 286 pairs`, tried: 286, kept: true, preview: previewText(affBest.plain), depth });
+            return;
           }
         }
 
-        if (letters.length >= 16) {
+        if (depth === 0 && letters.length >= 12 && letters.length <= 400) {
+          if (this._trace) this._trace.stats.railTried += 7;
           let railBest = { score: 1e9, rails: 0, plain: letters };
           for (let rails = 2; rails <= 8; rails += 1) {
-            const plain = railFenceDecrypt(letters, rails);
-            const score = chiSquared(plain);
-            if (score < railBest.score) railBest = { score, rails, plain };
+            const plain = railFenceDecrypt(text, rails);
+            const words = wordHits(plain);
+            const score = chiSquared(plain) - words.hits * 42;
+            if (score < railBest.score) railBest = { score, rails, plain, words };
           }
-          if (railBest.score < 45 && railBest.rails && railBest.score + 25 < best.score) {
-            guesses.push({
-              id: "rail", title: `Rail Fence / Caesar Box · ${railBest.rails} rails`, family: "classical",
-              confidence: "medium",
-              reason: "Zig-zag transposition unscrambles into English-like frequencies. Columnar transposition is the same family.",
-              preview: previewText(railBest.plain), score: railBest.score,
+          const railEng = looksEnglish(railBest.plain);
+          if (railEng.ok && railBest.rails && railBest.score + 10 < best.score) {
+            wrap({
+              id: "rail", title: `Rail Fence Cipher Decode · ${railBest.rails} rails`,
+              family: "classical", confidence: "medium",
+              reason: "Zig-zag transposition unscrambles into English.",
+              decoded: railBest.plain, score: railBest.score,
+              recipe: [{ name: "Rail Fence Cipher Decode", args: { rails: railBest.rails } }],
               apply: { method: "traditional", mode: "encrypt", text: railBest.plain, key: 0 }
             });
+            this.#note({ title: "Rail Fence", param: `${railBest.rails} rails · 7 tried`, tried: 7, kept: true, preview: previewText(railBest.plain), depth });
+            return;
           }
         }
 
-        const bacon = baconDecode(text);
-        if (bacon && chiSquared(bacon) < 80) {
-          guesses.push({
-            id: "bacon", title: "Bacon cipher", family: "classical", confidence: "high",
-            reason: "A/B groups of 5 decode to letters.",
-            preview: previewText(bacon), score: chiSquared(bacon),
-            apply: { method: "traditional", mode: "encrypt", text: bacon, key: 0 }
-          });
+        for (const key of COMMON_VIGENERE_KEYS) {
+          if (this._trace) this._trace.stats.vigKeysTried += 1;
+          const plain = vigenereDecodeFast(text, key);
+          const eng = looksEnglish(plain);
+          if (eng.ok && wordHits(plain).hits >= 2) {
+            wrap({
+              id: `vig-${key}`,
+              title: `Vigenère Decode · key ${key}`,
+              family: "classical",
+              confidence: "high",
+              reason: `Keyword “${key}” turns the stream into English (${eng.why}).`,
+              decoded: plain,
+              score: eng.score,
+              recipe: [{ name: "Vigenère Decode", args: { key } }],
+              apply: { method: "modified", mode: "decrypt", text, keyword: key }
+            });
+            this.#note({ title: "Vigenère", param: `key ${key} · ${this._trace?.stats.vigKeysTried || 1} keywords tried`, tried: this._trace?.stats.vigKeysTried || 1, kept: true, preview: previewText(plain), depth });
+            return;
+          }
         }
 
-        if (letters.length >= 16 && letters.length % 2 === 0 && !letters.includes("J") && ioc >= 0.055 && best.score > 70) {
-          guesses.push({
-            id: "playfair", title: "Playfair (possible)", family: "classical", confidence: "weak",
-            reason: "Even letter count, no J, English-like IOC — Playfair-shaped, not proven.",
-            preview: previewText(text), score: 55,
-            apply: { method: "mono", mode: "decrypt", text, keyword: "" }
-          });
-        }
-
-        if (letters.length >= 16 && /^([A-Z]{4,5}[\s/]*)+$/.test(text.trim()) && ioc < 0.048) {
-          guesses.push({
-            id: "enigma", title: "Enigma / Typex-style groups", family: "classical", confidence: "weak",
-            reason: "5-letter groups and low IOC match machine ciphers. A Bombe is an attack machine, not a dump format.",
-            preview: previewText(text), score: 48,
-            apply: { method: "modified", mode: "decrypt", text, keyword: "" }
-          });
-        }
-
-        if (letters.length >= 16 && ioc >= 0.055 && best.score > 70 && !guesses.some((g) => g.id === "caesar" || g.id === "rot13")) {
-          guesses.push({
+        if (letters.length >= 16 && ioc >= 0.055 && !english.ok && !guesses.some((g) => g.family === "classical" && String(g.id).includes("caesar"))) {
+          wrap({
             id: "mono", title: "Monoalphabetic substitution", family: "classical", confidence: "medium",
             reason: `IOC ${ioc.toFixed(3)} stays near English, but no single Caesar shift reads as English.`,
-            preview: previewText(text), score: best.score,
+            decoded: text, score: best.score,
+            recipe: [],
+            readable: false,
             apply: { method: "mono", mode: "decrypt", text, keyword: "" }
           });
-        } else if (letters.length >= 16 && ioc >= 0.041 && ioc < 0.055) {
+        } else if (letters.length >= 16 && ioc >= 0.041 && ioc < 0.055 && !english.ok) {
           const period = this.#bestPeriod(letters);
-          guesses.push({
+          wrap({
             id: "modified",
             title: period
               ? `Vigenère / modified Caesar · key length ≈ ${period}`
               : "Vigenère / modified Caesar (repeating key stream)",
             family: "classical", confidence: "medium",
             reason: `IOC ${ioc.toFixed(3)} is below English, which fits a changing shift. Keyword is not recovered — only the likely length.`,
-            preview: previewText(text), score: 60,
+            decoded: text, score: 60,
+            recipe: [],
+            readable: false,
             apply: { method: "modified", mode: "decrypt", text, keyword: "" }
           });
         }
@@ -2402,30 +3425,65 @@
         return bestIoc > 0.052 ? bestLen : 0;
       }
 
-      static #xor(text, guesses) {
-        const raw = decodeHex(text) || decodeBase64(text);
-        const blob = raw && !looksPrintable(raw) ? raw : null;
-        if (!blob || blob.length < 8) return;
-        let best = { score: 1e9, key: 0, plain: "" };
-        for (let k = 1; k < 256; k += 1) {
-          const plain = xorKey(blob, k);
-          if (!looksPrintable(plain)) continue;
-          const score = chiSquared(plain);
-          if (score < best.score) best = { score, key: k, plain };
-        }
-        if (best.plain && best.score < 80) {
-          guesses.push({
-            id: "xor",
-            title: `Single-byte XOR · 0x${best.key.toString(16).padStart(2, "0")}`,
-            family: "classical", confidence: "medium",
-            reason: "A repeating 8-bit XOR key turns the blob into printable English-like text.",
-            preview: previewText(best.plain), score: best.score,
-            apply: { method: "traditional", mode: "encrypt", text: best.plain, key: 0 }
-          });
+      static #xor(text, guesses, path, depth = 0) {
+        if (depth > 0) return;
+        if (guesses.some((g) => g.readable || (g.family === "classical" && g.confidence === "high") || g.family === "hash")) return;
+        const candidates = [];
+        const hex = decodeHex(text);
+        const b64 = decodeBase64(text);
+        if (hex && hex.length >= 8 && !looksPrintable(hex)) candidates.push({ blob: hex, via: "hex", prefix: [{ name: "From Hex" }] });
+        else if (b64 && b64.length >= 8 && !looksPrintable(b64) && !isHexBlob(text)) candidates.push({ blob: b64, via: "b64", prefix: [{ name: "From Base64" }] });
+        else if (!looksPrintable(text) && text.length >= 8) candidates.push({ blob: text, via: "raw", prefix: [] });
+        for (const cand of candidates) {
+          if (this._trace) this._trace.stats.xorTried += 255;
+          const n = Math.min(cand.blob.length, 80);
+          const sample = cand.blob.slice(0, n);
+          let best = { score: 1e9, key: 0, plain: "" };
+          for (let k = 1; k < 256; k += 1) {
+            let ok = 0;
+            let plain = "";
+            for (let i = 0; i < n; i += 1) {
+              const c = sample.charCodeAt(i) ^ k;
+              if (c === 9 || c === 10 || c === 13 || (c >= 32 && c < 127)) ok += 1;
+              plain += String.fromCharCode(c);
+            }
+            if (ok / n < 0.9) continue;
+            const words = wordHits(plain);
+            if (!words.hits) continue;
+            const score = chiSquared(plain) - words.hits * 42;
+            if (score < best.score) best = { score, key: k, plain, words };
+          }
+          if (!best.key) continue;
+          const full = xorKey(cand.blob, best.key);
+          const eng = looksEnglish(full);
+          if (eng.ok || (best.words?.hits >= 1 && best.score < 70)) {
+            guesses.push({
+              id: this.#id(path, `xor-${cand.via}`),
+              title: this.#title(path, `XOR · 0x${best.key.toString(16).padStart(2, "0")}`),
+              family: "classical",
+              confidence: eng.ok ? "high" : "medium",
+              reason: "A repeating 8-bit XOR key turns the blob into printable English-like text.",
+              preview: previewText(full),
+              decoded: full,
+              readable: eng.ok,
+              score: best.score,
+              recipe: [...path.map((s) => s.op).filter(Boolean), ...cand.prefix, { name: "XOR", args: { key: String.fromCharCode(best.key) } }],
+              apply: { method: "traditional", mode: "encrypt", text: full, key: 0 }
+            });
+            this.#note({
+              title: "XOR",
+              param: `0x${best.key.toString(16).padStart(2, "0")} · 255 keys sampled`,
+              tried: 255,
+              kept: true,
+              preview: previewText(full),
+              depth
+            });
+            break;
+          }
         }
       }
 
-      static #modern(text, letters, guesses) {
+      static #modern(text, letters, guesses, path) {
         const entropy = shannonEntropy(text);
         const ioc = letters.length >= 16 ? indexOfCoincidence(text) : 1;
         const compact = compactBits(text);
@@ -2433,14 +3491,26 @@
         const b64 = decodeBase64(text);
         const readableEncoding = (hex && looksPrintable(hex)) || (b64 && looksPrintable(b64));
         const randomish = entropy >= 4.2 || (letters.length >= 16 && ioc < 0.042) || (hex && !looksPrintable(hex));
-        if (randomish && compact.length >= 16 && !readableEncoding) {
+        if (randomish && compact.length >= 16 && !readableEncoding && !looksEnglish(text).ok) {
           guesses.push({
-            id: "modern",
-            title: "High entropy · modern crypto / PRNG",
+            id: this.#id(path, "modern"),
+            title: this.#title(path, "High entropy · modern crypto / PRNG"),
             family: "modern",
             confidence: "weak",
             reason: `Entropy ${entropy.toFixed(2)} bits/char. ${MODERN_FAMILY} are indistinguishable from random bits without a header (PEM, Fernet, EVP Salted__). Not identified as a named algorithm.`,
-            preview: previewText(text), score: 200, apply: null
+            preview: previewText(text),
+            decoded: text,
+            score: 200,
+            recipe: path.map((s) => s.op).filter(Boolean),
+            apply: null
+          });
+          this.#note({
+            title: "Modern crypto family",
+            param: MODERN_FAMILY,
+            tried: 0,
+            kept: false,
+            preview: `entropy ${entropy.toFixed(2)} · indistinguishable without a header`,
+            depth: path.length
           });
         }
       }
@@ -2600,7 +3670,12 @@
     <span class="kw">char</span> ch = text[i], up = ch;
     <span class="kw">if</span> (up &gt;= <span class="st">'a'</span> &amp;&amp; up &lt;= <span class="st">'z'</span>) up = up - <span class="st">'a'</span> + <span class="st">'A'</span>;
     <span class="kw">if</span> (up &lt; <span class="st">'A'</span> || up &gt; <span class="st">'Z'</span>) <span class="kw">continue</span>;
-    <span class="kw">char</span> mapped = to[from.find(up)];
+    <span class="kw">int</span> pos = -1;
+    <span class="kw">for</span> (<span class="kw">int</span> j = 0; j &lt; (<span class="kw">int</span>)from.size(); j++) {
+      <span class="kw">if</span> (from[j] == up) { pos = j; <span class="kw">break</span>; }
+    }
+    <span class="kw">if</span> (pos &lt; 0 || pos &gt;= (<span class="kw">int</span>)to.size()) <span class="kw">continue</span>;
+    <span class="kw">char</span> mapped = to[pos];
     <span class="kw">if</span> (ch &gt;= <span class="st">'a'</span> &amp;&amp; ch &lt;= <span class="st">'z'</span>) mapped = mapped - <span class="st">'A'</span> + <span class="st">'a'</span>;
     text[i] = mapped;
   }
@@ -2628,6 +3703,9 @@
         this.result = { tokens: [], out: "", mapFrom: ALPHA, mapTo: ALPHA };
         this.playAbort = null;
         this.detectGuesses = [];
+        this.detectTrace = null;
+        this.lastDetectRaw = "";
+        this.detectGen = 0;
         this.els = Object.fromEntries([
           "knowledgeTitle", "knowledgeBody", "workshopHint", "interactHint", "logicIntro",
           "codePanel", "messageInput", "keyInput", "keywordInput", "keyField", "keywordField",
@@ -2637,7 +3715,7 @@
           "analysisBody", "challengeBox", "exampleBtn", "copyBtn", "clearBtn", "mapTitle",
           "outerDisk", "innerDisk", "cipherMachine", "hudMethod", "hudMode", "hudKey",
           "hudLetters", "hudWraps", "hudStrength", "modRail", "tapes", "wrapPill", "speedInput",
-          "detectInput", "detectBtn", "detectSampleBtn", "detectResults"
+          "detectInput", "detectKey", "detectBtn", "detectSamples", "detectResults"
         ].map((id) => [id, document.getElementById(id)]));
 
         this.#buildDecor();
@@ -2791,11 +3869,38 @@
         });
 
         this.els.detectBtn.addEventListener("click", () => this.runDetect());
-        this.els.detectSampleBtn.addEventListener("click", () => {
-          this.els.detectInput.value = "WKH HDJOH KDV ODQGHG RQ WKH PRRQ";
+        const scheduleDetect = () => {
+          clearTimeout(this.detectTimer);
+          this.detectTimer = setTimeout(() => this.runDetect(), 450);
+        };
+        this.els.detectInput.addEventListener("input", scheduleDetect);
+        this.els.detectKey?.addEventListener("input", scheduleDetect);
+        this.els.detectSamples.addEventListener("click", (event) => {
+          const btn = event.target.closest("[data-sample]");
+          if (!btn) return;
+          this.els.detectInput.value = SAMPLES[btn.dataset.sample] || "";
+          this.lastDetectRaw = "";
           this.runDetect();
         });
         this.els.detectResults.addEventListener("click", (event) => {
+          const copyBtn = event.target.closest("[data-copy]");
+          if (copyBtn) {
+            const guess = this.detectGuesses[Number(copyBtn.dataset.copy)];
+            const text = guess?.decoded || guess?.preview;
+            if (text && text !== "—") {
+              navigator.clipboard.writeText(text).then(() => {
+                copyBtn.textContent = "Copied";
+                setTimeout(() => { copyBtn.textContent = "Copy"; }, 1400);
+              });
+            }
+            return;
+          }
+          const kitchenBtn = event.target.closest("[data-kitchen]");
+          if (kitchenBtn) {
+            const guess = this.detectGuesses[Number(kitchenBtn.dataset.kitchen)];
+            this.openKitchenRecipe(guess);
+            return;
+          }
           const btn = event.target.closest("[data-apply]");
           if (!btn) return;
           const guess = this.detectGuesses[Number(btn.dataset.apply)];
@@ -2924,32 +4029,154 @@
         document.getElementById("workshopBox")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
       }
 
-      runDetect() {
-        const result = CipherDetector.inspect(this.els.detectInput.value);
+      #recipeChips(guess) {
+        const steps = guess?.recipe || [];
+        if (!steps.length) return "";
+        return `<div class="recipe-chain">${steps.map((s) => {
+          const extra = s.args?.amount != null ? ` ${s.args.amount}`
+            : s.args?.key ? ` ${s.args.key}`
+            : s.args?.a != null ? ` a=${s.args.a} b=${s.args.b}`
+            : s.args?.rails != null ? ` ${s.args.rails}`
+            : "";
+          return `<span>${escapeHtml(s.name)}${escapeHtml(String(extra))}</span>`;
+        }).join("")}</div>`;
+      }
+
+      #knobsFromGuess(guess) {
+        const knobs = [];
+        for (const s of guess?.recipe || []) {
+          if (s.name === "ROT13") knobs.push({ label: "ROT amount", value: String(s.args?.amount ?? 13) });
+          else if (s.name === "Vigenère Decode") knobs.push({ label: "key", value: s.args?.key || "" });
+          else if (s.name === "Affine Cipher Decode") knobs.push({ label: "a, b", value: `${s.args?.a}, ${s.args?.b}` });
+          else if (s.name === "Rail Fence Cipher Decode") knobs.push({ label: "rails", value: String(s.args?.rails) });
+          else if (s.name === "AES Decrypt") knobs.push({ label: "AES key", value: s.args?.key || "" });
+          else if (s.name === "XOR") {
+            const ch = s.args?.key || "";
+            knobs.push({ label: "XOR", value: ch.length === 1 ? `0x${(ch.charCodeAt(0) || 0).toString(16).padStart(2, "0")}` : ch });
+          } else if (s.name) knobs.push({ label: "layer", value: s.name });
+        }
+        return knobs;
+      }
+
+      #xrayHtml(trace, primary) {
+        if (!trace) return "";
+        const s = trace.stats || {};
+        const stats = [
+          Number.isFinite(s.entropy) ? `H ${s.entropy.toFixed(2)}` : "",
+          s.ioc ? `IOC ${s.ioc.toFixed(3)}` : "",
+          Number.isFinite(s.chi) && s.chi < 1e8 ? `χ² ${s.chi.toFixed(0)}` : "",
+          s.shiftsTried ? `${s.shiftsTried} shifts` : "",
+          s.encodingsTried ? `${s.encodingsTried} encodings` : "",
+          s.xorTried ? `${s.xorTried} XOR keys` : "",
+          s.affineTried ? `${s.affineTried} affine` : "",
+          s.vigKeysTried ? `${s.vigKeysTried} keywords` : "",
+          s.depth ? `depth ${s.depth}` : ""
+        ].filter(Boolean);
+        const knobs = this.#knobsFromGuess(primary);
+        if (trace.hint) knobs.unshift({ label: "tried with key", value: trace.hint });
+        const kept = (trace.steps || []).filter((st) => st.kept);
+        const dim = (trace.steps || []).filter((st) => !st.kept);
+        const passed = (trace.passed || []).slice(0, 8);
+        const gates = [
+          ...kept.map((st) => ({ ...st, dim: false })),
+          ...(primary?.decoded && (primary.family === "classical" || primary.family === "encoding")
+            ? [{ title: "Plaintext", param: "after last gate", preview: previewText(primary.decoded), out: true }]
+            : []),
+          ...dim.slice(0, 2).map((st) => ({ ...st, dim: true }))
+        ];
+        if (!gates.length && !stats.length) return "";
+        return `<div class="xray">
+          <p class="xray-kicker">X-ray · what Magic actually tried</p>
+          ${stats.length ? `<div class="xray-stats">${stats.map((n) => `<span>${escapeHtml(n)}</span>`).join("")}</div>` : ""}
+          ${knobs.length ? `<div class="xray-knobs">${knobs.map((k) => `<span>${escapeHtml(k.label)} ${escapeHtml(k.value)}</span>`).join("")}</div>` : ""}
+          ${gates.length ? `<div class="xray-path">${gates.map((st) => `
+            <div class="xray-gate${st.dim ? " dim" : ""}${st.out ? " out" : ""}">
+              <i></i>
+              <div>
+                <div class="name">${escapeHtml(st.title)}</div>
+                ${st.param ? `<div class="param">${escapeHtml(st.param)}</div>` : ""}
+                ${st.preview ? `<div class="peek">${escapeHtml(st.preview)}</div>` : ""}
+              </div>
+            </div>`).join("")}</div>` : ""}
+          ${passed.length ? `<p class="xray-miss">Passed over: ${escapeHtml(passed.join(" · "))}</p>` : ""}
+        </div>`;
+      }
+
+      openKitchenRecipe(guess) {
+        if (!window.guptlekhKitchen || !guess?.recipe?.length) return;
+        const input = document.getElementById("chefInput");
+        if (input) input.value = this.els.detectInput.value;
+        window.guptlekhKitchen.loadRecipe(guess.recipe);
+        document.getElementById("kitchen")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      }
+
+      async runDetect() {
+        const raw = this.els.detectInput.value;
+        const hint = (this.els.detectKey?.value || "").trim();
+        const stamp = `${raw}\n\x1e${hint}`;
+        if (!String(raw).trim()) {
+          this.detectGuesses = [];
+          this.lastDetectRaw = "";
+          this.els.detectResults.innerHTML = "";
+          return;
+        }
+        if (stamp === this.lastDetectRaw) return;
+        this.lastDetectRaw = stamp;
+        const gen = ++this.detectGen;
+        const result = await CipherDetector.inspect(raw, hint);
+        if (gen !== this.detectGen) return;
         if (result.error) {
           this.detectGuesses = [];
           this.els.detectResults.innerHTML = `<p class="hint">${escapeHtml(result.error)}</p>`;
           return;
         }
         this.detectGuesses = result.guesses || [];
-        if (!this.detectGuesses.length) {
-          this.els.detectResults.innerHTML = `<p class="hint">No strong pattern. Try a longer sample, or a hex / Base64 / classroom ciphertext.</p>`;
+        this.detectTrace = result.trace || null;
+        const entropy = this.detectGuesses.find((g) => g.id === "entropy");
+        const actionable = this.detectGuesses.filter((g) => g.family !== "metric");
+        const primary = actionable[0] || this.detectGuesses.find((g) => g.id !== "entropy") || this.detectGuesses[0];
+        if (!primary) {
+          this.els.detectResults.innerHTML = `<p class="hint">Nothing clear yet. Try a longer sample, or paste Base64, hex, Morse, or a classroom cipher.</p>`;
           return;
         }
-        this.els.detectResults.innerHTML = this.detectGuesses.map((guess, i) => `
-          <article class="guess-card">
-            <header>
+        const primaryIndex = this.detectGuesses.indexOf(primary);
+        const others = this.detectGuesses.filter((g) => g !== primary && g.id !== "entropy");
+        const conf = CONF_LABEL[primary.confidence] || primary.confidence;
+        const family = FAMILY_LABEL[primary.family] || primary.family || "reading";
+        const actions = [`<button type="button" class="apply-btn" data-copy="${primaryIndex}">Copy</button>`];
+        if (primary.recipe?.length) {
+          actions.push(`<button type="button" class="cta" data-kitchen="${primaryIndex}">Bake in kitchen</button>`);
+        }
+        if (primary.apply) {
+          actions.push(`<button type="button" class="apply-btn" data-apply="${primaryIndex}">Open on the bench</button>`);
+        }
+        const card = (guess, i, reading) => `
+          <article class="${reading ? "reading" : "guess-card"}">
+            ${reading ? `<p class="reading-kicker">${escapeHtml(conf)} · ${escapeHtml(family)}</p>` : `<header>
               <h4>${escapeHtml(guess.title)}</h4>
-              <span class="badge ${escapeHtml(guess.confidence)}">${escapeHtml(guess.confidence)} guess</span>
-              ${guess.family ? `<span class="badge family">${escapeHtml(guess.family)}</span>` : ""}
-            </header>
+              <span class="badge ${escapeHtml(guess.confidence)}">${escapeHtml(CONF_LABEL[guess.confidence] || guess.confidence)}</span>
+            </header>`}
+            ${reading ? `<h4>${escapeHtml(guess.title)}</h4>` : ""}
+            ${this.#recipeChips(guess)}
             <p class="why">${escapeHtml(guess.reason)}</p>
-            <div class="preview">${escapeHtml(guess.preview || "—")}</div>
-            ${guess.apply
-              ? `<button type="button" class="apply-btn" data-apply="${i}">Apply in workshop</button>`
-              : `<p class="hint">This guess cannot be loaded into the classroom ciphers.</p>`}
-          </article>
-        `).join("");
+            <div class="preview">${escapeHtml(guess.decoded || guess.preview || "—")}</div>
+            ${reading ? `<div class="reading-actions">${actions.join("")}</div>` : `
+              <div class="reading-actions">
+                ${guess.recipe?.length ? `<button type="button" class="apply-btn" data-kitchen="${i}">Bake in kitchen</button>` : ""}
+                ${guess.apply ? `<button type="button" class="apply-btn" data-apply="${i}">Open on the bench</button>` : ""}
+              </div>`}
+          </article>`;
+        const othersHtml = others.length ? `
+          <details class="other-readings">
+            <summary>Other possibilities (${others.length})</summary>
+            ${others.map((guess) => card(guess, this.detectGuesses.indexOf(guess), false)).join("")}
+          </details>` : "";
+        this.els.detectResults.innerHTML = `
+          ${card(primary, primaryIndex, true)}
+          ${this.#xrayHtml(result.trace, primary)}
+          ${entropy ? `<p class="reading-note">${escapeHtml(entropy.title)} — ${escapeHtml(entropy.reason)}</p>` : ""}
+          ${othersHtml}
+        `;
       }
 
       renderMethod() {
@@ -3141,8 +4368,10 @@
         if (start) start.classList.add("start");
         if (end) end.classList.add("end");
         if (step.wrap) {
-          [...buttons].slice(step.p).forEach((btn) => btn.classList.add("wrap"));
-          [...buttons].slice(0, (step.c ?? 0) + 1).forEach((btn) => btn.classList.add("wrap"));
+          const from = step.p > step.c ? step.p : step.c;
+          const to = step.p > step.c ? step.c : step.p;
+          [...buttons].slice(from).forEach((btn) => btn.classList.add("wrap"));
+          [...buttons].slice(0, to + 1).forEach((btn) => btn.classList.add("wrap"));
         } else if (step.p != null && step.c != null) {
           const a = Math.min(step.p, step.c);
           const b = Math.max(step.p, step.c);
@@ -3330,6 +4559,747 @@
     }
 
     new CipherLab();
+
+    const CHEF_CATEGORIES = [
+      { name: "Favourites", ops: ["To Base64", "From Base64", "To Hex", "From Hex", "AES Encrypt", "AES Decrypt", "ROT13", "XOR", "Vigenère Encode", "Vigenère Decode", "SHA2", "URL Decode"] },
+      { name: "Data format", ops: ["To Hexdump", "From Hexdump", "To Hex", "From Hex", "To Charcode", "From Charcode", "To Decimal", "From Decimal", "To Float", "From Float", "To Binary", "From Binary", "To Octal", "From Octal", "To Base32", "From Base32", "To Base45", "From Base45", "To Base58", "From Base58", "To Bech32", "From Bech32", "To Base62", "From Base62", "To Base64", "From Base64", "Show Base64 offsets", "To Base92", "From Base92", "To Base85", "From Base85", "To Base", "From Base", "To BCD", "From BCD", "Text-Integer Conversion", "To HTML Entity", "From HTML Entity", "URL Encode", "URL Decode", "Escape Unicode Characters", "Unescape Unicode Characters", "Normalise Unicode", "Escape Smart Characters", "To Quoted Printable", "From Quoted Printable", "To Punycode", "From Punycode", "AMF Encode", "AMF Decode", "To Hex Content", "From Hex Content", "PEM to Hex", "Hex to PEM", "Parse ASN.1 hex string", "Change IP format", "Encode text", "Decode text", "Text Encoding Brute Force", "Swap endianness", "To MessagePack", "From MessagePack", "To Braille", "From Braille", "Parse TLV", "CSV to JSON", "JSON to CSV", "Avro to JSON", "CBOR Encode", "CBOR Decode", "YAML to JSON", "JSON to YAML", "Caret/M-decode", "Rison Encode", "Rison Decode", "To Modhex", "From Modhex", "MIME Decoding", "To COBS", "From COBS"] },
+      { name: "Encryption / Encoding", ops: ["AES Encrypt", "AES Decrypt", "Blowfish Encrypt", "Blowfish Decrypt", "DES Encrypt", "DES Decrypt", "Triple DES Encrypt", "Triple DES Decrypt", "Fernet Encrypt", "Fernet Decrypt", "LS47 Encrypt", "LS47 Decrypt", "RC2 Encrypt", "RC2 Decrypt", "RC4", "RC4 Drop", "ChaCha", "Salsa20", "XSalsa20", "Rabbit", "SM4 Encrypt", "SM4 Decrypt", "RC6 Encrypt", "RC6 Decrypt", "Ascon Encrypt", "Ascon Decrypt", "PRESENT Encrypt", "PRESENT Decrypt", "Twofish Encrypt", "Twofish Decrypt", "GOST Encrypt", "GOST Decrypt", "GOST Sign", "GOST Verify", "GOST Key Wrap", "GOST Key Unwrap", "ROR13", "ROT13", "ROT13 Brute Force", "ROT47", "ROT47 Brute Force", "ROT8000", "XOR", "XOR Brute Force", "Vigenère Encode", "Vigenère Decode", "TEA Encrypt", "TEA Decrypt", "XTEA Encrypt", "XTEA Decrypt", "XXTEA Encrypt", "XXTEA Decrypt", "To Morse Code", "From Morse Code", "Bacon Cipher Encode", "Bacon Cipher Decode", "Bifid Cipher Encode", "Bifid Cipher Decode", "Caesar Box Cipher", "Affine Cipher Encode", "Affine Cipher Decode", "A1Z26 Cipher Encode", "A1Z26 Cipher Decode", "Rail Fence Cipher Encode", "Rail Fence Cipher Decode", "Atbash Cipher", "CipherSaber2 Encrypt", "CipherSaber2 Decrypt", "Cetacean Cipher Encode", "Cetacean Cipher Decode", "Substitute", "Derive PBKDF2 key", "Derive EVP key", "Derive HKDF key", "Bcrypt", "Scrypt", "JWT Sign", "JWT Verify", "JWT Decode", "Citrix CTX1 Encode", "Citrix CTX1 Decode", "AES Key Wrap", "AES Key Unwrap", "Pseudo-Random Number Generator", "Pseudo-Random Prime Generator", "Enigma", "Bombe", "Multiple Bombe", "Typex", "Lorenz", "Colossus", "SIGABA", "Flask Session Decode", "Flask Session Sign", "Flask Session Verify"] },
+      { name: "Public Key", ops: ["Parse X.509 certificate", "Parse X.509 CRL", "Parse ASN.1 hex string", "PEM to Hex", "Hex to PEM", "Hex to Object Identifier", "Object Identifier to Hex", "PEM to JWK", "JWK to PEM", "Generate PGP Key Pair", "PGP Encrypt", "PGP Decrypt", "PGP Sign", "PGP Verify", "PGP Encrypt and Sign", "PGP Decrypt and Verify", "Generate RSA Key Pair", "RSA Sign", "RSA Verify", "RSA Encrypt", "RSA Decrypt", "Generate ECDSA Key Pair", "ECDSA Signature Conversion", "ECDSA Sign", "ECDSA Verify", "Parse SSH Host Key", "Parse CSR", "Public Key from Certificate", "Public Key from Private Key", "SM2 Encrypt", "SM2 Decrypt"] },
+      { name: "Arithmetic / Logic", ops: ["Set Union", "Set Intersection", "Set Difference", "Symmetric Difference", "Cartesian Product", "Power Set", "XOR", "XOR Brute Force", "OR", "NOT", "AND", "ADD", "SUB", "Sum", "Subtract", "Multiply", "Divide", "MOD", "Extended GCD", "Modular Exponentiation", "Modular Inverse", "Mean", "Median", "Standard Deviation", "Bit shift left", "Bit shift right", "Rotate left", "Rotate right", "ROR13", "ROT13", "ROT8000"] },
+      { name: "Networking", ops: ["HTTP request", "DNS over HTTPS", "Strip HTTP headers", "Dechunk HTTP response", "Parse Ethernet frame", "Parse User Agent", "Parse IP range", "Parse IPv6 address", "IPv6 Transition Addresses", "Parse IPv4 header", "Strip IPv4 header", "Parse TCP", "Strip TCP header", "Parse TLS record", "Parse UDP", "Strip UDP header", "Parse SSH Host Key", "Parse URI", "URL Encode", "URL Decode", "Protobuf Decode", "Protobuf Encode", "VarInt Encode", "VarInt Decode", "JA3 Fingerprint", "JA3S Fingerprint", "JA4 Fingerprint", "JA4Server Fingerprint", "HASSH Client Fingerprint", "HASSH Server Fingerprint", "Format MAC addresses", "Change IP format", "Group IP addresses", "Encode NetBIOS Name", "Decode NetBIOS Name", "Defang URL", "Fang URL", "Defang IP Addresses"] },
+      { name: "Language", ops: ["Encode text", "Decode text", "Unicode Text Format", "Remove Diacritics", "Unescape Unicode Characters", "Convert to NATO alphabet", "Convert Leet Speak"] },
+      { name: "Utils", ops: ["Diff", "Remove whitespace", "Remove null bytes", "Remove ANSI Escape Codes", "To Upper case", "To Lower case", "Swap case", "Alternating Caps", "To Case Insensitive Regex", "From Case Insensitive Regex", "Add line numbers", "Remove line numbers", "Get All Casings", "To Table", "Reverse", "Sort", "Shuffle", "Unique", "Split", "Filter", "Head", "Tail", "Count occurrences", "Expand alphabet range", "Drop bytes", "Take bytes", "Pad lines", "Find / Replace", "Regular expression", "Fuzzy Match", "Offset checker", "Hamming Distance", "Levenshtein Distance", "Convert distance", "Convert area", "Convert mass", "Convert speed", "Convert data units", "Convert co-ordinate format", "Show on map", "Parse UNIX file permissions", "Parse ObjectID timestamp", "Swap endianness", "Parse colour code", "Escape string", "Unescape string", "Pseudo-Random Number Generator", "Sleep", "File Tree", "Wrap", "Take nth bytes", "Drop nth bytes"] },
+      { name: "Date / Time", ops: ["Parse DateTime", "Translate DateTime Format", "From UNIX Timestamp", "To UNIX Timestamp", "Windows Filetime to UNIX Timestamp", "UNIX Timestamp to Windows Filetime", "DateTime Delta", "Extract dates", "Get Time", "Sleep"] },
+      { name: "Extractors", ops: ["Strings", "Extract IP addresses", "Extract email addresses", "Extract MAC addresses", "Extract URLs", "Extract domains", "Extract file paths", "Extract dates", "Extract hashes", "Regular expression", "XPath expression", "JPath expression", "Jsonata Query", "CSS selector", "Extract EXIF", "Extract ID3", "Extract Audio Metadata", "Extract Files", "RAKE", "Template"] },
+      { name: "Compression", ops: ["Raw Deflate", "Raw Inflate", "Zlib Deflate", "Zlib Inflate", "Gzip", "Gunzip", "Zip", "Unzip", "Bzip2 Decompress", "Bzip2 Compress", "Tar", "Untar", "LZString Decompress", "LZString Compress", "LZMA Decompress", "LZMA Compress", "LZ4 Decompress", "LZ4 Compress", "LZNT1 Decompress", "XPRESS Decompress", "XPRESS LZ77+Huffman Decompress"] },
+      { name: "Hashing", ops: ["Analyse hash", "Generate all checksums", "Generate all hashes", "MD2", "MD4", "MD5", "MD6", "SHA0", "SHA1", "SHA2", "SHA3", "SM3", "Keccak", "Shake", "RIPEMD", "HAS-160", "Whirlpool", "Snefru", "BLAKE2b", "BLAKE2s", "BLAKE3", "Ascon Hash", "Ascon MAC", "GOST Hash", "Streebog", "SSDEEP", "CTPH", "Compare SSDEEP hashes", "Compare CTPH hashes", "HMAC", "CMAC", "Bcrypt", "Bcrypt compare", "Bcrypt parse", "Argon2", "Argon2 compare", "Scrypt", "NT Hash", "LM Hash", "MurmurHash3", "Fletcher-8 Checksum", "Fletcher-16 Checksum", "Fletcher-32 Checksum", "Fletcher-64 Checksum", "Adler-32 Checksum", "Luhn Checksum", "CRC Checksum", "TCP/IP Checksum", "XOR Checksum", "Parity Bit"] },
+      { name: "Code tidy", ops: ["Syntax highlighter", "Generic Code Beautify", "JavaScript Parser", "JavaScript Beautify", "JavaScript Minify", "JSON Beautify", "JSON Minify", "XML Beautify", "XML Minify", "SQL Beautify", "SQL Minify", "CSS Beautify", "CSS Minify", "XPath expression", "JPath expression", "Jq", "CSS selector", "PHP Deserialize", "PHP Serialize", "Microsoft Script Decoder", "Strip HTML tags", "Diff", "To Snake case", "To Camel case", "To Kebab case", "BSON serialise", "BSON deserialise", "To MessagePack", "From MessagePack", "Render Markdown"] },
+      { name: "Forensics", ops: ["Detect File Type", "Scan for Embedded Files", "Extract Files", "YARA Rules", "Remove EXIF", "Extract EXIF", "Extract RGBA", "View Bit Plane", "Randomize Colour Palette", "Extract LSB", "ELF Info", "Extract Audio Metadata"] },
+      { name: "Multimedia", ops: ["Render Image", "Play Media", "Generate Image", "Optical Character Recognition", "Remove EXIF", "Extract EXIF", "Split Colour Channels", "Rotate Image", "Resize Image", "Blur Image", "Dither Image", "Invert Image", "Flip Image", "Crop Image", "Image Brightness / Contrast", "Image Opacity", "Image Filter", "Contain Image", "Cover Image", "Image Hue/Saturation/Lightness", "Sharpen Image", "Normalise Image", "Convert Image Format", "Add Text To Image", "Hex Density chart", "Scatter chart", "Series chart", "Heatmap chart", "Render PDF"] },
+      { name: "Other", ops: ["Entropy", "Frequency distribution", "Index of Coincidence", "Chi Square", "P-list Viewer", "Disassemble x86", "Disassemble ARM", "Pseudo-Random Number Generator", "Pseudo-Random Integer Generator", "Generate De Bruijn Sequence", "Generate UUID", "Analyse UUID", "Generate TOTP", "Generate HOTP", "Generate QR Code", "Parse QR Code", "Haversine distance", "HTML To Text", "Generate Lorem Ipsum", "Numberwang", "XKCD Random Number", "Automated Validation Test Op"] },
+      { name: "Flow control", ops: ["Magic", "Fork", "Subsection", "Merge", "Register", "Label", "Jump", "Conditional Jump", "Return", "Comment"] }
+    ];
+
+    const chefEnc = new TextEncoder();
+    const chefDec = new TextDecoder();
+    const chefHex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    const chefFromHexBytes = (hex) => {
+      const h = String(hex).replace(/[^0-9a-f]/gi, "");
+      if (h.length % 2) throw new Error("Hex length must be even");
+      const out = new Uint8Array(h.length / 2);
+      for (let i = 0; i < out.length; i += 1) out[i] = parseInt(h.slice(i * 2, i * 2 + 2), 16);
+      return out;
+    };
+    const chefJoin = (bytes, delim) => [...bytes].map((b) => b.toString(16).padStart(2, "0")).join(delim);
+    const chefDelim = (name) => ({ None: "", Space: " ", Colon: ":", Comma: ",", "LF": "\n" }[name] ?? " ");
+    const chefArg = (key, label, value, type = "text", extra = {}) => ({ key, label, value, type, ...extra });
+    const chefBytesOf = (text) => chefEnc.encode(String(text ?? ""));
+
+    function chefToBase32(text) {
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+      const bytes = chefBytesOf(text);
+      let bits = "";
+      for (const b of bytes) bits += b.toString(2).padStart(8, "0");
+      let out = "";
+      for (let i = 0; i < bits.length; i += 5) {
+        out += alphabet[parseInt(bits.slice(i, i + 5).padEnd(5, "0"), 2)];
+      }
+      while (out.length % 8) out += "=";
+      return out;
+    }
+
+    function chefFromBase32(text) {
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+      const clean = String(text).toUpperCase().replace(/=+$/g, "").replace(/[^A-Z2-7]/g, "");
+      let bits = "";
+      for (const ch of clean) bits += alphabet.indexOf(ch).toString(2).padStart(5, "0");
+      const bytes = [];
+      for (let i = 0; i + 8 <= bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i + 8), 2));
+      return chefDec.decode(new Uint8Array(bytes));
+    }
+
+    function chefRotAlpha(text, amount) {
+      const n = wrap26(amount);
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        return String.fromCharCode(base + wrap26(ch.charCodeAt(0) - base + n));
+      });
+    }
+
+    function chefVigenere(text, key, decode) {
+      const k = lettersOnly(key);
+      if (!k) throw new Error("Keyword required");
+      let i = 0;
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        const shift = k.charCodeAt(i % k.length) - 65;
+        i += 1;
+        return String.fromCharCode(base + wrap26(ch.charCodeAt(0) - base + (decode ? -shift : shift)));
+      });
+    }
+
+    function chefAffineEncode(text, a, b) {
+      a = Number(a); b = Number(b);
+      let ok = false;
+      for (let x = 1; x < 26; x += 1) if ((a * x) % 26 === 1) ok = true;
+      if (!ok) throw new Error("a must be coprime with 26 (1,3,5,7,9,11,15,17,19,21,23,25)");
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const base = ch <= "Z" ? 65 : 97;
+        return String.fromCharCode(base + ((a * (ch.charCodeAt(0) - base) + b) % 26));
+      });
+    }
+
+    function chefRailEncode(text, rails) {
+      rails = Number(rails) || 3;
+      if (rails < 2) return text;
+      const rows = Array.from({ length: rails }, () => []);
+      let r = 0;
+      let dir = 1;
+      for (const ch of String(text)) {
+        rows[r].push(ch);
+        r += dir;
+        if (r === 0 || r === rails - 1) dir *= -1;
+      }
+      return rows.map((row) => row.join("")).join("");
+    }
+
+    function chefXorRepeat(text, key) {
+      if (!key) throw new Error("XOR key required");
+      return [...String(text)].map((ch, i) => String.fromCharCode(ch.charCodeAt(0) ^ key.charCodeAt(i % key.length))).join("");
+    }
+
+    function chefMorseFwd() {
+      const fwd = {};
+      MORSE_AZ.forEach((code, i) => { fwd[ALPHA[i]] = code; });
+      Object.entries(MORSE_MAP).forEach(([code, ch]) => { if (!fwd[ch]) fwd[ch] = code; });
+      fwd[" "] = "/";
+      return fwd;
+    }
+
+    function chefToMorse(text) {
+      const fwd = chefMorseFwd();
+      return [...String(text).toUpperCase()].map((ch) => fwd[ch] || "").filter(Boolean).join(" ");
+    }
+
+    function chefFromMorse(text) {
+      return String(text).trim().split(/\s+/).map((t) => (t in MORSE_MAP ? MORSE_MAP[t] : t === "/" ? " " : "?")).join("");
+    }
+
+    function chefBaconEncode(text) {
+      return [...String(text).toUpperCase()].map((ch) => {
+        const i = ALPHA.indexOf(ch);
+        if (i < 0) return "";
+        return i.toString(2).padStart(5, "0").replace(/0/g, "A").replace(/1/g, "B");
+      }).filter(Boolean).join(" ");
+    }
+
+    function chefBaconEncodeFull(text) {
+      const out = chefBaconEncode(text);
+      if (!out) throw new Error("No letters to encode");
+      return out;
+    }
+
+    function chefBaconDecodeText(text) {
+      const bits = String(text).toUpperCase().replace(/[^AB]/g, "");
+      if (!bits.length || bits.length % 5) throw new Error("Bacon groups must be multiples of 5 A/B");
+      let out = "";
+      for (let i = 0; i < bits.length; i += 5) {
+        const n = parseInt(bits.slice(i, i + 5).replace(/A/g, "0").replace(/B/g, "1"), 2);
+        out += n < 26 ? ALPHA[n] : "?";
+      }
+      return out;
+    }
+
+    function chefA1z26Encode(text) {
+      return [...String(text).toUpperCase()].map((ch) => {
+        const i = ALPHA.indexOf(ch);
+        return i >= 0 ? String(i + 1) : ch;
+      }).join(" ").replace(/ +/g, " ").replace(/ (\W)/g, "$1").trim();
+    }
+
+    function chefA1z26Decode(text) {
+      return String(text).replace(/\d{1,2}/g, (n) => {
+        const i = Number(n);
+        return i >= 1 && i <= 26 ? ALPHA[i - 1] : n;
+      });
+    }
+
+    function chefSubstitute(text, keyword, decode) {
+      const cipher = buildMonoAlphabet(keyword || "CIPHER");
+      const from = decode ? cipher : ALPHA;
+      const to = decode ? ALPHA : cipher;
+      return String(text).replace(/[a-z]/gi, (ch) => {
+        const up = ch.toUpperCase();
+        const pos = from.indexOf(up);
+        if (pos < 0 || pos >= to.length) return ch;
+        const mapped = to[pos];
+        return ch === up ? mapped : mapped.toLowerCase();
+      });
+    }
+
+    async function chefDigest(algo, text) {
+      const buf = await crypto.subtle.digest(algo, chefBytesOf(text));
+      return chefHex(buf);
+    }
+
+    async function chefAesKey(keyStr) {
+      const hex = String(keyStr || "").replace(/\s/g, "");
+      if (/^[0-9a-f]+$/i.test(hex) && [32, 48, 64].includes(hex.length)) return chefFromHexBytes(hex);
+      if (!hex) throw new Error("AES key required (passphrase, or 16/24/32-byte hex)");
+      return new Uint8Array(await crypto.subtle.digest("SHA-256", chefBytesOf(keyStr)));
+    }
+
+    async function chefAesEncrypt(plain, keyStr, ivHex) {
+      const raw = await chefAesKey(keyStr);
+      const key = await crypto.subtle.importKey("raw", raw, { name: "AES-CBC" }, false, ["encrypt"]);
+      const iv = ivHex ? chefFromHexBytes(ivHex) : crypto.getRandomValues(new Uint8Array(16));
+      if (iv.length !== 16) throw new Error("IV must be 16 bytes (32 hex characters)");
+      const ct = await crypto.subtle.encrypt({ name: "AES-CBC", iv }, key, chefBytesOf(plain));
+      return chefHex(iv) + chefHex(ct);
+    }
+
+    async function chefAesDecrypt(hexIn, keyStr, ivHex) {
+      const raw = await chefAesKey(keyStr);
+      const key = await crypto.subtle.importKey("raw", raw, { name: "AES-CBC" }, false, ["decrypt"]);
+      let data = chefFromHexBytes(hexIn);
+      let iv;
+      if (ivHex) {
+        iv = chefFromHexBytes(ivHex);
+      } else {
+        if (data.length < 32) throw new Error("Ciphertext too short (need IV + data as hex)");
+        iv = data.slice(0, 16);
+        data = data.slice(16);
+      }
+      if (iv.length !== 16) throw new Error("IV must be 16 bytes");
+      const pt = await crypto.subtle.decrypt({ name: "AES-CBC", iv }, key, data);
+      return chefDec.decode(pt);
+    }
+
+    async function chefHmac(text, key, hash) {
+      const algo = { name: "HMAC", hash };
+      const cryptoKey = await crypto.subtle.importKey("raw", chefBytesOf(key || "key"), algo, false, ["sign"]);
+      const sig = await crypto.subtle.sign("HMAC", cryptoKey, chefBytesOf(text));
+      return chefHex(sig);
+    }
+
+    async function chefPbkdf2(pass, salt, iter, length, hash) {
+      const key = await crypto.subtle.importKey("raw", chefBytesOf(pass), "PBKDF2", false, ["deriveBits"]);
+      const bits = await crypto.subtle.deriveBits(
+        { name: "PBKDF2", salt: chefBytesOf(salt || "salt"), iterations: Number(iter) || 1000, hash },
+        key,
+        (Number(length) || 32) * 8
+      );
+      return chefHex(bits);
+    }
+
+    function chefMd5(str) {
+      function toW(s) {
+        const n = ((s.length + 8) >> 6) + 1;
+        const w = new Array(n * 16).fill(0);
+        for (let i = 0; i < s.length; i += 1) w[i >> 2] |= s.charCodeAt(i) << ((i % 4) * 8);
+        w[s.length >> 2] |= 0x80 << ((s.length % 4) * 8);
+        w[n * 16 - 2] = s.length * 8;
+        return w;
+      }
+      function cmn(q, a, b, x, s, t) {
+        a = (a + q + x + t) | 0;
+        return (((a << s) | (a >>> (32 - s))) + b) | 0;
+      }
+      const ff = (a, b, c, d, x, s, t) => cmn((b & c) | (~b & d), a, b, x, s, t);
+      const gg = (a, b, c, d, x, s, t) => cmn((b & d) | (c & ~d), a, b, x, s, t);
+      const hh = (a, b, c, d, x, s, t) => cmn(b ^ c ^ d, a, b, x, s, t);
+      const ii = (a, b, c, d, x, s, t) => cmn(c ^ (b | ~d), a, b, x, s, t);
+      const x = toW(unescape(encodeURIComponent(str)));
+      let a = 1732584193, b = -271733879, c = -1732584194, d = 271733878;
+      for (let i = 0; i < x.length; i += 16) {
+        const oa = a, ob = b, oc = c, od = d;
+        a = ff(a, b, c, d, x[i], 7, -680876936); d = ff(d, a, b, c, x[i + 1], 12, -389564586);
+        c = ff(c, d, a, b, x[i + 2], 17, 606105819); b = ff(b, c, d, a, x[i + 3], 22, -1044525330);
+        a = ff(a, b, c, d, x[i + 4], 7, -176418897); d = ff(d, a, b, c, x[i + 5], 12, 1200080426);
+        c = ff(c, d, a, b, x[i + 6], 17, -1473231341); b = ff(b, c, d, a, x[i + 7], 22, -45705983);
+        a = ff(a, b, c, d, x[i + 8], 7, 1770035416); d = ff(d, a, b, c, x[i + 9], 12, -1958414417);
+        c = ff(c, d, a, b, x[i + 10], 17, -42063); b = ff(b, c, d, a, x[i + 11], 22, -1990404162);
+        a = ff(a, b, c, d, x[i + 12], 7, 1804603682); d = ff(d, a, b, c, x[i + 13], 12, -40341101);
+        c = ff(c, d, a, b, x[i + 14], 17, -1502002290); b = ff(b, c, d, a, x[i + 15], 22, 1236535329);
+        a = gg(a, b, c, d, x[i + 1], 5, -165796510); d = gg(d, a, b, c, x[i + 6], 9, -1069501632);
+        c = gg(c, d, a, b, x[i + 11], 14, 643717713); b = gg(b, c, d, a, x[i], 20, -373897302);
+        a = gg(a, b, c, d, x[i + 5], 5, -701558691); d = gg(d, a, b, c, x[i + 10], 9, 38016083);
+        c = gg(c, d, a, b, x[i + 15], 14, -660478335); b = gg(b, c, d, a, x[i + 4], 20, -405537848);
+        a = gg(a, b, c, d, x[i + 9], 5, 568446438); d = gg(d, a, b, c, x[i + 14], 9, -1019803690);
+        c = gg(c, d, a, b, x[i + 3], 14, -187363961); b = gg(b, c, d, a, x[i + 8], 20, 1163531501);
+        a = gg(a, b, c, d, x[i + 13], 5, -1444681467); d = gg(d, a, b, c, x[i + 2], 9, -51403784);
+        c = gg(c, d, a, b, x[i + 7], 14, 1735328473); b = gg(b, c, d, a, x[i + 12], 20, -1926607734);
+        a = hh(a, b, c, d, x[i + 5], 4, -378558); d = hh(d, a, b, c, x[i + 8], 11, -2022574463);
+        c = hh(c, d, a, b, x[i + 11], 16, 1839030562); b = hh(b, c, d, a, x[i + 14], 23, -35309556);
+        a = hh(a, b, c, d, x[i + 1], 4, -1530992060); d = hh(d, a, b, c, x[i + 4], 11, 1272893353);
+        c = hh(c, d, a, b, x[i + 7], 16, -155497632); b = hh(b, c, d, a, x[i + 10], 23, -1094730640);
+        a = hh(a, b, c, d, x[i + 13], 4, 681279174); d = hh(d, a, b, c, x[i], 11, -358537222);
+        c = hh(c, d, a, b, x[i + 3], 16, -722521979); b = hh(b, c, d, a, x[i + 6], 23, 76029189);
+        a = hh(a, b, c, d, x[i + 9], 4, -640364487); d = hh(d, a, b, c, x[i + 12], 11, -421815835);
+        c = hh(c, d, a, b, x[i + 15], 16, 530742520); b = hh(b, c, d, a, x[i + 2], 23, -995338651);
+        a = ii(a, b, c, d, x[i], 6, -198630844); d = ii(d, a, b, c, x[i + 7], 10, 1126891415);
+        c = ii(c, d, a, b, x[i + 14], 15, -1416354905); b = ii(b, c, d, a, x[i + 5], 21, -57434055);
+        a = ii(a, b, c, d, x[i + 12], 6, 1700485571); d = ii(d, a, b, c, x[i + 3], 10, -1894986606);
+        c = ii(c, d, a, b, x[i + 10], 15, -1051523); b = ii(b, c, d, a, x[i + 1], 21, -2054922799);
+        a = ii(a, b, c, d, x[i + 8], 6, 1873313359); d = ii(d, a, b, c, x[i + 15], 10, -30611744);
+        c = ii(c, d, a, b, x[i + 6], 15, -1560198380); b = ii(b, c, d, a, x[i + 13], 21, 1309151649);
+        a = ii(a, b, c, d, x[i + 4], 6, -145523070); d = ii(d, a, b, c, x[i + 11], 10, -1120210379);
+        c = ii(c, d, a, b, x[i + 2], 15, 718787259); b = ii(b, c, d, a, x[i + 9], 21, -343485551);
+        a = (a + oa) | 0; b = (b + ob) | 0; c = (c + oc) | 0; d = (d + od) | 0;
+      }
+      function hex(n) {
+        let s = "";
+        for (let j = 0; j < 4; j += 1) s += ((n >> (j * 8)) & 255).toString(16).padStart(2, "0");
+        return s;
+      }
+      return hex(a) + hex(b) + hex(c) + hex(d);
+    }
+
+    function chefAdler32(text) {
+      let a = 1;
+      let b = 0;
+      for (const byte of chefBytesOf(text)) {
+        a = (a + byte) % 65521;
+        b = (b + a) % 65521;
+      }
+      return ((b << 16) | a) >>> 0;
+    }
+
+    function chefFreq(text) {
+      const letters = lettersOnly(text);
+      if (!letters) return "(no A–Z letters)";
+      const counts = Object.fromEntries([...ALPHA].map((ch) => [ch, 0]));
+      for (const ch of letters) counts[ch] += 1;
+      return [...ALPHA]
+        .map((ch) => `${ch}  ${counts[ch]}  ${(counts[ch] / letters.length * 100).toFixed(1)}%`)
+        .join("\n");
+    }
+
+    const CHEF_IMPL = {
+      "To Hex": { args: [chefArg("delim", "Delimiter", "Space", "select", { options: ["Space", "None", "Colon", "Comma"] })], run: (t, a) => chefJoin(chefBytesOf(t), chefDelim(a.delim)) },
+      "From Hex": { args: [], run: (t) => chefDec.decode(chefFromHexBytes(t)) },
+      "To Binary": { args: [], run: (t) => [...chefBytesOf(t)].map((b) => b.toString(2).padStart(8, "0")).join(" ") },
+      "From Binary": { args: [], run: (t) => {
+        const bits = compactBits(t);
+        if (bits.length % 8 || /[^01]/.test(bits)) throw new Error("Need 8-bit groups of 0/1");
+        const bytes = [];
+        for (let i = 0; i < bits.length; i += 8) bytes.push(parseInt(bits.slice(i, i + 8), 2));
+        return chefDec.decode(new Uint8Array(bytes));
+      } },
+      "To Octal": { args: [], run: (t) => [...chefBytesOf(t)].map((b) => b.toString(8)).join(" ") },
+      "From Octal": { args: [], run: (t) => t.trim().split(/[\s,]+/).filter(Boolean).map((p) => String.fromCharCode(parseInt(p, 8))).join("") },
+      "To Decimal": { args: [], run: (t) => [...chefBytesOf(t)].map(String).join(" ") },
+      "From Decimal": { args: [], run: (t) => t.trim().split(/[\s,;]+/).filter(Boolean).map((n) => String.fromCharCode(Number(n))).join("") },
+      "To Charcode": { args: [], run: (t) => [...String(t)].map((ch) => ch.charCodeAt(0)).join(" ") },
+      "From Charcode": { args: [], run: (t) => t.trim().split(/[\s,;]+/).filter(Boolean).map((n) => String.fromCharCode(Number(n))).join("") },
+      "To Base64": { args: [], run: (t) => btoa(unescape(encodeURIComponent(t))) },
+      "From Base64": { args: [], run: (t) => decodeURIComponent(escape(atob(String(t).replace(/\s/g, "")))) },
+      "To Base32": { args: [], run: (t) => chefToBase32(t) },
+      "From Base32": { args: [], run: (t) => chefFromBase32(t) },
+      "From Base58": { args: [], run: (t) => {
+        const out = decodeBase58(t);
+        if (out == null) throw new Error("Not Base58");
+        return out;
+      } },
+      "From Base85": { args: [], run: (t) => {
+        const out = decodeBase85(t);
+        if (out == null) throw new Error("Not Base85");
+        return out;
+      } },
+      "From Quoted Printable": { args: [], run: (t) => String(t).replace(/=\r?\n/g, "").replace(/=([0-9A-F]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16))) },
+      "URL Encode": { args: [], run: (t) => encodeURIComponent(t) },
+      "URL Decode": { args: [], run: (t) => decodeURIComponent(String(t).replace(/\+/g, " ")) },
+      "To HTML Entity": { args: [], run: (t) => [...String(t)].map((ch) => {
+        if (ch === "&") return "&amp;";
+        if (ch === "<") return "&lt;";
+        if (ch === ">") return "&gt;";
+        if (ch === '"') return "&quot;";
+        const c = ch.charCodeAt(0);
+        return c > 127 ? `&#${c};` : ch;
+      }).join("") },
+      "From HTML Entity": { args: [], run: (t) => {
+        const el = document.createElement("textarea");
+        el.innerHTML = t;
+        return el.value;
+      } },
+      "Escape Unicode Characters": { args: [], run: (t) => [...String(t)].map((ch) => {
+        const c = ch.charCodeAt(0);
+        return c > 127 ? `\\u${c.toString(16).padStart(4, "0")}` : ch;
+      }).join("") },
+      "Unescape Unicode Characters": { args: [], run: (t) => String(t).replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16))) },
+      "To Hexdump": { args: [], run: (t) => {
+        const bytes = chefBytesOf(t);
+        let out = "";
+        for (let i = 0; i < bytes.length; i += 16) {
+          const slice = bytes.slice(i, i + 16);
+          const hex = [...slice].map((b) => b.toString(16).padStart(2, "0")).join(" ").padEnd(47, " ");
+          const ascii = [...slice].map((b) => (b >= 32 && b < 127 ? String.fromCharCode(b) : ".")).join("");
+          out += `${i.toString(16).padStart(8, "0")}  ${hex}  ${ascii}\n`;
+        }
+        return out.trimEnd();
+      } },
+      "AES Encrypt": {
+        args: [chefArg("key", "Key", "secret"), chefArg("iv", "IV (hex, blank=random)", "")],
+        run: (t, a) => chefAesEncrypt(t, a.key, a.iv)
+      },
+      "AES Decrypt": {
+        args: [chefArg("key", "Key", "secret"), chefArg("iv", "IV (hex, blank=prefix)", "")],
+        run: (t, a) => chefAesDecrypt(t, a.key, a.iv)
+      },
+      "ROT13": { args: [chefArg("amount", "Amount", 13, "number")], run: (t, a) => chefRotAlpha(t, a.amount) },
+      "ROR13": { args: [], run: (t) => chefRotAlpha(t, -13) },
+      "ROT47": { args: [], run: (t) => rot47(t) },
+      "XOR": { args: [chefArg("key", "Key", "key")], run: (t, a) => chefXorRepeat(t, a.key) },
+      "Vigenère Encode": { args: [chefArg("key", "Key", "LEMON")], run: (t, a) => chefVigenere(t, a.key, false) },
+      "Vigenère Decode": { args: [chefArg("key", "Key", "LEMON")], run: (t, a) => chefVigenere(t, a.key, true) },
+      "Atbash Cipher": { args: [], run: (t) => atbash(t) },
+      "Affine Cipher Encode": { args: [chefArg("a", "a", 5, "number"), chefArg("b", "b", 8, "number")], run: (t, a) => chefAffineEncode(t, a.a, a.b) },
+      "Affine Cipher Decode": { args: [chefArg("a", "a", 5, "number"), chefArg("b", "b", 8, "number")], run: (t, a) => affineDecrypt(t, Number(a.a), Number(a.b)) },
+      "A1Z26 Cipher Encode": { args: [], run: (t) => chefA1z26Encode(t) },
+      "A1Z26 Cipher Decode": { args: [], run: (t) => chefA1z26Decode(t) },
+      "Rail Fence Cipher Encode": { args: [chefArg("rails", "Rails", 3, "number")], run: (t, a) => chefRailEncode(t, a.rails) },
+      "Rail Fence Cipher Decode": { args: [chefArg("rails", "Rails", 3, "number")], run: (t, a) => railFenceDecrypt(t, Number(a.rails) || 3) },
+      "To Morse Code": { args: [], run: (t) => chefToMorse(t) },
+      "From Morse Code": { args: [], run: (t) => chefFromMorse(t) },
+      "Bacon Cipher Encode": { args: [], run: (t) => chefBaconEncodeFull(t) },
+      "Bacon Cipher Decode": { args: [], run: (t) => chefBaconDecodeText(t) },
+      "Substitute": { args: [chefArg("key", "Keyword", "CIPHER")], run: (t, a) => chefSubstitute(t, a.key, false) },
+      "Derive PBKDF2 key": {
+        args: [chefArg("salt", "Salt", "salt"), chefArg("iter", "Iterations", 1000, "number"), chefArg("len", "Bytes", 32, "number")],
+        run: (t, a) => chefPbkdf2(t, a.salt, a.iter, a.len, "SHA-256")
+      },
+      "JWT Decode": { args: [], run: (t) => {
+        const parts = String(t).trim().split(".");
+        if (parts.length < 2) throw new Error("Not a JWT");
+        const dec = (p) => JSON.parse(chefDec.decode(chefFromHexBytes(
+          [...atob(p.replace(/-/g, "+").replace(/_/g, "/") + "==".slice((p.length % 4) || 4))].map((c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("")
+        )));
+        const b64url = (p) => decodeURIComponent(escape(atob(p.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - p.length % 4) % 4))));
+        return JSON.stringify({ header: JSON.parse(b64url(parts[0])), payload: JSON.parse(b64url(parts[1])) }, null, 2);
+      } },
+      "To Upper case": { args: [], run: (t) => t.toUpperCase() },
+      "To Lower case": { args: [], run: (t) => t.toLowerCase() },
+      "Swap case": { args: [], run: (t) => [...t].map((ch) => (ch === ch.toUpperCase() ? ch.toLowerCase() : ch.toUpperCase())).join("") },
+      "Reverse": { args: [], run: (t) => [...t].reverse().join("") },
+      "Remove whitespace": { args: [], run: (t) => t.replace(/\s+/g, "") },
+      "Remove null bytes": { args: [], run: (t) => t.replace(/\0/g, "") },
+      "Add line numbers": { args: [], run: (t) => t.split("\n").map((line, i) => `${i + 1}: ${line}`).join("\n") },
+      "Remove line numbers": { args: [], run: (t) => t.replace(/^\s*\d+[:.\s]+/gm, "") },
+      "Sort": { args: [], run: (t) => t.split("\n").sort().join("\n") },
+      "Shuffle": { args: [], run: (t) => {
+        const rows = t.split("\n");
+        for (let i = rows.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [rows[i], rows[j]] = [rows[j], rows[i]];
+        }
+        return rows.join("\n");
+      } },
+      "Unique": { args: [], run: (t) => [...new Set(t.split("\n"))].join("\n") },
+      "Split": { args: [chefArg("delim", "Delimiter", ",")], run: (t, a) => t.split(a.delim || ",").join("\n") },
+      "Head": { args: [chefArg("n", "Lines", 10, "number")], run: (t, a) => t.split("\n").slice(0, Number(a.n) || 10).join("\n") },
+      "Tail": { args: [chefArg("n", "Lines", 10, "number")], run: (t, a) => t.split("\n").slice(-(Number(a.n) || 10)).join("\n") },
+      "Count occurrences": { args: [chefArg("needle", "Find", "")], run: (t, a) => {
+        if (!a.needle) return String(t.length);
+        return String(t.split(a.needle).length - 1);
+      } },
+      "Find / Replace": { args: [chefArg("find", "Find", ""), chefArg("repl", "Replace", "")], run: (t, a) => (a.find ? t.split(a.find).join(a.repl) : t) },
+      "To Snake case": { args: [], run: (t) => t.replace(/([a-z])([A-Z])/g, "$1_$2").replace(/[\s-]+/g, "_").toLowerCase() },
+      "To Camel case": { args: [], run: (t) => t.toLowerCase().replace(/[^a-z0-9]+(.)/gi, (_, c) => c.toUpperCase()) },
+      "To Kebab case": { args: [], run: (t) => t.replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase() },
+      "JSON Beautify": { args: [], run: (t) => JSON.stringify(JSON.parse(t), null, 2) },
+      "JSON Minify": { args: [], run: (t) => JSON.stringify(JSON.parse(t)) },
+      "Strip HTML tags": { args: [], run: (t) => t.replace(/<[^>]+>/g, "") },
+      "Escape string": { args: [], run: (t) => JSON.stringify(t).slice(1, -1) },
+      "Unescape string": { args: [], run: (t) => JSON.parse(`"${t.replaceAll('"', '\\"')}"`) },
+      "From UNIX Timestamp": { args: [], run: (t) => {
+        const n = Number(String(t).trim());
+        if (!Number.isFinite(n)) throw new Error("Not a timestamp");
+        const ms = n > 1e12 ? n : n * 1000;
+        return new Date(ms).toISOString();
+      } },
+      "To UNIX Timestamp": { args: [], run: (t) => String(Math.floor(new Date(t).getTime() / 1000)) },
+      "Get Time": { args: [], run: () => new Date().toISOString() },
+      "Generate UUID": { args: [], run: () => crypto.randomUUID() },
+      "Extract IP addresses": { args: [], run: (t) => (t.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g) || []).join("\n") },
+      "Extract email addresses": { args: [], run: (t) => (t.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || []).join("\n") },
+      "Extract URLs": { args: [], run: (t) => (t.match(/https?:\/\/[^\s<>"']+/gi) || []).join("\n") },
+      "Extract hashes": { args: [], run: (t) => (t.match(/\b[0-9a-f]{32,128}\b/gi) || []).join("\n") },
+      "MD5": { args: [], run: (t) => chefMd5(t) },
+      "SHA1": { args: [], run: (t) => chefDigest("SHA-1", t) },
+      "SHA2": { args: [chefArg("size", "Size", "256", "select", { options: ["256", "384", "512"] })], run: (t, a) => chefDigest(`SHA-${a.size}`, t) },
+      "HMAC": { args: [chefArg("key", "Key", "key"), chefArg("hash", "Hash", "SHA-256", "select", { options: ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] })], run: (t, a) => chefHmac(t, a.key, a.hash) },
+      "Adler-32 Checksum": { args: [], run: (t) => chefAdler32(t).toString(16).padStart(8, "0") },
+      "Analyse hash": { args: [], run: (t) => {
+        const h = String(t).replace(/\s/g, "");
+        const fam = HASH_LEN[h.length];
+        return fam ? `${h.length} hex chars → ${fam.join(", ")}` : `Length ${h.length}: unknown family`;
+      } },
+      "Entropy": { args: [], run: (t) => shannonEntropy(t).toFixed(4) },
+      "Frequency distribution": { args: [], run: (t) => chefFreq(t) },
+      "Index of Coincidence": { args: [], run: (t) => indexOfCoincidence(t).toFixed(4) },
+      "Chi Square": { args: [], run: (t) => {
+        const s = chiSquared(t);
+        return Number.isFinite(s) ? s.toFixed(2) : "n/a";
+      } },
+      "Magic": {
+        args: [],
+        run: async (t) => {
+          const result = await CipherDetector.inspect(t);
+          const guess = (result.guesses || []).find((g) => g.recipe?.length && g.decoded && looksEnglish(g.decoded).ok)
+            || (result.guesses || []).find((g) => g.recipe?.length && g.decoded)
+            || (result.guesses || []).find((g) => g.decoded && g.family !== "metric");
+          if (!guess?.decoded) throw new Error("Magic found no readable decode. Try Hex, Base64, ROT13, or a longer classroom cipher.");
+          return guess.decoded;
+        }
+      },
+      "Comment": { args: [chefArg("note", "Note", "")], run: (t) => t },
+      "To Quoted Printable": { args: [], run: (t) => [...chefBytesOf(t)].map((b) => (b < 32 || b > 126 || b === 61 ? `=${b.toString(16).toUpperCase().padStart(2, "0")}` : String.fromCharCode(b))).join("") },
+      "Defang URL": { args: [], run: (t) => t.replace(/https?:\/\//gi, (m) => m.replace("://", "[://]")).replace(/\./g, "[.]") },
+      "Fang URL": { args: [], run: (t) => t.replace(/\[:\/\/\]/g, "://").replace(/\[\.\]/g, ".") },
+      "Convert to NATO alphabet": { args: [], run: (t) => {
+        const nato = "Alfa Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliett Kilo Lima Mike November Oscar Papa Quebec Romeo Sierra Tango Uniform Victor Whiskey X-ray Yankee Zulu".split(" ");
+        return [...String(t).toUpperCase()].map((ch) => {
+          const i = ALPHA.indexOf(ch);
+          return i >= 0 ? nato[i] : ch;
+        }).join(" ");
+      } }
+    };
+
+    class ChefKitchen {
+      constructor() {
+        this.els = {
+          search: document.getElementById("chefSearch"),
+          list: document.getElementById("chefOpsList"),
+          recipe: document.getElementById("chefRecipe"),
+          input: document.getElementById("chefInput"),
+          output: document.getElementById("chefOutput"),
+          status: document.getElementById("chefStatus"),
+          auto: document.getElementById("chefAuto")
+        };
+        if (!this.els.list) return;
+        this.recipe = [];
+        this.seq = 0;
+        this.gen = 0;
+        this.search = "";
+        this.renderOps();
+        this.renderRecipe();
+        this.#bind();
+      }
+
+      #bind() {
+        this.els.search.addEventListener("input", () => {
+          this.search = this.els.search.value;
+          this.renderOps();
+        });
+        this.els.list.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-op]");
+          if (!btn) return;
+          this.addOp(btn.dataset.op);
+        });
+        this.els.input.addEventListener("input", () => this.maybeBake());
+        document.getElementById("chefBake").addEventListener("click", () => this.bake());
+        document.getElementById("chefClearRecipe").addEventListener("click", () => {
+          this.recipe = [];
+          this.renderRecipe();
+          this.maybeBake();
+        });
+        document.getElementById("chefClearIn").addEventListener("click", () => {
+          this.els.input.value = "";
+          this.maybeBake();
+        });
+        document.getElementById("chefCopyOut").addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(this.els.output.value);
+            this.setStatus("Copied");
+          } catch {
+            this.setStatus("Copy failed", true);
+          }
+        });
+        this.els.auto.addEventListener("change", () => this.maybeBake());
+        document.getElementById("chefSamples").addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-sample]");
+          if (btn) this.loadSample(btn.dataset.sample);
+        });
+        this.els.recipe.addEventListener("click", (e) => {
+          const stepEl = e.target.closest(".chef-step");
+          if (!stepEl) return;
+          const id = Number(stepEl.dataset.id);
+          if (e.target.closest("[data-del]")) {
+            this.recipe = this.recipe.filter((s) => s.id !== id);
+            this.renderRecipe();
+            this.maybeBake();
+          } else if (e.target.closest("[data-up]")) {
+            this.move(id, -1);
+          } else if (e.target.closest("[data-down]")) {
+            this.move(id, 1);
+          }
+        });
+        this.els.recipe.addEventListener("change", (e) => {
+          const stepEl = e.target.closest(".chef-step");
+          if (!stepEl) return;
+          const step = this.recipe.find((s) => s.id === Number(stepEl.dataset.id));
+          if (!step) return;
+          if (e.target.dataset.disable !== undefined) {
+            step.enabled = e.target.checked;
+          } else if (e.target.dataset.arg) {
+            step.args[e.target.dataset.arg] = e.target.value;
+          }
+          this.maybeBake();
+        });
+      }
+
+      addOp(name) {
+        if (name === "Magic") {
+          this.runMagic();
+          return;
+        }
+        const impl = CHEF_IMPL[name];
+        if (!impl) {
+          this.setStatus(`${name} is in the CyberChef catalog, but this bench cannot bake it yet.`, true);
+          return;
+        }
+        const args = Object.fromEntries((impl.args || []).map((a) => [a.key, a.value]));
+        this.recipe.push({ id: ++this.seq, name, args, enabled: true });
+        this.renderRecipe();
+        this.maybeBake();
+      }
+
+      loadRecipe(steps) {
+        this.recipe = [];
+        for (const s of steps || []) {
+          const impl = CHEF_IMPL[s.name];
+          if (!impl) continue;
+          const args = Object.fromEntries((impl.args || []).map((a) => [a.key, a.value]));
+          Object.assign(args, s.args || {});
+          this.recipe.push({ id: ++this.seq, name: s.name, args, enabled: true });
+        }
+        this.renderRecipe();
+        this.maybeBake();
+      }
+
+      async runMagic() {
+        const input = this.els.input.value.trim();
+        if (!input) {
+          this.setStatus("Paste input first, then click Magic.", true);
+          return;
+        }
+        const result = await CipherDetector.inspect(input);
+        const guess = (result.guesses || []).find((g) => g.recipe?.length && g.decoded && looksEnglish(g.decoded).ok)
+          || (result.guesses || []).find((g) => g.recipe?.length && g.decoded);
+        if (!guess?.recipe?.length) {
+          this.setStatus("Magic could not unwrap this. It may already be plaintext, or it needs a keyword.", true);
+          return;
+        }
+        this.loadRecipe(guess.recipe);
+        this.setStatus(`Magic: ${guess.title}`);
+      }
+
+      move(id, dir) {
+        const i = this.recipe.findIndex((s) => s.id === id);
+        const j = i + dir;
+        if (i < 0 || j < 0 || j >= this.recipe.length) return;
+        [this.recipe[i], this.recipe[j]] = [this.recipe[j], this.recipe[i]];
+        this.renderRecipe();
+        this.maybeBake();
+      }
+
+      renderOps() {
+        const q = this.search.trim().toLowerCase();
+        this.els.list.innerHTML = CHEF_CATEGORIES.map((cat) => {
+          const ops = cat.ops.filter((n) => !q || n.toLowerCase().includes(q));
+          if (!ops.length) return "";
+          const open = q || cat.name === "Favourites" || cat.name === "Encryption / Encoding";
+          return `<details class="chef-cat"${open ? " open" : ""}>
+            <summary>${escapeHtml(cat.name)} <em>${ops.length}</em></summary>
+            ${ops.map((n) => `<button type="button" class="chef-op ${CHEF_IMPL[n] ? "ready" : "ghost"}" data-op="${escapeHtml(n)}" title="${CHEF_IMPL[n] ? "Add to recipe" : "Listed from CyberChef — not baked here yet"}">${escapeHtml(n)}</button>`).join("")}
+          </details>`;
+        }).join("") || `<p class="chef-empty">No operations match.</p>`;
+      }
+
+      renderRecipe() {
+        if (!this.recipe.length) {
+          this.els.recipe.innerHTML = `<p class="chef-empty">Click an operation on the left to add it. Chain them like CyberChef: output of one step is the input of the next.</p>`;
+          return;
+        }
+        this.els.recipe.innerHTML = this.recipe.map((step) => {
+          const impl = CHEF_IMPL[step.name];
+          const fields = (impl?.args || []).map((a) => {
+            if (a.type === "select") {
+              const opts = a.options.map((o) => `<option${String(step.args[a.key]) === o ? " selected" : ""}>${o}</option>`).join("");
+              return `<label><span>${escapeHtml(a.label)}</span><select data-arg="${a.key}">${opts}</select></label>`;
+            }
+            const t = a.type === "number" ? "number" : "text";
+            return `<label><span>${escapeHtml(a.label)}</span><input data-arg="${a.key}" type="${t}" value="${escapeHtml(step.args[a.key] ?? "")}" /></label>`;
+          }).join("");
+          return `<article class="chef-step${step.enabled ? "" : " off"}" data-id="${step.id}">
+            <div class="chef-step-bar">
+              <input type="checkbox" data-disable ${step.enabled ? "checked" : ""} title="Include in bake" />
+              <strong>${escapeHtml(step.name)}</strong>
+              <button type="button" data-up title="Move up">↑</button>
+              <button type="button" data-down title="Move down">↓</button>
+              <button type="button" data-del title="Remove">×</button>
+            </div>
+            ${fields ? `<div class="chef-args">${fields}</div>` : ""}
+          </article>`;
+        }).join("");
+      }
+
+      setStatus(msg, err = false) {
+        this.els.status.textContent = msg || "";
+        this.els.status.classList.toggle("err", Boolean(err));
+      }
+
+      maybeBake() {
+        if (this.els.auto.checked) this.bake();
+      }
+
+      loadSample(kind) {
+        this.recipe = [];
+        const add = (name, args = {}) => {
+          const impl = CHEF_IMPL[name];
+          const base = Object.fromEntries((impl.args || []).map((a) => [a.key, a.value]));
+          this.recipe.push({ id: ++this.seq, name, args: { ...base, ...args }, enabled: true });
+        };
+        if (kind === "rot13") {
+          this.els.input.value = "Gur rntyr unf ynaqrq";
+          add("ROT13");
+        } else if (kind === "b64") {
+          this.els.input.value = "R3VwdGxla2g=";
+          add("From Base64");
+        } else if (kind === "aes") {
+          this.els.input.value = "attack at dawn";
+          add("AES Encrypt", { key: "secret" });
+        } else if (kind === "vig") {
+          this.els.input.value = "LXFOPVEFRNHR";
+          add("Vigenère Decode", { key: "LEMON" });
+        }
+        this.renderRecipe();
+        this.bake();
+      }
+
+      async bake() {
+        const gen = ++this.gen;
+        let value = this.els.input.value;
+        const used = this.recipe.filter((s) => s.enabled);
+        try {
+          for (const step of used) {
+            const impl = CHEF_IMPL[step.name];
+            if (!impl) throw new Error(`${step.name} cannot bake here`);
+            value = await impl.run(value, step.args);
+            value = value == null ? "" : String(value);
+          }
+          if (gen !== this.gen) return;
+          this.els.output.value = value;
+          this.setStatus(used.length ? `${used.length} step${used.length === 1 ? "" : "s"}` : "passthrough");
+        } catch (err) {
+          if (gen !== this.gen) return;
+          this.els.output.value = "";
+          this.setStatus(err.message || String(err), true);
+        }
+      }
+    }
+
+    window.guptlekhKitchen = new ChefKitchen();
   </script>
 </body>
 </html>
