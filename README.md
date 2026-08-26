@@ -11,17 +11,17 @@ A quiet night lab in one page. Paste a string you found. Guptlekh names what it 
 - **On your computer:** open `index.html` in a browser. That is the whole lab.
 - **On the web:** host this folder on **GitHub Pages** from the `main` branch. Typical address: [https://utsavmehta1975.github.io/utsav-cipher-lab/](https://utsavmehta1975.github.io/utsav-cipher-lab/)
 
-No install. No login. Stay on this page and jump with **Read**, **Kitchen**, and **Work**.
+No install. No login. Stay on this page and jump with **Magic**, **Kitchen**, and **Work**.
 
 ---
 
 ## Three places
 
-### 1. Read
+### 1. Magic Tool (Read)
 
-Paste unknown text. Guptlekh tries to name it.
+Paste unknown ciphertext. Optionally add a key. Press **Magic Tool**.
 
-Reading starts as you type. Or press **Read this**.
+Guptlekh names the algorithm (confidence + plaintext + recipe). **Bake in kitchen** loads that recipe. Or call `detectAlgorithm(text, key?)` from the browser console.
 
 ### 2. Kitchen
 
@@ -84,6 +84,8 @@ Kitchen also has **Magic**. Paste input first, then click Magic. It fills the re
 **It cannot uniquely name AES vs ChaCha** from random-looking bits. Those (and DES, Blowfish, Salsa20, RSA ciphertext, and more) all look like noise unless there is a **header** or a **working key**.
 
 Kitchen lists many CyberChef names. **Bright** ones bake here. **Faded** ones stay in the catalog. Click a faded name and the bench will say it cannot bake it yet.
+
+See **[TODO.md](TODO.md)** for what already bakes, what is next, and what needs a library or a server.
 
 AES **does** bake in Kitchen when you give a key (try **Try AES**). Detect will only open AES if you supply that kind of key.
 
