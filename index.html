@@ -2673,84 +2673,68 @@
       return [...String(text)].map((ch) => String.fromCharCode(ch.charCodeAt(0) ^ key)).join("");
     }
 
-    function bifidDecode(cipher, period) {
-      const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
-      const clean = String(cipher).toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
-      if (clean.length < 4) return null;
+    function bifidAlphabet() {
+      return "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+    }
+
+    function bifidClean(text) {
+      return String(text).toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+    }
+
+    function bifidCoordMap() {
+      const alphabet = bifidAlphabet();
       const grid = {};
-      for (let i = 0; i < 25; i++) {
-        grid[alphabet[i]] = [Math.floor(i / 5), i % 5];
-      }
-      const p = period || 5;
-      const rows = [];
-      const cols = [];
-      for (let i = 0; i < clean.length; i += p) {
-        const block = clean.slice(i, Math.min(i + p, clean.length));
-        for (const ch of block) {
-          const pos = grid[ch];
-          if (pos) { rows.push(pos[0]); cols.push(pos[1]); }
-        }
-        const merged = [];
-        for (let j = 0; j < rows.length; j++) merged.push(rows[j], cols[j]);
-        for (let j = 0; j < block.length; j++) {
-          const r = merged[j * 2];
-          const c = merged[j * 2 + 1];
-          if (r != null && c != null) {
-            const idx = r * 5 + c;
-            if (idx < 25) {
-              clean[Math.floor(i / p) * p + j] = alphabet[idx];
-            }
-          }
-        }
-      }
+      for (let i = 0; i < 25; i += 1) grid[alphabet[i]] = [Math.floor(i / 5), i % 5];
+      return { alphabet, grid, letter: (r, c) => alphabet[r * 5 + c] };
+    }
+
+    /** Period Bifid encode (rows then cols, then pair). */
+    function bifidEncode(plain, period) {
+      const clean = bifidClean(plain);
+      if (!clean.length) return "";
+      const { grid, letter } = bifidCoordMap();
+      const p = Math.max(1, Number(period) || 5);
       let out = "";
-      const allRows = [];
-      const allCols = [];
       for (let i = 0; i < clean.length; i += p) {
-        const block = clean.slice(i, Math.min(i + p, clean.length));
-        const br = [];
-        const bc = [];
+        const block = clean.slice(i, i + p);
+        const rows = [];
+        const cols = [];
         for (const ch of block) {
           const pos = grid[ch];
-          if (pos) { br.push(pos[0]); bc.push(pos[1]); }
+          rows.push(pos[0]);
+          cols.push(pos[1]);
         }
-        const merged = [...br, ...bc];
-        for (let j = 0; j < block.length; j++) {
-          const r = merged[j * 2];
-          const c = merged[j * 2 + 1];
-          if (r != null && c != null) {
-            const idx = r * 5 + c;
-            out += idx < 25 ? alphabet[idx] : block[j];
-          }
+        const stream = rows.concat(cols);
+        for (let j = 0; j < block.length; j += 1) out += letter(stream[j * 2], stream[j * 2 + 1]);
+      }
+      return out;
+    }
+
+    /** Period Bifid decode (expand pairs → half rows / half cols). */
+    function bifidDecode(cipher, period) {
+      const clean = bifidClean(cipher);
+      if (clean.length < 4) return null;
+      const { grid, letter } = bifidCoordMap();
+      const p = Math.max(1, Number(period) || 5);
+      let out = "";
+      for (let i = 0; i < clean.length; i += p) {
+        const block = clean.slice(i, i + p);
+        const stream = [];
+        for (const ch of block) {
+          const pos = grid[ch];
+          if (!pos) return null;
+          stream.push(pos[0], pos[1]);
         }
+        const n = block.length;
+        const rows = stream.slice(0, n);
+        const cols = stream.slice(n);
+        for (let j = 0; j < n; j += 1) out += letter(rows[j], cols[j]);
       }
       return out || null;
     }
 
     function bifidDecodeSimple(cipher, period) {
-      const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
-      const clean = String(cipher).toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
-      if (clean.length < 4) return null;
-      const grid = {};
-      for (let i = 0; i < 25; i++) grid[alphabet[i]] = [Math.floor(i / 5), i % 5];
-      const posOf = (ch) => grid[ch];
-      const p = period || 5;
-      let out = "";
-      for (let i = 0; i < clean.length; i += p) {
-        const block = clean.slice(i, Math.min(i + p, clean.length));
-        const positions = block.split("").map((ch) => posOf(ch)).filter(Boolean);
-        if (positions.length !== block.length) return null;
-        const rows = positions.map((p) => p[0]);
-        const cols = positions.map((p) => p[1]);
-        const merged = [...rows, ...cols];
-        for (let j = 0; j < block.length; j++) {
-          const r = merged[j];
-          const c = merged[block.length + j];
-          const idx = r * 5 + c;
-          out += idx < 25 ? alphabet[idx] : "?";
-        }
-      }
-      return out || null;
+      return bifidDecode(cipher, period);
     }
 
     const HASH_LEN = {
@@ -5882,6 +5866,15 @@
       "From Morse Code": { args: [], run: (t) => chefFromMorse(t) },
       "Bacon Cipher Encode": { args: [], run: (t) => chefBaconEncodeFull(t) },
       "Bacon Cipher Decode": { args: [], run: (t) => chefBaconDecodeText(t) },
+      "Bifid Cipher Encode": { args: [chefArg("period", "Period", 5, "number")], run: (t, a) => bifidEncode(t, a.period) },
+      "Bifid Cipher Decode": {
+        args: [chefArg("period", "Period", 5, "number")],
+        run: (t, a) => {
+          const out = bifidDecode(t, a.period);
+          if (out == null) throw new Error("Bifid decode failed");
+          return out;
+        }
+      },
       "Substitute": { args: [chefArg("key", "Keyword", "CIPHER")], run: (t, a) => chefSubstitute(t, a.key, false) },
       "Derive PBKDF2 key": {
         args: [chefArg("salt", "Salt", "salt"), chefArg("iter", "Iterations", 1000, "number"), chefArg("len", "Bytes", 32, "number")],
@@ -5920,6 +5913,18 @@
       } },
       "Remove whitespace": { args: [], run: (t) => t.replace(/\s+/g, "") },
       "Remove null bytes": { args: [], run: (t) => t.replace(/\0/g, "") },
+      "Remove ANSI Escape Codes": { args: [], run: (t) => String(t).replace(/\u001b\[[0-9;]*[a-zA-Z]/g, "").replace(/\u001b\][^\u0007]*\u0007/g, "") },
+      "Swap endianness": {
+        args: [chefArg("width", "Word size", "4", "select", { options: ["2", "4", "8"] })],
+        run: (t, a) => {
+          const w = Number(a.width) || 4;
+          const bytes = [...chefBytesOf(t)];
+          if (bytes.length % w) throw new Error(`Length must be a multiple of ${w}`);
+          const out = [];
+          for (let i = 0; i < bytes.length; i += w) out.push(...bytes.slice(i, i + w).reverse());
+          return chefDec.decode(new Uint8Array(out));
+        }
+      },
       "Add line numbers": { args: [], run: (t) => t.split("\n").map((line, i) => `${i + 1}: ${line}`).join("\n") },
       "Remove line numbers": { args: [], run: (t) => t.replace(/^\s*\d+[:.\s]+/gm, "") },
       "Sort": { args: [], run: (t) => t.split("\n").sort().join("\n") },
@@ -5961,6 +5966,15 @@
       "Extract email addresses": { args: [], run: (t) => (t.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || []).join("\n") },
       "Extract URLs": { args: [], run: (t) => (t.match(/https?:\/\/[^\s<>"']+/gi) || []).join("\n") },
       "Extract hashes": { args: [], run: (t) => (t.match(/\b[0-9a-f]{32,128}\b/gi) || []).join("\n") },
+      "Extract MAC addresses": { args: [], run: (t) => (t.match(/\b(?:[0-9a-f]{2}([-:]))(?:[0-9a-f]{2}\1){4}[0-9a-f]{2}\b/gi) || []).join("\n") },
+      "Strings": {
+        args: [chefArg("min", "Min length", 4, "number")],
+        run: (t, a) => {
+          const min = Math.max(1, Number(a.min) || 4);
+          const re = new RegExp(`[\\x20-\\x7e]{${min},}`, "g");
+          return (String(t).match(re) || []).join("\n");
+        }
+      },
       "Extract domains": { args: [], run: (t) => {
         const re = /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b/gi;
         return [...new Set(t.match(re) || [])].join("\n");
@@ -5977,6 +5991,23 @@
       "SHA2": { args: [chefArg("size", "Size", "256", "select", { options: ["256", "384", "512"] })], run: (t, a) => chefDigest(`SHA-${a.size}`, t) },
       "HMAC": { args: [chefArg("key", "Key", "key"), chefArg("hash", "Hash", "SHA-256", "select", { options: ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] })], run: (t, a) => chefHmac(t, a.key, a.hash) },
       "Adler-32 Checksum": { args: [], run: (t) => chefAdler32(t).toString(16).padStart(8, "0") },
+      "Luhn Checksum": { args: [], run: (t) => {
+        const digits = String(t).replace(/\D/g, "");
+        if (!digits) throw new Error("Need digits for Luhn");
+        let sum = 0;
+        let alt = false;
+        for (let i = digits.length - 1; i >= 0; i -= 1) {
+          let n = Number(digits[i]);
+          if (alt) {
+            n *= 2;
+            if (n > 9) n -= 9;
+          }
+          sum += n;
+          alt = !alt;
+        }
+        const check = (10 - (sum % 10)) % 10;
+        return `sum=${sum} valid=${sum % 10 === 0} checkDigit=${check}`;
+      } },
       "Analyse hash": { args: [], run: (t) => {
         const h = String(t).replace(/\s/g, "");
         const fam = HASH_LEN[h.length];
@@ -6010,6 +6041,7 @@
       "To Quoted Printable": { args: [], run: (t) => [...chefBytesOf(t)].map((b) => (b < 32 || b > 126 || b === 61 ? `=${b.toString(16).toUpperCase().padStart(2, "0")}` : String.fromCharCode(b))).join("") },
       "Defang URL": { args: [], run: (t) => t.replace(/https?:\/\//gi, (m) => m.replace("://", "[://]")).replace(/\./g, "[.]") },
       "Fang URL": { args: [], run: (t) => t.replace(/\[:\/\/\]/g, "://").replace(/\[\.\]/g, ".") },
+      "Defang IP Addresses": { args: [], run: (t) => String(t).replace(/\b(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\b/g, "$1[.]$2[.]$3[.]$4") },
       "Convert to NATO alphabet": { args: [], run: (t) => {
         const nato = "Alfa Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliett Kilo Lima Mike November Oscar Papa Quebec Romeo Sierra Tango Uniform Victor Whiskey X-ray Yankee Zulu".split(" ");
         return [...String(t).toUpperCase()].map((ch) => {
