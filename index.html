@@ -2499,7 +2499,6 @@
       return out || null;
     }
 
-    const BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     function decodeBase62(raw) {
       const compact = String(raw).replace(/\s/g, "");
       if (compact.length < 4 || compact.length > 200) return null;
