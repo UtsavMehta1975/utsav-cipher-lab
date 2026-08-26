@@ -44,7 +44,13 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; color-scheme: dark; scroll-padding-top: 3.4rem; }
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+      scroll-padding-top: 3.4rem;
+      overflow-x: clip;
+      max-width: 100%;
+    }
 
     body {
       font-family: var(--font-body);
@@ -52,7 +58,8 @@
       color: var(--ink);
       background: var(--paper);
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow-x: clip;
+      max-width: 100%;
       line-height: 1.65;
       letter-spacing: 0.01em;
       padding-bottom: var(--safe-bottom);
@@ -83,6 +90,7 @@
       position: fixed;
       inset: 0;
       z-index: -2;
+      overflow: hidden;
       background:
         radial-gradient(ellipse 60% 45% at 18% 8%, rgba(90, 110, 98, 0.12), transparent 55%),
         radial-gradient(ellipse 50% 40% at 88% 10%, rgba(160, 140, 100, 0.06), transparent 50%),
@@ -94,12 +102,14 @@
 
     .grid-layer {
       position: fixed;
-      inset: -20%;
+      inset: 0;
       z-index: -1;
+      overflow: hidden;
       background-image:
         linear-gradient(var(--line) 1px, transparent 1px),
         linear-gradient(90deg, var(--line) 1px, transparent 1px);
       background-size: 72px 72px;
+      background-position: center;
       transform: translateX(var(--grid-drift)) rotate(calc(var(--shift) * 0.015));
       opacity: calc(0.22 + var(--glow) * 0.04);
       pointer-events: none;
@@ -138,6 +148,8 @@
       background: rgba(12, 15, 13, 0.92);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--line);
+      max-width: 100%;
+      overflow-x: clip;
     }
 
     .topbar {
@@ -151,6 +163,7 @@
       font-size: 0.72rem;
       letter-spacing: 0.06em;
       color: var(--ink-soft);
+      max-width: 100%;
     }
 
     .topbar .prompt {
@@ -204,6 +217,7 @@
 
     .wrap {
       width: min(1180px, calc(100% - 2rem));
+      max-width: 100%;
       margin: 0 auto;
       padding-left: env(safe-area-inset-left, 0px);
       padding-right: env(safe-area-inset-right, 0px);
@@ -212,16 +226,24 @@
     .hero {
       min-height: auto;
       display: grid;
-      grid-template-columns: minmax(280px, 1.05fr) minmax(280px, 0.95fr);
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
       align-items: start;
       padding: 1.35rem 0 2.2rem;
       position: relative;
       gap: 1.5rem;
+      max-width: 100%;
+      overflow-x: clip;
+    }
+
+    .hero-copy {
+      min-width: 0;
+      max-width: 100%;
     }
 
     .machine {
       position: relative;
       width: min(92vw, 440px);
+      max-width: 100%;
       margin: 0 auto;
       aspect-ratio: 1;
       border-radius: 50%;
@@ -1576,12 +1598,13 @@
     .chef {
       flex: 1 1 auto;
       display: grid;
-      grid-template-columns: minmax(200px, 0.9fr) minmax(210px, 1fr) minmax(240px, 1.15fr);
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.15fr);
       grid-template-rows: 1fr 1fr;
       gap: 0.5rem;
       min-height: 0;
       height: 100%;
       margin-top: 0;
+      max-width: 100%;
     }
     .chef-pane {
       display: flex;
@@ -1795,6 +1818,24 @@
       white-space: nowrap;
     }
     #chefStatus.err { color: #f0a8a0; }
+    .chef-pane.chef-flash {
+      box-shadow: inset 0 0 0 1px rgba(159, 184, 171, 0.45);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .chef-pane.chef-flash {
+        animation: chefFlash 0.55s ease;
+      }
+      @keyframes chefFlash {
+        0% { box-shadow: inset 0 0 0 1px rgba(159, 184, 171, 0.55); }
+        100% { box-shadow: none; }
+      }
+      .machine {
+        transition: box-shadow 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+      }
+      .disk.inner {
+        transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+      }
+    }
     .chef-pane > header .ghost-btn {
       padding: 0.28rem 0.45rem;
       font-size: 0.68rem;
@@ -6900,12 +6941,17 @@
           if (!stepEl) return;
           const step = this.recipe.find((s) => s.id === Number(stepEl.dataset.id));
           if (!step) return;
-          if (e.target.dataset.disable !== undefined) {
+          if (e.target.matches("[data-disable]")) {
             step.enabled = e.target.checked;
-          } else if (e.target.dataset.arg) {
-            step.args[e.target.dataset.arg] = e.target.value;
+            stepEl.classList.toggle("off", !step.enabled);
+            this.maybeBake();
+            return;
           }
-          this.maybeBake();
+          const key = e.target.dataset.arg;
+          if (key) {
+            step.args[key] = e.target.type === "number" ? Number(e.target.value) : e.target.value;
+            this.maybeBake();
+          }
         });
       }
 
@@ -6975,7 +7021,8 @@
 
       renderOps() {
         const q = this.search.trim().toLowerCase();
-        const cats = this.category === "All"
+        // Search spans the full catalog; chips only filter when the box is empty.
+        const cats = q || this.category === "All"
           ? CHEF_CATEGORIES
           : CHEF_CATEGORIES.filter((c) => c.name === this.category);
         const seen = new Set();
@@ -6995,7 +7042,7 @@
 
       renderRecipe() {
         if (!this.recipe.length) {
-          this.els.recipe.innerHTML = `<p class="chef-empty">Click an operation on the left to add it. Chain them like CyberChef: output of one step is the input of the next.</p>`;
+          this.els.recipe.innerHTML = `<p class="chef-empty">Add ops → chain → Bake.</p>`;
           return;
         }
         this.els.recipe.innerHTML = this.recipe.map((step) => {
@@ -7068,6 +7115,11 @@
           if (gen !== this.gen) return;
           this.els.output.value = value;
           this.setStatus(used.length ? `${used.length} step${used.length === 1 ? "" : "s"}` : "passthrough");
+          this.els.output.closest(".chef-pane")?.classList.remove("chef-flash");
+          void this.els.output.offsetWidth;
+          this.els.output.closest(".chef-pane")?.classList.add("chef-flash");
+          document.documentElement.style.setProperty("--glow", String(Math.min(4.2, 1 + used.length * 0.35 + Math.min(2, value.length * 0.01))));
+          document.documentElement.style.setProperty("--spark", `${((value.length % 26) - 13) * 0.4}deg`);
         } catch (err) {
           if (gen !== this.gen) return;
           this.els.output.value = "";
