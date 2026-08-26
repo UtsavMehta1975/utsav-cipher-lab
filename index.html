@@ -1107,6 +1107,71 @@
       align-items: center;
     }
     .detect-actions .cta { padding: 0.62rem 1rem; }
+    .magic-tool-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brass);
+      margin-bottom: 0.35rem;
+    }
+    .magic-tool-mark i {
+      width: 0.45rem;
+      height: 0.45rem;
+      border-radius: 50%;
+      background: var(--teal-deep);
+      box-shadow: 0 0 0 3px rgba(106, 154, 132, 0.22);
+    }
+    .conf-meter {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0.45rem;
+      align-items: center;
+      margin: 0.45rem 0 0.55rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-soft);
+    }
+    .conf-meter .bar {
+      height: 0.35rem;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+    .conf-meter .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal-deep), var(--brass));
+    }
+    .conf-meter.high .bar > span { width: 92%; }
+    .conf-meter.medium .bar > span { width: 58%; }
+    .conf-meter.weak .bar > span { width: 28%; background: var(--sand); }
+    .magic-plain-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin: 0.35rem 0 0.25rem;
+    }
+    .suggest-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 0.35rem 0 0.55rem;
+    }
+    .suggest-row span {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.22rem 0.45rem;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
+    }
     .sample-pills {
       display: flex;
       flex-wrap: wrap;
@@ -1648,7 +1713,7 @@
     <div class="wrap topbar">
       <a class="prompt" href="#">Guptlekh</a>
       <nav class="jump" aria-label="On this page">
-        <a href="#read">Read</a>
+        <a href="#read">Magic</a>
         <a href="#kitchen">Kitchen</a>
         <a href="#work">Work</a>
         <a href="#learn">Learn</a>
@@ -1677,17 +1742,19 @@
         or stack encrypt, decrypt, and encode steps in the kitchen, the way CyberChef does.
       </p>
 
-      <section class="box detect-box" id="read">
-        <p class="box-label">Read</p>
-        <h3>Paste anything unknown</h3>
+      <section class="box detect-box magic-tool" id="read">
+        <p class="box-label">Magic Tool</p>
+        <div class="magic-tool-mark"><i aria-hidden="true"></i> Algorithm detector</div>
+        <h3>Paste ciphertext · Detect what it is</h3>
         <p>
           Magic unwraps encodings, then names the classroom cipher if the inner text reads as English.
           Optional key: if you already know it, Detect tries that first.
+          Results show confidence, plaintext, and a CyberChef-style recipe you can bake in the kitchen.
         </p>
         <div class="field-row">
           <label>
-            <span>Unknown text</span>
-            <textarea id="detectInput" placeholder="Paste here. Reading starts as you type…"></textarea>
+            <span>Ciphertext / unknown text</span>
+            <textarea id="detectInput" placeholder="Paste ciphertext here. Detection starts as you type…"></textarea>
           </label>
           <label>
             <span>Key (optional)</span>
@@ -1695,7 +1762,8 @@
           </label>
         </div>
         <div class="detect-actions">
-          <button type="button" class="cta" id="detectBtn">Read this</button>
+          <button type="button" class="cta" id="detectBtn">Magic Tool</button>
+          <button type="button" class="ghost-btn" id="detectClearBtn">Clear</button>
         </div>
         <div class="sample-pills" id="detectSamples">
           <button type="button" data-sample="caesar">Try Caesar</button>
@@ -1704,6 +1772,8 @@
           <button type="button" data-sample="hex">Try hex</button>
           <button type="button" data-sample="rot13">Try ROT13</button>
           <button type="button" data-sample="hash">Try a hash</button>
+          <button type="button" data-sample="vig">Try Vigenère</button>
+          <button type="button" data-sample="short">Try short</button>
         </div>
         <div class="detect-results" id="detectResults"></div>
       </section>
@@ -1737,6 +1807,7 @@
         <header>
           <span>Recipe</span>
           <label class="chef-auto"><input type="checkbox" id="chefAuto" checked /> Auto Bake</label>
+          <button type="button" class="ghost-btn" id="chefMagic">Magic</button>
           <button type="button" class="ghost-btn" id="chefBake">Bake</button>
           <button type="button" class="ghost-btn" id="chefClearRecipe">Clear</button>
         </header>
@@ -1935,7 +2006,9 @@
       b64: "VGhlIGVhZ2xlIGhhcyBsYW5kZWQgb24gdGhlIG1vb24=",
       hex: "546865206561676c6520686173206c616e646564206f6e20746865206d6f6f6e",
       rot13: "Gur rntyr unf ynaqrq ba gur zbba",
-      hash: "5d41402abc4b2a76b9719d911017c592"
+      hash: "5d41402abc4b2a76b9719d911017c592",
+      vig: "WICD QC KX LYSL",
+      short: "KHOOR ZRUOG"
     };
     const CONF_LABEL = { high: "Likely", medium: "Possible", weak: "Uncertain" };
     const FAMILY_LABEL = {
@@ -3364,6 +3437,14 @@
           if (b85 && looksPrintable(b85)) {
             step("base85", "From Base85", b85, { name: "From Base85" }, /^<~/.test(text.trim()));
           }
+          if (/^[0-9A-Z $%*+\-./:]+$/i.test(text.trim()) && text.replace(/\s/g, "").length >= 4) {
+            try {
+              const b45 = chefFromBase45(text);
+              if (b45 && looksPrintable(b45) && (looksEnglish(b45).ok || wordHits(b45).hits >= 1 || b45.length >= 3)) {
+                step("base45", "From Base45", b45, { name: "From Base45" }, looksEnglish(b45).ok);
+              }
+            } catch { /* not base45 */ }
+          }
           const b62 = decodeBase62(text);
           if (b62 && looksPrintable(b62) && (looksEnglish(b62).ok || wordHits(b62).hits >= 1)) {
             step("base62", "From Base62", b62, { name: "From Base62" }, true);
@@ -3372,6 +3453,15 @@
           if (b92 && looksPrintable(b92) && (looksEnglish(b92).ok || wordHits(b92).hits >= 1)) {
             step("base92", "From Base92", b92, { name: "From Base92" }, true);
           }
+        }
+
+        if (/\|[a-f\d ]{2,}\|/i.test(text)) {
+          try {
+            const hc = chefFromHexContent(text);
+            if (hc && hc !== text && looksPrintable(hc)) {
+              step("hexcontent", "From Hex Content", hc, { name: "From Hex Content" }, true);
+            }
+          } catch { /* not snort hex content */ }
         }
 
         const url = decodeUrl(text);
@@ -3410,7 +3500,8 @@
           return c >= 0x2800 && c <= 0x28FF;
         }).length;
         if (visible.length >= 4 && braille / visible.length > 0.7) {
-          step("braille", "Braille", text, null, true);
+          const decoded = chefFromBraille(text);
+          step("braille", "From Braille", decoded, { name: "From Braille" }, true);
         }
         return layers;
       }
@@ -4074,7 +4165,7 @@
           "analysisBody", "challengeBox", "exampleBtn", "copyBtn", "clearBtn", "mapTitle",
           "outerDisk", "innerDisk", "cipherMachine", "hudMethod", "hudMode", "hudKey",
           "hudLetters", "hudWraps", "hudStrength", "modRail", "tapes", "wrapPill", "speedInput",
-          "detectInput", "detectKey", "detectBtn", "detectSamples", "detectResults"
+          "detectInput", "detectKey", "detectBtn", "detectSamples", "detectResults", "detectClearBtn"
         ].map((id) => [id, document.getElementById(id)]));
 
         this.#buildDecor();
@@ -4227,21 +4318,30 @@
           }
         });
 
-        this.els.detectBtn.addEventListener("click", () => this.runDetect());
+        this.els.detectBtn?.addEventListener("click", () => this.runDetect(true));
+        this.els.detectClearBtn?.addEventListener("click", () => {
+          if (this.els.detectInput) this.els.detectInput.value = "";
+          if (this.els.detectKey) this.els.detectKey.value = "";
+          this.lastDetectRaw = "";
+          this.detectGuesses = [];
+          this.detectTrace = null;
+          if (this.els.detectResults) this.els.detectResults.innerHTML = "";
+        });
         const scheduleDetect = () => {
           clearTimeout(this.detectTimer);
           this.detectTimer = setTimeout(() => this.runDetect(), 450);
         };
-        this.els.detectInput.addEventListener("input", scheduleDetect);
+        this.els.detectInput?.addEventListener("input", scheduleDetect);
         this.els.detectKey?.addEventListener("input", scheduleDetect);
-        this.els.detectSamples.addEventListener("click", (event) => {
+        this.els.detectSamples?.addEventListener("click", (event) => {
           const btn = event.target.closest("[data-sample]");
           if (!btn) return;
           this.els.detectInput.value = SAMPLES[btn.dataset.sample] || "";
+          if (this.els.detectKey) this.els.detectKey.value = btn.dataset.sample === "vig" ? "KEY" : "";
           this.lastDetectRaw = "";
-          this.runDetect();
+          this.runDetect(true);
         });
-        this.els.detectResults.addEventListener("click", (event) => {
+        this.els.detectResults?.addEventListener("click", (event) => {
           const copyBtn = event.target.closest("[data-copy]");
           if (copyBtn) {
             const guess = this.detectGuesses[Number(copyBtn.dataset.copy)];
@@ -4464,29 +4564,43 @@
       openKitchenRecipe(guess) {
         if (!window.guptlekhKitchen || !guess?.recipe?.length) return;
         const input = document.getElementById("chefInput");
-        if (input) input.value = this.els.detectInput.value;
+        // Prefer original ciphertext so the recipe unwraps live; fall back to decoded.
+        if (input) input.value = this.els.detectInput?.value || guess.decoded || "";
         window.guptlekhKitchen.loadRecipe(guess.recipe);
+        window.guptlekhKitchen.setStatus(`Loaded from Magic Tool · ${guess.title || "recipe"}`);
         document.getElementById("kitchen")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
       }
 
-      async runDetect() {
+      async runDetect(force = false) {
+        const box = this.els.detectResults;
+        if (!this.els.detectInput || !box) return;
         const raw = this.els.detectInput.value;
         const hint = (this.els.detectKey?.value || "").trim();
         const stamp = `${raw}\n\x1e${hint}`;
         if (!String(raw).trim()) {
           this.detectGuesses = [];
           this.lastDetectRaw = "";
-          this.els.detectResults.innerHTML = "";
+          box.innerHTML = "";
           return;
         }
-        if (stamp === this.lastDetectRaw) return;
+        if (!force && stamp === this.lastDetectRaw) return;
         this.lastDetectRaw = stamp;
         const gen = ++this.detectGen;
-        const result = await CipherDetector.inspect(raw, hint);
+        box.innerHTML = `<p class="hint">Magic Tool is reading…</p>`;
+        let result;
+        try {
+          result = await CipherDetector.inspect(raw, hint);
+        } catch (err) {
+          if (gen !== this.detectGen) return;
+          this.lastDetectRaw = "";
+          this.detectGuesses = [];
+          box.innerHTML = `<p class="hint">Detect failed: ${escapeHtml(err.message || String(err))}</p>`;
+          return;
+        }
         if (gen !== this.detectGen) return;
         if (result.error) {
           this.detectGuesses = [];
-          this.els.detectResults.innerHTML = `<p class="hint">${escapeHtml(result.error)}</p>`;
+          box.innerHTML = `<p class="hint">${escapeHtml(result.error)}</p>`;
           return;
         }
         this.detectGuesses = result.guesses || [];
@@ -4495,14 +4609,15 @@
         const actionable = this.detectGuesses.filter((g) => g.family !== "metric");
         const primary = actionable[0] || this.detectGuesses.find((g) => g.id !== "entropy") || this.detectGuesses[0];
         if (!primary) {
-          this.els.detectResults.innerHTML = `<p class="hint">Nothing clear yet. Try a longer sample, or paste Base64, hex, Morse, or a classroom cipher.</p>`;
+          box.innerHTML = `<p class="hint">Nothing clear yet. Try a longer sample, or paste Base64, hex, Morse, or a classroom cipher.</p>`;
           return;
         }
         const primaryIndex = this.detectGuesses.indexOf(primary);
         const others = this.detectGuesses.filter((g) => g !== primary && g.id !== "entropy");
         const conf = CONF_LABEL[primary.confidence] || primary.confidence;
         const family = FAMILY_LABEL[primary.family] || primary.family || "reading";
-        const actions = [`<button type="button" class="apply-btn" data-copy="${primaryIndex}">Copy</button>`];
+        const suggest = actionable.slice(0, 5).map((g) => `<span>${escapeHtml(g.title)}</span>`).join("");
+        const actions = [`<button type="button" class="apply-btn" data-copy="${primaryIndex}">Copy plaintext</button>`];
         if (primary.recipe?.length) {
           actions.push(`<button type="button" class="cta" data-kitchen="${primaryIndex}">Bake in kitchen</button>`);
         }
@@ -4515,9 +4630,16 @@
               <h4>${escapeHtml(guess.title)}</h4>
               <span class="badge ${escapeHtml(guess.confidence)}">${escapeHtml(CONF_LABEL[guess.confidence] || guess.confidence)}</span>
             </header>`}
-            ${reading ? `<h4>${escapeHtml(guess.title)}</h4>` : ""}
+            ${reading ? `<h4>${escapeHtml(guess.title)}</h4>
+            <div class="conf-meter ${escapeHtml(guess.confidence || "weak")}" title="Confidence">
+              <span>Confidence</span>
+              <div class="bar"><span></span></div>
+              <span>${escapeHtml(CONF_LABEL[guess.confidence] || guess.confidence || "")}</span>
+            </div>` : ""}
             ${this.#recipeChips(guess)}
             <p class="why">${escapeHtml(guess.reason)}</p>
+            ${reading && suggest ? `<div class="suggest-row" aria-label="Suggestions">${suggest}</div>` : ""}
+            ${reading ? `<p class="magic-plain-label">Plaintext / preview</p>` : ""}
             <div class="preview">${escapeHtml(guess.decoded || guess.preview || "—")}</div>
             ${reading ? `<div class="reading-actions">${actions.join("")}</div>` : `
               <div class="reading-actions">
@@ -4530,7 +4652,7 @@
             <summary>Other possibilities (${others.length})</summary>
             ${others.map((guess) => card(guess, this.detectGuesses.indexOf(guess), false)).join("")}
           </details>` : "";
-        this.els.detectResults.innerHTML = `
+        box.innerHTML = `
           ${card(primary, primaryIndex, true)}
           ${this.#xrayHtml(result.trace, primary)}
           ${entropy ? `<p class="reading-note">${escapeHtml(entropy.title)} — ${escapeHtml(entropy.reason)}</p>` : ""}
@@ -4917,10 +5039,17 @@
       }
     }
 
-    new CipherLab();
+    try {
+      window.guptlekhLab = new CipherLab();
+    } catch (err) {
+      console.error(err);
+      const box = document.getElementById("detectResults");
+      if (box) box.innerHTML = `<p class="hint">Lab failed to start: ${escapeHtml(err.message || String(err))}</p>`;
+    }
+    window.CipherDetector = CipherDetector;
 
     const CHEF_CATEGORIES = [
-      { name: "Favourites", ops: ["To Base64", "From Base64", "To Hex", "From Hex", "AES Encrypt", "AES Decrypt", "ROT13", "XOR", "Vigenère Encode", "Vigenère Decode", "SHA2", "URL Decode"] },
+      { name: "Favourites", ops: ["Magic", "To Base64", "From Base64", "To Hex", "From Hex", "AES Encrypt", "AES Decrypt", "ROT13", "XOR", "Vigenère Encode", "Vigenère Decode", "SHA2", "URL Decode"] },
       { name: "Data format", ops: ["To Hexdump", "From Hexdump", "To Hex", "From Hex", "To Charcode", "From Charcode", "To Decimal", "From Decimal", "To Float", "From Float", "To Binary", "From Binary", "To Octal", "From Octal", "To Base32", "From Base32", "To Base45", "From Base45", "To Base58", "From Base58", "To Bech32", "From Bech32", "To Base62", "From Base62", "To Base64", "From Base64", "Show Base64 offsets", "To Base92", "From Base92", "To Base85", "From Base85", "To Base", "From Base", "To BCD", "From BCD", "Text-Integer Conversion", "To HTML Entity", "From HTML Entity", "URL Encode", "URL Decode", "Escape Unicode Characters", "Unescape Unicode Characters", "Normalise Unicode", "Escape Smart Characters", "To Quoted Printable", "From Quoted Printable", "To Punycode", "From Punycode", "AMF Encode", "AMF Decode", "To Hex Content", "From Hex Content", "PEM to Hex", "Hex to PEM", "Parse ASN.1 hex string", "Change IP format", "Encode text", "Decode text", "Text Encoding Brute Force", "Swap endianness", "To MessagePack", "From MessagePack", "To Braille", "From Braille", "Parse TLV", "CSV to JSON", "JSON to CSV", "Avro to JSON", "CBOR Encode", "CBOR Decode", "YAML to JSON", "JSON to YAML", "Caret/M-decode", "Rison Encode", "Rison Decode", "To Modhex", "From Modhex", "MIME Decoding", "To COBS", "From COBS"] },
       { name: "Encryption / Encoding", ops: ["AES Encrypt", "AES Decrypt", "Blowfish Encrypt", "Blowfish Decrypt", "DES Encrypt", "DES Decrypt", "Triple DES Encrypt", "Triple DES Decrypt", "Fernet Encrypt", "Fernet Decrypt", "LS47 Encrypt", "LS47 Decrypt", "RC2 Encrypt", "RC2 Decrypt", "RC4", "RC4 Drop", "ChaCha", "Salsa20", "XSalsa20", "Rabbit", "SM4 Encrypt", "SM4 Decrypt", "RC6 Encrypt", "RC6 Decrypt", "Ascon Encrypt", "Ascon Decrypt", "PRESENT Encrypt", "PRESENT Decrypt", "Twofish Encrypt", "Twofish Decrypt", "GOST Encrypt", "GOST Decrypt", "GOST Sign", "GOST Verify", "GOST Key Wrap", "GOST Key Unwrap", "ROR13", "ROT13", "ROT13 Brute Force", "ROT47", "ROT47 Brute Force", "ROT8000", "XOR", "XOR Brute Force", "Vigenère Encode", "Vigenère Decode", "TEA Encrypt", "TEA Decrypt", "XTEA Encrypt", "XTEA Decrypt", "XXTEA Encrypt", "XXTEA Decrypt", "To Morse Code", "From Morse Code", "Bacon Cipher Encode", "Bacon Cipher Decode", "Bifid Cipher Encode", "Bifid Cipher Decode", "Caesar Box Cipher", "Affine Cipher Encode", "Affine Cipher Decode", "A1Z26 Cipher Encode", "A1Z26 Cipher Decode", "Rail Fence Cipher Encode", "Rail Fence Cipher Decode", "Atbash Cipher", "CipherSaber2 Encrypt", "CipherSaber2 Decrypt", "Cetacean Cipher Encode", "Cetacean Cipher Decode", "Substitute", "Derive PBKDF2 key", "Derive EVP key", "Derive HKDF key", "Bcrypt", "Scrypt", "JWT Sign", "JWT Verify", "JWT Decode", "Citrix CTX1 Encode", "Citrix CTX1 Decode", "AES Key Wrap", "AES Key Unwrap", "Pseudo-Random Number Generator", "Pseudo-Random Prime Generator", "Enigma", "Bombe", "Multiple Bombe", "Typex", "Lorenz", "Colossus", "SIGABA", "Flask Session Decode", "Flask Session Sign", "Flask Session Verify"] },
       { name: "Public Key", ops: ["Parse X.509 certificate", "Parse X.509 CRL", "Parse ASN.1 hex string", "PEM to Hex", "Hex to PEM", "Hex to Object Identifier", "Object Identifier to Hex", "PEM to JWK", "JWK to PEM", "Generate PGP Key Pair", "PGP Encrypt", "PGP Decrypt", "PGP Sign", "PGP Verify", "PGP Encrypt and Sign", "PGP Decrypt and Verify", "Generate RSA Key Pair", "RSA Sign", "RSA Verify", "RSA Encrypt", "RSA Decrypt", "Generate ECDSA Key Pair", "ECDSA Signature Conversion", "ECDSA Sign", "ECDSA Verify", "Parse SSH Host Key", "Parse CSR", "Public Key from Certificate", "Public Key from Private Key", "SM2 Encrypt", "SM2 Decrypt"] },
@@ -4953,6 +5082,393 @@
     const chefDelim = (name) => ({ None: "", Space: " ", Colon: ":", Comma: ",", "LF": "\n" }[name] ?? " ");
     const chefArg = (key, label, value, type = "text", extra = {}) => ({ key, label, value, type, ...extra });
     const chefBytesOf = (text) => chefEnc.encode(String(text ?? ""));
+
+    function chefToBase58(text) {
+      const bytes = [...chefBytesOf(text)];
+      let zeros = 0;
+      while (zeros < bytes.length && bytes[zeros] === 0) zeros += 1;
+      let n = 0n;
+      for (const b of bytes) n = n * 256n + BigInt(b);
+      let out = "";
+      while (n > 0n) {
+        out = BASE58_ALPHABET[Number(n % 58n)] + out;
+        n /= 58n;
+      }
+      return "1".repeat(zeros) + (out || (bytes.length ? "1" : ""));
+    }
+
+    function chefToBase85(text) {
+      const bytes = [...chefBytesOf(text)];
+      let out = "<~";
+      for (let i = 0; i < bytes.length; i += 4) {
+        const chunk = bytes.slice(i, i + 4);
+        const pad = 4 - chunk.length;
+        while (chunk.length < 4) chunk.push(0);
+        let n = ((chunk[0] << 24) >>> 0) + (chunk[1] << 16) + (chunk[2] << 8) + chunk[3];
+        if (n === 0 && pad === 0) {
+          out += "z";
+          continue;
+        }
+        const chars = [];
+        for (let j = 0; j < 5; j += 1) {
+          chars.unshift(String.fromCharCode(33 + (n % 85)));
+          n = Math.floor(n / 85);
+        }
+        out += chars.join("").slice(0, 5 - pad);
+      }
+      return `${out}~>`;
+    }
+
+    function chefFromHexdump(text) {
+      const bytes = [];
+      for (const line of String(text).split(/\r?\n/)) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        const m = trimmed.match(/^(?:[0-9a-fA-F]{4,8}\s+)((?:[0-9a-fA-F]{2}\s*){1,16})(?:\s{2,}.*)?$/);
+        if (m) {
+          for (const h of m[1].trim().split(/\s+/).filter(Boolean)) bytes.push(parseInt(h, 16));
+          continue;
+        }
+        const pairs = trimmed.match(/\b[0-9a-fA-F]{2}\b/g);
+        if (pairs && pairs.length >= 2) {
+          for (const h of pairs) bytes.push(parseInt(h, 16));
+        }
+      }
+      if (!bytes.length) throw new Error("No hex bytes found in dump");
+      return chefDec.decode(new Uint8Array(bytes));
+    }
+
+    function chefLatin1Bytes(text) {
+      const hex = compactBits(text);
+      if (hex.length >= 4 && hex.length % 2 === 0 && /^[0-9a-f]+$/i.test(hex) && !/[G-Z]/i.test(String(text))) {
+        try { return chefFromHexBytes(hex); } catch { /* fall through */ }
+      }
+      return Uint8Array.from(String(text), (ch) => ch.charCodeAt(0) & 255);
+    }
+
+    async function chefCompress(text, inflate, format = "gzip") {
+      const label = inflate ? `inflate (${format})` : `deflate (${format})`;
+      const Ctor = inflate ? globalThis.DecompressionStream : globalThis.CompressionStream;
+      if (typeof Ctor !== "function") throw new Error(`${label} needs a modern browser (CompressionStream)`);
+      let ds;
+      try {
+        ds = new Ctor(format);
+      } catch {
+        throw new Error(`${label} is not supported in this browser`);
+      }
+      const input = inflate ? chefLatin1Bytes(text) : chefBytesOf(text);
+      // Blob → pipeThrough avoids writable/readable deadlocks some engines hit with manual writers.
+      const buf = await new Response(new Blob([input]).stream().pipeThrough(ds)).arrayBuffer();
+      if (inflate) {
+        try { return chefDec.decode(new Uint8Array(buf)); } catch { return String.fromCharCode(...new Uint8Array(buf)); }
+      }
+      return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function chefGzip(text, inflate) {
+      return chefCompress(text, inflate, "gzip");
+    }
+
+    const BASE45_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
+    const BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    function chefToBase45(text) {
+      const input = chefBytesOf(text);
+      if (!input.length) return "";
+      const alphabet = BASE45_ALPHABET;
+      const res = [];
+      for (let i = 0; i < input.length; i += 2) {
+        const pair = input.slice(i, i + 2);
+        let b = 0;
+        for (const e of pair) b = b * 256 + e;
+        let chars = 0;
+        do {
+          res.push(alphabet[b % 45]);
+          chars += 1;
+          b = Math.floor(b / 45);
+        } while (b > 0);
+        if (chars < 2) { res.push(alphabet[0]); chars += 1; }
+        if (pair.length > 1 && chars < 3) res.push(alphabet[0]);
+      }
+      return res.join("");
+    }
+
+    function chefFromBase45(text) {
+      let input = String(text ?? "");
+      if (!input) return "";
+      const alphabet = BASE45_ALPHABET;
+      const re = /[^0-9A-Z $%*+\-./:]/g;
+      input = input.replace(re, "");
+      const res = [];
+      for (let i = 0; i < input.length; i += 3) {
+        const triple = [...input.slice(i, i + 3)].reverse();
+        let b = 0;
+        for (const c of triple) {
+          const idx = alphabet.indexOf(c);
+          if (idx < 0) throw new Error(`Character not in Base45 alphabet: '${c}'`);
+          b = b * 45 + idx;
+        }
+        if (b > 65535) throw new Error(`Triplet too large: '${[...triple].reverse().join("")}'`);
+        if (triple.length > 2) res.push(b >> 8);
+        res.push(b & 0xff);
+      }
+      return chefDec.decode(new Uint8Array(res));
+    }
+
+    function chefToBase62(text) {
+      const bytes = chefBytesOf(text);
+      if (!bytes.length) return "";
+      let n = 0n;
+      for (const b of bytes) n = (n << 8n) + BigInt(b);
+      if (n === 0n) return BASE62_ALPHABET[0];
+      let out = "";
+      while (n > 0n) {
+        out = BASE62_ALPHABET[Number(n % 62n)] + out;
+        n /= 62n;
+      }
+      return out;
+    }
+
+    function chefFromBase62(text) {
+      const s = String(text ?? "").replace(/\s/g, "");
+      if (!s) return "";
+      let n = 0n;
+      for (const ch of s) {
+        const idx = BASE62_ALPHABET.indexOf(ch);
+        if (idx < 0) throw new Error(`Not Base62: '${ch}'`);
+        n = n * 62n + BigInt(idx);
+      }
+      if (n === 0n) return "\0";
+      const bytes = [];
+      while (n > 0n) {
+        bytes.unshift(Number(n % 256n));
+        n /= 256n;
+      }
+      return chefDec.decode(new Uint8Array(bytes));
+    }
+
+    function chefBase92Chr(val) {
+      if (val < 0 || val >= 91) throw new Error("Invalid Base92 value");
+      if (val === 0) return "!";
+      if (val <= 61) return String.fromCharCode("#".charCodeAt(0) + val - 1);
+      return String.fromCharCode("a".charCodeAt(0) + val - 62);
+    }
+
+    function chefBase92Ord(val) {
+      if (val === "!") return 0;
+      if (val >= "#" && val <= "_") return val.charCodeAt(0) - "#".charCodeAt(0) + 1;
+      if (val >= "a" && val <= "}") return val.charCodeAt(0) - "a".charCodeAt(0) + 62;
+      throw new Error(`${val} is not a Base92 character`);
+    }
+
+    function chefToBase92(text) {
+      let input = String(text ?? "");
+      const res = [];
+      let bitString = "";
+      while (input.length > 0) {
+        while (bitString.length < 13 && input.length > 0) {
+          bitString += input.charCodeAt(0).toString(2).padStart(8, "0");
+          input = input.slice(1);
+        }
+        if (bitString.length < 13) break;
+        const i = parseInt(bitString.slice(0, 13), 2);
+        res.push(chefBase92Chr(Math.floor(i / 91)));
+        res.push(chefBase92Chr(i % 91));
+        bitString = bitString.slice(13);
+      }
+      if (bitString.length > 0) {
+        if (bitString.length < 7) {
+          bitString = bitString.padEnd(6, "0");
+          res.push(chefBase92Chr(parseInt(bitString, 2)));
+        } else {
+          bitString = bitString.padEnd(13, "0");
+          const i = parseInt(bitString.slice(0, 13), 2);
+          res.push(chefBase92Chr(Math.floor(i / 91)));
+          res.push(chefBase92Chr(i % 91));
+        }
+      }
+      return res.join("");
+    }
+
+    function chefFromBase92(text) {
+      const input = String(text ?? "");
+      const res = [];
+      let bitString = "";
+      for (let i = 0; i < input.length; i += 2) {
+        if (i + 1 !== input.length) {
+          const x = chefBase92Ord(input[i]) * 91 + chefBase92Ord(input[i + 1]);
+          bitString += x.toString(2).padStart(13, "0");
+        } else {
+          bitString += chefBase92Ord(input[i]).toString(2).padStart(6, "0");
+        }
+        while (bitString.length >= 8) {
+          res.push(parseInt(bitString.slice(0, 8), 2));
+          bitString = bitString.slice(8);
+        }
+      }
+      return chefDec.decode(new Uint8Array(res));
+    }
+
+    function chefToHexContent(text, convert = "Only special chars", spaces = false) {
+      const input = chefBytesOf(text);
+      const toHexByte = (b) => b.toString(16).padStart(2, "0");
+      if (convert === "All chars") {
+        let result = `|${[...input].map(toHexByte).join(spaces ? " " : "")}|`;
+        return result;
+      }
+      let output = "";
+      let inHex = false;
+      const convertSpaces = convert === "Only special chars including spaces";
+      for (let i = 0; i < input.length; i += 1) {
+        const b = input[i];
+        const special = (b === 32 && convertSpaces) || (b < 48 && b !== 32) || (b > 57 && b < 65) || (b > 90 && b < 97) || b > 122;
+        if (special) {
+          if (!inHex) { output += "|"; inHex = true; }
+          else if (spaces) output += " ";
+          output += toHexByte(b);
+        } else {
+          if (inHex) { output += "|"; inHex = false; }
+          output += String.fromCharCode(b);
+        }
+      }
+      if (inHex) output += "|";
+      return output;
+    }
+
+    function chefFromHexContent(text) {
+      const input = String(text ?? "");
+      const regex = /\|([a-f\d ]{2,})\|/gi;
+      const output = [];
+      let m;
+      let i = 0;
+      while ((m = regex.exec(input))) {
+        for (; i < m.index; i += 1) output.push(input.charCodeAt(i));
+        const hex = m[1].replace(/[^a-f\d]/gi, "");
+        if (hex.length >= 2 && hex.length % 2 === 0) {
+          for (let a = 0; a < hex.length; a += 2) output.push(parseInt(hex.slice(a, a + 2), 16));
+        } else {
+          for (; i < regex.lastIndex; i += 1) output.push(input.charCodeAt(i));
+        }
+        i = regex.lastIndex;
+      }
+      for (; i < input.length; i += 1) output.push(input.charCodeAt(i));
+      return chefDec.decode(new Uint8Array(output));
+    }
+
+    function chefRot47Shift(text, amount) {
+      const n = ((Number(amount) % 94) + 94) % 94;
+      return [...String(text)].map((ch) => {
+        const c = ch.charCodeAt(0);
+        if (c < 33 || c > 126) return ch;
+        return String.fromCharCode(33 + ((c - 33 + n) % 94));
+      }).join("");
+    }
+
+    function chefRot8000(text) {
+      const validCodePoints = {
+        33: true, 127: false, 161: true, 5760: false, 5761: true, 8192: false, 8203: true,
+        8232: false, 8234: true, 8239: false, 8240: true, 8287: false, 8288: true,
+        12288: false, 12289: true, 55296: false, 57344: true
+      };
+      const bmpSize = 0x10000;
+      const validIntList = [];
+      let currValid = false;
+      for (let i = 0; i < bmpSize; i += 1) {
+        if (validCodePoints[i] !== undefined) currValid = validCodePoints[i];
+        if (currValid) validIntList.push(i);
+      }
+      const rotateNum = validIntList.length / 2;
+      const rotList = {};
+      for (let i = 0; i < validIntList.length; i += 1) {
+        rotList[String.fromCharCode(validIntList[i])] =
+          String.fromCharCode(validIntList[(i + rotateNum) % (rotateNum * 2)]);
+      }
+      return [...String(text)].map((ch) => rotList[ch] ?? ch).join("");
+    }
+
+    const BRAILLE_ASCII = " A1B'K2L@CIF/MSP\"E3H9O6R^DJG>NTQ,*5<-U8V.%[$+X!&;:4\\0Z7(_?W]#Y)=";
+    const BRAILLE_DOT6 = "⠀⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯⠰⠱⠲⠳⠴⠵⠶⠷⠸⠹⠺⠻⠼⠽⠾⠿";
+
+    function chefToBraille(text) {
+      return [...String(text)].map((c) => {
+        const idx = BRAILLE_ASCII.indexOf(c.toUpperCase());
+        return idx < 0 ? c : BRAILLE_DOT6[idx];
+      }).join("");
+    }
+
+    function chefFromBraille(text) {
+      return [...String(text)].map((c) => {
+        const idx = BRAILLE_DOT6.indexOf(c);
+        return idx < 0 ? c : BRAILLE_ASCII[idx];
+      }).join("");
+    }
+
+    function chefB64UrlEncode(bytes) {
+      let bin = "";
+      for (const b of bytes) bin += String.fromCharCode(b);
+      return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    }
+
+    function chefB64UrlDecode(str) {
+      const pad = "=".repeat((4 - (str.length % 4)) % 4);
+      const b64 = str.replace(/-/g, "+").replace(/_/g, "/") + pad;
+      const bin = atob(b64);
+      return Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    }
+
+    async function chefJwtSign(text, secret, alg = "HS256") {
+      let payload;
+      try { payload = JSON.parse(String(text)); }
+      catch { throw new Error("JWT Sign expects a JSON object as input"); }
+      const hashName = ({ HS256: "SHA-256", HS384: "SHA-384", HS512: "SHA-512" })[alg];
+      if (!hashName) throw new Error("This page signs HS256 / HS384 / HS512 only (no RSA/ECDSA without a library)");
+      const header = { alg, typ: "JWT" };
+      const enc = new TextEncoder();
+      const head = chefB64UrlEncode(enc.encode(JSON.stringify(header)));
+      const body = chefB64UrlEncode(enc.encode(JSON.stringify(payload)));
+      const data = `${head}.${body}`;
+      const key = await crypto.subtle.importKey("raw", enc.encode(String(secret ?? "")), { name: "HMAC", hash: hashName }, false, ["sign"]);
+      const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(data)));
+      return `${data}.${chefB64UrlEncode(sig)}`;
+    }
+
+    async function chefJwtVerify(text, secret) {
+      const parts = String(text).trim().split(".");
+      if (parts.length !== 3) throw new Error("Not a JWT");
+      const [headB64, bodyB64, sigB64] = parts;
+      const header = JSON.parse(chefDec.decode(chefB64UrlDecode(headB64)));
+      const alg = header.alg || "HS256";
+      const hashName = ({ HS256: "SHA-256", HS384: "SHA-384", HS512: "SHA-512" })[alg];
+      if (!hashName) throw new Error(`Verify here supports HS* only (got ${alg})`);
+      const enc = new TextEncoder();
+      const data = `${headB64}.${bodyB64}`;
+      const key = await crypto.subtle.importKey("raw", enc.encode(String(secret ?? "")), { name: "HMAC", hash: hashName }, false, ["verify"]);
+      const ok = await crypto.subtle.verify("HMAC", key, chefB64UrlDecode(sigB64), enc.encode(data));
+      if (!ok) throw new Error("JWT signature invalid for this secret");
+      return JSON.stringify(JSON.parse(chefDec.decode(chefB64UrlDecode(bodyB64))), null, 2);
+    }
+
+    function chefPunyTo(text) {
+      const s = String(text).trim();
+      if (!s) return "";
+      try {
+        const host = new URL(`http://${s}`).hostname;
+        if (host.startsWith("xn--") || host.includes(".xn--")) return host;
+        if (host !== s.toLowerCase() && /[^\x00-\x7f]/.test(s)) return host;
+      } catch { /* not a host */ }
+      throw new Error("To Punycode here only handles domain names (try 例子.com)");
+    }
+
+    function chefPunyFrom(text) {
+      const s = String(text).trim();
+      if (!s) return "";
+      try {
+        const host = s.includes("://") ? new URL(s).hostname : new URL(`http://${s}`).hostname;
+        return host;
+      } catch {
+        throw new Error("From Punycode here only handles xn-- domain labels");
+      }
+    }
 
     function chefToBase32(text) {
       const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -5260,11 +5776,29 @@
         if (out == null) throw new Error("Not Base58");
         return out;
       } },
+      "To Base58": { args: [], run: (t) => chefToBase58(t) },
       "From Base85": { args: [], run: (t) => {
         const out = decodeBase85(t);
         if (out == null) throw new Error("Not Base85");
         return out;
       } },
+      "To Base85": { args: [], run: (t) => chefToBase85(t) },
+      "To Base45": { args: [], run: (t) => chefToBase45(t) },
+      "From Base45": { args: [], run: (t) => chefFromBase45(t) },
+      "To Base62": { args: [], run: (t) => chefToBase62(t) },
+      "From Base62": { args: [], run: (t) => chefFromBase62(t) },
+      "To Base92": { args: [], run: (t) => chefToBase92(t) },
+      "From Base92": { args: [], run: (t) => chefFromBase92(t) },
+      "To Hex Content": {
+        args: [
+          chefArg("convert", "Convert", "Only special chars", "select", { options: ["Only special chars", "Only special chars including spaces", "All chars"] }),
+          chefArg("spaces", "Spaces between bytes", "false", "select", { options: ["false", "true"] })
+        ],
+        run: (t, a) => chefToHexContent(t, a.convert, a.spaces === "true")
+      },
+      "From Hex Content": { args: [], run: (t) => chefFromHexContent(t) },
+      "To Braille": { args: [], run: (t) => chefToBraille(t) },
+      "From Braille": { args: [], run: (t) => chefFromBraille(t) },
       "From Quoted Printable": { args: [], run: (t) => String(t).replace(/=\r?\n/g, "").replace(/=([0-9A-F]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16))) },
       "URL Encode": { args: [], run: (t) => encodeURIComponent(t) },
       "URL Decode": { args: [], run: (t) => decodeURIComponent(String(t).replace(/\+/g, " ")) },
@@ -5286,6 +5820,8 @@
         return c > 127 ? `\\u${c.toString(16).padStart(4, "0")}` : ch;
       }).join("") },
       "Unescape Unicode Characters": { args: [], run: (t) => String(t).replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16))) },
+      "To Punycode": { args: [], run: (t) => chefPunyTo(t) },
+      "From Punycode": { args: [], run: (t) => chefPunyFrom(t) },
       "To Hexdump": { args: [], run: (t) => {
         const bytes = chefBytesOf(t);
         let out = "";
@@ -5297,6 +5833,7 @@
         }
         return out.trimEnd();
       } },
+      "From Hexdump": { args: [], run: (t) => chefFromHexdump(t) },
       "AES Encrypt": {
         args: [chefArg("key", "Key", "secret"), chefArg("iv", "IV (hex, blank=random)", "")],
         run: (t, a) => chefAesEncrypt(t, a.key, a.iv)
@@ -5306,9 +5843,33 @@
         run: (t, a) => chefAesDecrypt(t, a.key, a.iv)
       },
       "ROT13": { args: [chefArg("amount", "Amount", 13, "number")], run: (t, a) => chefRotAlpha(t, a.amount) },
+      "ROT13 Brute Force": { args: [], run: (t) => Array.from({ length: 26 }, (_, k) => {
+        const plain = chefRotAlpha(t, k);
+        const w = wordHits(plain);
+        return `rot=${String(k).padStart(2, "0")}  ${plain}${w.hits ? `  [${w.hits} words]` : ""}`;
+      }).join("\n") },
       "ROR13": { args: [], run: (t) => chefRotAlpha(t, -13) },
       "ROT47": { args: [], run: (t) => rot47(t) },
+      "ROT47 Brute Force": { args: [], run: (t) => Array.from({ length: 94 }, (_, k) => {
+        const plain = chefRot47Shift(t, k);
+        const w = wordHits(plain);
+        return `rot=${String(k).padStart(2, "0")}  ${previewText(plain, 72)}${w.hits ? `  [${w.hits} words]` : ""}`;
+      }).join("\n") },
+      "ROT8000": { args: [], run: (t) => chefRot8000(t) },
       "XOR": { args: [chefArg("key", "Key", "key")], run: (t, a) => chefXorRepeat(t, a.key) },
+      "XOR Brute Force": { args: [], run: (t) => {
+        const sample = String(t).slice(0, 80);
+        const hits = [];
+        for (let k = 1; k < 256; k += 1) {
+          const plain = xorKey(sample, k);
+          if (!looksPrintable(plain)) continue;
+          const w = wordHits(plain);
+          if (!w.hits) continue;
+          hits.push(`0x${k.toString(16).padStart(2, "0")}  ${previewText(plain, 60)}  [${w.hits} words]`);
+        }
+        if (!hits.length) throw new Error("No single-byte XOR key produced English-like text");
+        return hits.join("\n");
+      } },
       "Vigenère Encode": { args: [chefArg("key", "Key", "LEMON")], run: (t, a) => chefVigenere(t, a.key, false) },
       "Vigenère Decode": { args: [chefArg("key", "Key", "LEMON")], run: (t, a) => chefVigenere(t, a.key, true) },
       "Atbash Cipher": { args: [], run: (t) => atbash(t) },
@@ -5330,16 +5891,34 @@
       "JWT Decode": { args: [], run: (t) => {
         const parts = String(t).trim().split(".");
         if (parts.length < 2) throw new Error("Not a JWT");
-        const dec = (p) => JSON.parse(chefDec.decode(chefFromHexBytes(
-          [...atob(p.replace(/-/g, "+").replace(/_/g, "/") + "==".slice((p.length % 4) || 4))].map((c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("")
-        )));
         const b64url = (p) => decodeURIComponent(escape(atob(p.replace(/-/g, "+").replace(/_/g, "/") + "=".repeat((4 - p.length % 4) % 4))));
         return JSON.stringify({ header: JSON.parse(b64url(parts[0])), payload: JSON.parse(b64url(parts[1])) }, null, 2);
       } },
+      "JWT Sign": {
+        args: [
+          chefArg("key", "Secret", "secret"),
+          chefArg("alg", "Algorithm", "HS256", "select", { options: ["HS256", "HS384", "HS512"] })
+        ],
+        run: (t, a) => chefJwtSign(t, a.key, a.alg)
+      },
+      "JWT Verify": {
+        args: [chefArg("key", "Secret", "secret")],
+        run: (t, a) => chefJwtVerify(t, a.key)
+      },
       "To Upper case": { args: [], run: (t) => t.toUpperCase() },
       "To Lower case": { args: [], run: (t) => t.toLowerCase() },
       "Swap case": { args: [], run: (t) => [...t].map((ch) => (ch === ch.toUpperCase() ? ch.toLowerCase() : ch.toUpperCase())).join("") },
       "Reverse": { args: [], run: (t) => [...t].reverse().join("") },
+      "Drop bytes": { args: [chefArg("n", "Start", 0, "number"), chefArg("len", "Length", 1, "number")], run: (t, a) => {
+        const bytes = [...chefBytesOf(t)];
+        bytes.splice(Number(a.n) || 0, Number(a.len) || 0);
+        return chefDec.decode(new Uint8Array(bytes));
+      } },
+      "Take bytes": { args: [chefArg("n", "Start", 0, "number"), chefArg("len", "Length", 10, "number")], run: (t, a) => {
+        const start = Number(a.n) || 0;
+        const bytes = [...chefBytesOf(t)].slice(start, start + (Number(a.len) || 10));
+        return chefDec.decode(new Uint8Array(bytes));
+      } },
       "Remove whitespace": { args: [], run: (t) => t.replace(/\s+/g, "") },
       "Remove null bytes": { args: [], run: (t) => t.replace(/\0/g, "") },
       "Add line numbers": { args: [], run: (t) => t.split("\n").map((line, i) => `${i + 1}: ${line}`).join("\n") },
@@ -5383,6 +5962,17 @@
       "Extract email addresses": { args: [], run: (t) => (t.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || []).join("\n") },
       "Extract URLs": { args: [], run: (t) => (t.match(/https?:\/\/[^\s<>"']+/gi) || []).join("\n") },
       "Extract hashes": { args: [], run: (t) => (t.match(/\b[0-9a-f]{32,128}\b/gi) || []).join("\n") },
+      "Extract domains": { args: [], run: (t) => {
+        const re = /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b/gi;
+        return [...new Set(t.match(re) || [])].join("\n");
+      } },
+      "Extract dates": { args: [], run: (t) => {
+        const date1 = "(?:19|20)\\d\\d[- /.](?:0[1-9]|1[012])[- /.](?:0[1-9]|[12][0-9]|3[01])";
+        const date2 = "(?:0[1-9]|[12][0-9]|3[01])[- /.](?:0[1-9]|1[012])[- /.](?:19|20)\\d\\d";
+        const date3 = "(?:0[1-9]|1[012])[- /.](?:0[1-9]|[12][0-9]|3[01])[- /.](?:19|20)\\d\\d";
+        const re = new RegExp(`${date1}|${date2}|${date3}`, "ig");
+        return (t.match(re) || []).join("\n");
+      } },
       "MD5": { args: [], run: (t) => chefMd5(t) },
       "SHA1": { args: [], run: (t) => chefDigest("SHA-1", t) },
       "SHA2": { args: [chefArg("size", "Size", "256", "select", { options: ["256", "384", "512"] })], run: (t, a) => chefDigest(`SHA-${a.size}`, t) },
@@ -5400,6 +5990,12 @@
         const s = chiSquared(t);
         return Number.isFinite(s) ? s.toFixed(2) : "n/a";
       } },
+      "Gzip": { args: [], run: (t) => chefGzip(t, false) },
+      "Gunzip": { args: [], run: (t) => chefGzip(t, true) },
+      "Zlib Deflate": { args: [], run: (t) => chefCompress(t, false, "deflate") },
+      "Zlib Inflate": { args: [], run: (t) => chefCompress(t, true, "deflate") },
+      "Raw Deflate": { args: [], run: (t) => chefCompress(t, false, "deflate-raw") },
+      "Raw Inflate": { args: [], run: (t) => chefCompress(t, true, "deflate-raw") },
       "Magic": {
         args: [],
         run: async (t) => {
@@ -5457,6 +6053,7 @@
         });
         this.els.input.addEventListener("input", () => this.maybeBake());
         document.getElementById("chefBake").addEventListener("click", () => this.bake());
+        document.getElementById("chefMagic")?.addEventListener("click", () => this.runMagic());
         document.getElementById("chefClearRecipe").addEventListener("click", () => {
           this.recipe = [];
           this.renderRecipe();
@@ -5658,7 +6255,68 @@
       }
     }
 
+    /**
+     * Public Magic Tool API — algorithm detector for ciphertext (+ optional key).
+     * @returns {{
+     *   ok: boolean,
+     *   algorithm: string|null,
+     *   confidence: 'high'|'medium'|'weak'|null,
+     *   family: string|null,
+     *   plaintext: string|null,
+     *   reason: string|null,
+     *   recipe: object[],
+     *   suggestions: object[],
+     *   entropy?: number,
+     *   error?: string,
+     *   guesses?: object[],
+     *   trace?: object
+     * }}
+     */
+    async function detectAlgorithm(ciphertext, key) {
+      const result = await CipherDetector.inspect(ciphertext, key);
+      if (result.error) {
+        return {
+          ok: false,
+          error: result.error,
+          algorithm: null,
+          confidence: null,
+          family: null,
+          plaintext: null,
+          reason: null,
+          recipe: [],
+          suggestions: []
+        };
+      }
+      const guesses = result.guesses || [];
+      const actionable = guesses.filter((g) => g.family !== "metric");
+      const primary = actionable[0] || guesses.find((g) => g.id !== "entropy") || guesses[0] || null;
+      const suggestions = actionable.slice(0, 8).map((g) => ({
+        algorithm: g.title,
+        confidence: g.confidence,
+        family: g.family,
+        reason: g.reason,
+        plaintext: g.decoded ?? null,
+        recipe: g.recipe || [],
+        score: g.score
+      }));
+      return {
+        ok: true,
+        algorithm: primary?.title || null,
+        confidence: primary?.confidence || null,
+        family: primary?.family || null,
+        plaintext: primary?.decoded ?? null,
+        reason: primary?.reason || null,
+        recipe: primary?.recipe || [],
+        suggestions,
+        entropy: result.trace?.stats?.entropy,
+        guesses,
+        trace: result.trace || null
+      };
+    }
+
     window.guptlekhKitchen = new ChefKitchen();
+    window.CipherDetector = CipherDetector;
+    window.detectAlgorithm = detectAlgorithm;
   </script>
 </body>
 </html>
