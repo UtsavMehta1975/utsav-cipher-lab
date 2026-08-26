@@ -30,4 +30,4 @@ Track mobile, kitchen single-screen, and expressive motion work on `feat/crazy-m
 ## Ship
 
 - [x] Update POLISH_TODO.md checkboxes
-- [ ] Commit, push, open/update PR to main
+- [x] Commit, push, open/update PR to main
