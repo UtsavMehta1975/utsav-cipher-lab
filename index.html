@@ -2305,7 +2305,25 @@
       LANDING HASNT DONT CANT WONT LETTER SHIFT ALPHABET CLASSICAL UNKNOWN PASTE
     `.trim().split(/\s+/));
 
-    const COMMON_VIGENERE_KEYS = ["KEY", "CIPHER", "SECRET", "LEMON", "PASSWORD", "CODE", "CRYPTO", "ATTACK", "GUPTLEKH"];
+    const COMMON_VIGENERE_KEYS = [
+      "KEY", "CIPHER", "SECRET", "LEMON", "PASSWORD", "CODE", "CRYPTO", "ATTACK", "GUPTLEKH",
+      "HELLO", "WORLD", "TEST", "ADMIN", "USER", "LOGIN", "SERVER", "CLIENT", "MASTER",
+      "ALPHA", "BRAVO", "CHARLIE", "DELTA", "ECHO", "FOXTROT", "GOLF", "HOTEL",
+      "INDIA", "JULIET", "KILO", "LIMA", "MIKE", "NOVEMBER", "OSCAR", "PAPA",
+      "QUEBEC", "ROMEO", "SIERRA", "TANGO", "UNIFORM", "VICTOR", "WHISKEY", "XRAY",
+      "YANKEE", "ZULU", "OPEN", "SANS", "READ", "WRITE", "EXEC", "ROOT", "GATE",
+      "LOCK", "SAFE", "IRON", "GOLD", "SILVER", "BRONZE", "TITANIUM", "STEEL",
+      "WATER", "FIRE", "EARTH", "WIND", "STORM", "THUNDER", "LIGHTNING", "CLOUD",
+      "SUNRISE", "SUNSET", "DAWN", "DUSK", "NIGHT", "DAY", "MOON", "STAR",
+      "RIVER", "OCEAN", "MOUNTAIN", "VALLEY", "FOREST", "DESERT", "ISLAND", "BRIDGE",
+      "CIPHER", "ENCODE", "DECODE", "ENCRYPT", "DECRYPT", "HASH", "SIGN", "VERIFY",
+      "PUBLIC", "PRIVATE", "SECURE", "TRUST", "AUTH", "TOKEN", "SESSION", "ACCESS",
+      "REDACT", "SHADOW", "PHANTOM", "GHOST", "NINJA", "SAMURAI", "KNIGHT", "DRAGON",
+      "EAGLE", "TIGER", "WOLF", "BEAR", "HAWK", "SNAKE", "SPIDER", "SHARK",
+      "LOREM", "IPSUM", "DOLOR", "SIT", "AMET", "CONSECTETUR", "ADIPISCING", "ELIT",
+      "ABCDEFG", "HIJKLMN", "OPQRSTU", "VWXYZ", "ABCDEFGHIJKLMNOP",
+      "ABCDEF", "GHIJKL", "MNOPQR", "STUVWX", "YZABC", "DEFGHI"
+    ];
 
     function wordHits(text) {
       const tokens = String(text || "").toUpperCase().match(/[A-Z']{3,}/g) || [];
@@ -2481,6 +2499,42 @@
       return out || null;
     }
 
+    const BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    function decodeBase62(raw) {
+      const compact = String(raw).replace(/\s/g, "");
+      if (compact.length < 4 || compact.length > 200) return null;
+      if (/[^0-9A-Za-z]/.test(compact)) return null;
+      if (!/[a-z]/.test(compact) || !/[A-Z]/.test(compact) || !/[0-9]/.test(compact)) return null;
+      let n = 0n;
+      for (const ch of compact) {
+        const i = BASE62_ALPHABET.indexOf(ch);
+        if (i < 0) return null;
+        n = n * 62n + BigInt(i);
+      }
+      const bytes = [];
+      while (n > 0n) {
+        bytes.unshift(Number(n % 256n));
+        n /= 256n;
+      }
+      return bytes.length ? bytes.map((b) => String.fromCharCode(b)).join("") : null;
+    }
+
+    const BASE92_ALPHABET = "!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    function decodeBase92(raw) {
+      const compact = String(raw).replace(/\s/g, "");
+      if (compact.length < 2 || compact.length > 200) return null;
+      if ([...compact].some((ch) => BASE92_ALPHABET.indexOf(ch) < 0)) return null;
+      const bytes = [];
+      for (let i = 0; i < compact.length; i += 2) {
+        const c1 = BASE92_ALPHABET.indexOf(compact[i]);
+        const c2 = i + 1 < compact.length ? BASE92_ALPHABET.indexOf(compact[i + 1]) : -1;
+        if (c1 < 0 || (i + 1 < compact.length && c2 < 0)) return null;
+        const n = i + 1 < compact.length ? c1 * 91 + c2 : c1;
+        bytes.push((n >> 8) & 255, n & 255);
+      }
+      return bytes.length ? bytes.map((b) => String.fromCharCode(b)).join("") : null;
+    }
+
     function decodeA1z26(raw) {
       const words = String(raw).trim().split(/\s{2,}/);
       const decoded = words.map((word) => {
@@ -2619,19 +2673,99 @@
       return [...String(text)].map((ch) => String.fromCharCode(ch.charCodeAt(0) ^ key)).join("");
     }
 
+    function bifidDecode(cipher, period) {
+      const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+      const clean = String(cipher).toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+      if (clean.length < 4) return null;
+      const grid = {};
+      for (let i = 0; i < 25; i++) {
+        grid[alphabet[i]] = [Math.floor(i / 5), i % 5];
+      }
+      const p = period || 5;
+      const rows = [];
+      const cols = [];
+      for (let i = 0; i < clean.length; i += p) {
+        const block = clean.slice(i, Math.min(i + p, clean.length));
+        for (const ch of block) {
+          const pos = grid[ch];
+          if (pos) { rows.push(pos[0]); cols.push(pos[1]); }
+        }
+        const merged = [];
+        for (let j = 0; j < rows.length; j++) merged.push(rows[j], cols[j]);
+        for (let j = 0; j < block.length; j++) {
+          const r = merged[j * 2];
+          const c = merged[j * 2 + 1];
+          if (r != null && c != null) {
+            const idx = r * 5 + c;
+            if (idx < 25) {
+              clean[Math.floor(i / p) * p + j] = alphabet[idx];
+            }
+          }
+        }
+      }
+      let out = "";
+      const allRows = [];
+      const allCols = [];
+      for (let i = 0; i < clean.length; i += p) {
+        const block = clean.slice(i, Math.min(i + p, clean.length));
+        const br = [];
+        const bc = [];
+        for (const ch of block) {
+          const pos = grid[ch];
+          if (pos) { br.push(pos[0]); bc.push(pos[1]); }
+        }
+        const merged = [...br, ...bc];
+        for (let j = 0; j < block.length; j++) {
+          const r = merged[j * 2];
+          const c = merged[j * 2 + 1];
+          if (r != null && c != null) {
+            const idx = r * 5 + c;
+            out += idx < 25 ? alphabet[idx] : block[j];
+          }
+        }
+      }
+      return out || null;
+    }
+
+    function bifidDecodeSimple(cipher, period) {
+      const alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+      const clean = String(cipher).toUpperCase().replace(/J/g, "I").replace(/[^A-Z]/g, "");
+      if (clean.length < 4) return null;
+      const grid = {};
+      for (let i = 0; i < 25; i++) grid[alphabet[i]] = [Math.floor(i / 5), i % 5];
+      const posOf = (ch) => grid[ch];
+      const p = period || 5;
+      let out = "";
+      for (let i = 0; i < clean.length; i += p) {
+        const block = clean.slice(i, Math.min(i + p, clean.length));
+        const positions = block.split("").map((ch) => posOf(ch)).filter(Boolean);
+        if (positions.length !== block.length) return null;
+        const rows = positions.map((p) => p[0]);
+        const cols = positions.map((p) => p[1]);
+        const merged = [...rows, ...cols];
+        for (let j = 0; j < block.length; j++) {
+          const r = merged[j];
+          const c = merged[block.length + j];
+          const idx = r * 5 + c;
+          out += idx < 25 ? alphabet[idx] : "?";
+        }
+      }
+      return out || null;
+    }
+
     const HASH_LEN = {
       2: ["CRC-8"],
       4: ["CRC-16", "Fletcher-16"],
       6: ["CRC-24"],
-      8: ["CRC-32", "Fletcher-32"],
-      16: ["CRC-64"],
-      32: ["MD5", "MD4", "MD2", "NT Hash", "LM Hash", "RIPEMD-128"],
+      8: ["CRC-32", "Fletcher-32", "Adler-32"],
+      16: ["CRC-64", "Fletcher-64"],
+      32: ["MD5", "MD4", "MD2", "NT Hash", "LM Hash", "RIPEMD-128", "MurmurHash3"],
       40: ["SHA-1", "RIPEMD-160", "HAS-160", "HASSH"],
       56: ["SHA-224", "SHA-512/224", "SHA-3-224"],
-      64: ["SHA-256", "SHA-512/256", "SHA-3-256", "RIPEMD-256", "GOST"],
+      64: ["SHA-256", "SHA-512/256", "SHA-3-256", "RIPEMD-256", "GOST", "Keccak-256"],
       80: ["RIPEMD-320"],
-      96: ["SHA-384", "SHA-3-384"],
-      128: ["SHA-512", "SHA-3-512", "Whirlpool", "SHAKE-256"]
+      96: ["SHA-384", "SHA-3-384", "Keccak-384"],
+      128: ["SHA-512", "SHA-3-512", "Whirlpool", "SHAKE-256", "Keccak-512"]
     };
 
     const MODERN_FAMILY = "AES, DES, Triple DES, Blowfish, Twofish, RC2, RC4, RC4 Drop, RC6, SM4, ChaCha, Salsa20, XSalsa20, Rabbit, LS47, PRESENT, Ascon, TEA, XTEA, XXTEA, GOST, CipherSaber2, RSA ciphertext, SM2, PRNG";
@@ -3163,6 +3297,109 @@
             score: 9, apply: null
           });
         }
+        if (hexHead.startsWith("504B0304")) {
+          push({
+            id: "zip", title: "ZIP archive", family: "format", confidence: "high",
+            reason: "ZIP magic bytes (PK\\x03\\x04).",
+            score: 2, apply: null
+          });
+        }
+        if (hexHead.startsWith("1F9D") || hexHead.startsWith("1FA0")) {
+          push({
+            id: "compress", title: "LZW / compress", family: "format", confidence: "medium",
+            reason: "Unix compress magic bytes.",
+            score: 8, apply: null
+          });
+        }
+        if (hexHead.startsWith("425A6839")) {
+          push({
+            id: "bzip2", title: "Bzip2", family: "format", confidence: "high",
+            reason: "Bzip2 magic (BZh9).",
+            score: 2, apply: null
+          });
+        }
+        if (hexHead.startsWith("377ABCAF271C")) {
+          push({
+            id: "7z", title: "7-Zip archive", family: "format", confidence: "high",
+            reason: "7z magic bytes.",
+            score: 2, apply: null
+          });
+        }
+        if (hexHead.startsWith("52617221")) {
+          push({
+            id: "rar", title: "RAR archive", family: "format", confidence: "high",
+            reason: "RAR magic (Rar!).",
+            score: 2, apply: null
+          });
+        }
+        if (/^[A-Z0-9]{52}$/.test(u) && /^[A-Z]/.test(u)) {
+          push({
+            id: "base58btc", title: "Base58 Bitcoin address", family: "format", confidence: "medium",
+            reason: "52 Base58 characters starting with a letter — possibly a Bitcoin address.",
+            score: 10, apply: null
+          });
+        }
+        if (/^ld\$\//.test(u) || /^__DATA__/.test(u)) {
+          push({
+            id: "macho", title: "Mach-O binary", family: "format", confidence: "high",
+            reason: "Mach-O segment or __DATA__ section.",
+            score: 3, apply: null
+          });
+        }
+        if (/^<\?xml/.test(u)) {
+          push({
+            id: "xml", title: "XML document", family: "format", confidence: "high",
+            reason: "XML declaration.",
+            score: 2, apply: null
+          });
+        }
+        if (/^\{[\s\S]*"[\w]+"\s*:/.test(u)) {
+          try {
+            const parsed = JSON.parse(u);
+            if (typeof parsed === "object" && parsed !== null) {
+              push({
+                id: "json", title: "JSON object", family: "format", confidence: "high",
+                reason: "Valid JSON with named keys.",
+                score: 3, apply: null
+              });
+            }
+          } catch { /* not json */ }
+        }
+        if (/^PK/.test(u) && u.length > 4) {
+          push({
+            id: "pk", title: "PKCS / Java Keystore", family: "format", confidence: "weak",
+            reason: "PK prefix in printable text — may be a keystore or signed JAR.",
+            score: 12, apply: null
+          });
+        }
+        if (/^\$2[abxy]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(u)) {
+          push({
+            id: "bcrypt-full", title: "Bcrypt hash", family: "hash", confidence: "high",
+            reason: "Full bcrypt hash string with cost and 22-char salt+hash.",
+            score: 1, apply: null
+          });
+        }
+        if (/^[0-9a-f]{64}$/i.test(u)) {
+          push({
+            id: "sha256", title: "SHA-256 hash", family: "hash", confidence: "medium",
+            reason: "64 hex characters — SHA-256 length.",
+            score: 8, apply: null
+          });
+        }
+        if (/^[0-9a-f]{40}$/i.test(u)) {
+          push({
+            id: "sha1-full", title: "SHA-1 hash", family: "hash", confidence: "medium",
+            reason: "40 hex characters — SHA-1 length.",
+            score: 8, apply: null
+          });
+        }
+        if (/^[0-9a-f]{32}$/i.test(u) && /^[0-9]/.test(u)) {
+          push({
+            id: "md5-full", title: "MD5 hash", family: "hash", confidence: "medium",
+            reason: "32 hex characters — MD5 length.",
+            score: 8, apply: null
+          });
+        }
       }
 
       static #tryEncodings(text) {
@@ -3207,6 +3444,14 @@
                 step("base45", "From Base45", b45, { name: "From Base45" }, looksEnglish(b45).ok);
               }
             } catch { /* not base45 */ }
+          }
+          const b62 = decodeBase62(text);
+          if (b62 && looksPrintable(b62) && (looksEnglish(b62).ok || wordHits(b62).hits >= 1)) {
+            step("base62", "From Base62", b62, { name: "From Base62" }, true);
+          }
+          const b92 = decodeBase92(text);
+          if (b92 && looksPrintable(b92) && (looksEnglish(b92).ok || wordHits(b92).hits >= 1)) {
+            step("base92", "From Base92", b92, { name: "From Base92" }, true);
           }
         }
 
@@ -3470,6 +3715,63 @@
           }
         }
 
+        if (depth === 0 && letters.length >= 8 && !english.ok) {
+          for (const period of [5, 6, 7, 8, 9, 10]) {
+            const bifidPlain = bifidDecodeSimple(text, period);
+            if (bifidPlain && bifidPlain !== text) {
+              const bifidEng = looksEnglish(bifidPlain);
+              if (bifidEng.ok && wordHits(bifidPlain).hits >= 2) {
+                wrap({
+                  id: `bifid-${period}`, title: `Bifid Cipher Decode · period ${period}`,
+                  family: "classical", confidence: "high",
+                  reason: `Bifid with period ${period} decodes to English (${bifidEng.why}).`,
+                  decoded: bifidPlain, score: bifidEng.score,
+                  recipe: [{ name: "Bifid Cipher Decode", args: { period } }],
+                  apply: { method: "traditional", mode: "encrypt", text: bifidPlain, key: 0 }
+                });
+                this.#note({ title: "Bifid", param: `period ${period}`, tried: 6, kept: true, preview: previewText(bifidPlain), depth });
+                return;
+              }
+            }
+          }
+        }
+
+        if (depth === 0 && letters.length >= 8 && !english.ok) {
+          const ror13text = caesarShift(text, -13);
+          const ror13eng = looksEnglish(ror13text);
+          if (ror13eng.ok && wordHits(ror13text).hits >= 2 && ror13eng.score < best.score) {
+            wrap({
+              id: "ror13", title: "ROR13 (reverse ROT13)", family: "classical", confidence: "medium",
+              reason: `ROR13 reads as English (${ror13eng.why}).`,
+              decoded: ror13text, score: ror13eng.score,
+              recipe: [{ name: "ROR13" }],
+              apply: { method: "traditional", mode: "decrypt", text, key: 13 }
+            });
+          }
+        }
+
+        if (depth === 0 && letters.length >= 8 && !english.ok) {
+          for (const [name, fn] of [
+            ["A1Z26", decodeA1z26],
+          ]) {
+            const decoded = fn(text);
+            if (decoded && decoded !== text) {
+              const eng = looksEnglish(decoded);
+              if (eng.ok && wordHits(decoded).hits >= 2) {
+                wrap({
+                  id: name.toLowerCase(), title: `${name} Cipher Decode`,
+                  family: "classical", confidence: "high",
+                  reason: `${name} decodes to English (${eng.why}).`,
+                  decoded: decoded, score: eng.score,
+                  recipe: [{ name: `${name} Cipher Decode` }],
+                  apply: { method: "traditional", mode: "encrypt", text: decoded, key: 0 }
+                });
+                return;
+              }
+            }
+          }
+        }
+
         if (letters.length >= 16 && ioc >= 0.055 && !english.ok && !guesses.some((g) => g.family === "classical" && String(g.id).includes("caesar"))) {
           wrap({
             id: "mono", title: "Monoalphabetic substitution", family: "classical", confidence: "medium",
@@ -3544,32 +3846,89 @@
             const score = chiSquared(plain) - words.hits * 42;
             if (score < best.score) best = { score, key: k, plain, words };
           }
-          if (!best.key) continue;
-          const full = xorKey(cand.blob, best.key);
-          const eng = looksEnglish(full);
-          if (eng.ok || (best.words?.hits >= 1 && best.score < 70)) {
-            guesses.push({
-              id: this.#id(path, `xor-${cand.via}`),
-              title: this.#title(path, `XOR · 0x${best.key.toString(16).padStart(2, "0")}`),
-              family: "classical",
-              confidence: eng.ok ? "high" : "medium",
-              reason: "A repeating 8-bit XOR key turns the blob into printable English-like text.",
-              preview: previewText(full),
-              decoded: full,
-              readable: eng.ok,
-              score: best.score,
-              recipe: [...path.map((s) => s.op).filter(Boolean), ...cand.prefix, { name: "XOR", args: { key: String.fromCharCode(best.key) } }],
-              apply: { method: "traditional", mode: "encrypt", text: full, key: 0 }
-            });
-            this.#note({
-              title: "XOR",
-              param: `0x${best.key.toString(16).padStart(2, "0")} · 255 keys sampled`,
-              tried: 255,
-              kept: true,
-              preview: previewText(full),
-              depth
-            });
-            break;
+          if (best.key) {
+            const full = xorKey(cand.blob, best.key);
+            const eng = looksEnglish(full);
+            if (eng.ok || (best.words?.hits >= 1 && best.score < 70)) {
+              guesses.push({
+                id: this.#id(path, `xor-${cand.via}`),
+                title: this.#title(path, `XOR · 0x${best.key.toString(16).padStart(2, "0")}`),
+                family: "classical",
+                confidence: eng.ok ? "high" : "medium",
+                reason: "A repeating 8-bit XOR key turns the blob into printable English-like text.",
+                preview: previewText(full),
+                decoded: full,
+                readable: eng.ok,
+                score: best.score,
+                recipe: [...path.map((s) => s.op).filter(Boolean), ...cand.prefix, { name: "XOR", args: { key: String.fromCharCode(best.key) } }],
+                apply: { method: "traditional", mode: "encrypt", text: full, key: 0 }
+              });
+              this.#note({
+                title: "XOR",
+                param: `0x${best.key.toString(16).padStart(2, "0")} · 255 keys sampled`,
+                tried: 255,
+                kept: true,
+                preview: previewText(full),
+                depth
+              });
+              break;
+            }
+          }
+          if (n >= 16) {
+            for (let len = 2; len <= 4; len++) {
+              if (this._trace) this._trace.stats.xorTried += 256;
+              let best2 = { score: 1e9, key: "", plain: "" };
+              const maxKey = Math.min(256, 1 << (len * 8));
+              for (let k = 1; k < Math.min(maxKey, 5000); k += 1) {
+                let keyBytes = "";
+                let temp = k;
+                for (let b = 0; b < len; b++) {
+                  keyBytes += String.fromCharCode(temp & 0xff);
+                  temp >>= 8;
+                }
+                let ok = 0;
+                let plain = "";
+                for (let i = 0; i < n; i += 1) {
+                  const c = sample.charCodeAt(i) ^ keyBytes.charCodeAt(i % len);
+                  if (c === 9 || c === 10 || c === 13 || (c >= 32 && c < 127)) ok += 1;
+                  plain += String.fromCharCode(c);
+                }
+                if (ok / n < 0.85) continue;
+                const words = wordHits(plain);
+                if (!words.hits) continue;
+                const score = chiSquared(plain) - words.hits * 42;
+                if (score < best2.score) best2 = { score, key: keyBytes, plain, words };
+              }
+              if (best2.key) {
+                const full = chefXorRepeat(cand.blob, best2.key);
+                const eng = looksEnglish(full);
+                if (eng.ok && best2.score < (best.score || 1e9)) {
+                  const keyHex = [...best2.key].map((ch) => ch.charCodeAt(0).toString(16).padStart(2, "0")).join("");
+                  guesses.push({
+                    id: this.#id(path, `xor${len}-${cand.via}`),
+                    title: this.#title(path, `XOR · key [${keyHex}]`),
+                    family: "classical",
+                    confidence: "high",
+                    reason: `A ${len}-byte repeating XOR key decodes to English.`,
+                    preview: previewText(full),
+                    decoded: full,
+                    readable: true,
+                    score: best2.score,
+                    recipe: [...path.map((s) => s.op).filter(Boolean), ...cand.prefix, { name: "XOR", args: { key: best2.key } }],
+                    apply: { method: "traditional", mode: "encrypt", text: full, key: 0 }
+                  });
+                  this.#note({
+                    title: `XOR ${len}-byte`,
+                    param: `[${keyHex}] · sampled`,
+                    tried: 256,
+                    kept: true,
+                    preview: previewText(full),
+                    depth
+                  });
+                  break;
+                }
+              }
+            }
           }
         }
       }
