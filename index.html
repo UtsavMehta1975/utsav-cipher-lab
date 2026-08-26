@@ -44,7 +44,13 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; color-scheme: dark; scroll-padding-top: 3.4rem; }
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+      scroll-padding-top: 3.4rem;
+      overflow-x: clip;
+      max-width: 100%;
+    }
 
     body {
       font-family: var(--font-body);
@@ -52,7 +58,8 @@
       color: var(--ink);
       background: var(--paper);
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow-x: clip;
+      max-width: 100%;
       line-height: 1.65;
       letter-spacing: 0.01em;
       padding-bottom: var(--safe-bottom);
@@ -83,6 +90,7 @@
       position: fixed;
       inset: 0;
       z-index: -2;
+      overflow: hidden;
       background:
         radial-gradient(ellipse 60% 45% at 18% 8%, rgba(90, 110, 98, 0.12), transparent 55%),
         radial-gradient(ellipse 50% 40% at 88% 10%, rgba(160, 140, 100, 0.06), transparent 50%),
@@ -94,12 +102,14 @@
 
     .grid-layer {
       position: fixed;
-      inset: -20%;
+      inset: 0;
       z-index: -1;
+      overflow: hidden;
       background-image:
         linear-gradient(var(--line) 1px, transparent 1px),
         linear-gradient(90deg, var(--line) 1px, transparent 1px);
       background-size: 72px 72px;
+      background-position: center;
       transform: translateX(var(--grid-drift)) rotate(calc(var(--shift) * 0.015));
       opacity: calc(0.22 + var(--glow) * 0.04);
       pointer-events: none;
@@ -138,6 +148,8 @@
       background: rgba(12, 15, 13, 0.92);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--line);
+      max-width: 100%;
+      overflow-x: clip;
     }
 
     .topbar {
@@ -151,6 +163,7 @@
       font-size: 0.72rem;
       letter-spacing: 0.06em;
       color: var(--ink-soft);
+      max-width: 100%;
     }
 
     .topbar .prompt {
@@ -204,6 +217,7 @@
 
     .wrap {
       width: min(1180px, calc(100% - 2rem));
+      max-width: 100%;
       margin: 0 auto;
       padding-left: env(safe-area-inset-left, 0px);
       padding-right: env(safe-area-inset-right, 0px);
@@ -212,16 +226,24 @@
     .hero {
       min-height: auto;
       display: grid;
-      grid-template-columns: minmax(280px, 1.05fr) minmax(280px, 0.95fr);
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
       align-items: start;
       padding: 1.35rem 0 2.2rem;
       position: relative;
       gap: 1.5rem;
+      max-width: 100%;
+      overflow-x: clip;
+    }
+
+    .hero-copy {
+      min-width: 0;
+      max-width: 100%;
     }
 
     .machine {
       position: relative;
       width: min(92vw, 440px);
+      max-width: 100%;
       margin: 0 auto;
       aspect-ratio: 1;
       border-radius: 50%;
@@ -1535,21 +1557,54 @@
       color: var(--sand);
     }
 
-    .chef-section { padding: 0.4rem 0 3rem; }
+    .chef-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      padding: 0.55rem 0 0.85rem;
+      min-height: calc(100dvh - 3.35rem);
+      max-height: calc(100dvh - 3.35rem);
+      box-sizing: border-box;
+    }
+    .chef-section .section-head {
+      flex: 0 0 auto;
+      margin-bottom: 0;
+      align-items: baseline;
+      gap: 0.65rem 1.25rem;
+    }
+    .chef-section .section-head h2 {
+      font-size: clamp(1.35rem, 3vw, 1.75rem);
+      margin: 0;
+    }
+    .chef-section .section-head p {
+      font-size: 0.86rem;
+      max-width: 36rem;
+      margin: 0;
+    }
     .chef-kicker {
       font-family: var(--font-mono);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       letter-spacing: 0.06em;
       color: var(--brass);
-      margin-bottom: 0.25rem;
+      margin: 0;
+    }
+    .chef-toolbar {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem;
     }
     .chef {
+      flex: 1 1 auto;
       display: grid;
-      grid-template-columns: minmax(200px, 0.82fr) minmax(230px, 1fr) minmax(250px, 1.2fr);
-      grid-template-rows: minmax(200px, 1fr) minmax(200px, 1fr);
-      gap: 0.55rem;
-      min-height: min(74vh, 780px);
-      margin-top: 0.85rem;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.15fr);
+      grid-template-rows: 1fr 1fr;
+      gap: 0.5rem;
+      min-height: 0;
+      height: 100%;
+      margin-top: 0;
+      max-width: 100%;
     }
     .chef-pane {
       display: flex;
@@ -1568,11 +1623,12 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.4rem;
-      padding: 0.55rem 0.7rem;
+      gap: 0.35rem;
+      flex: 0 0 auto;
+      padding: 0.45rem 0.55rem;
       border-bottom: 1px solid var(--line);
       font-family: var(--font-mono);
-      font-size: 0.7rem;
+      font-size: 0.66rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--brass);
@@ -1580,49 +1636,75 @@
     .chef-pane > header span { margin-right: auto; }
     .chef-pane > header input[type="search"],
     .chef-pane > header input[type="text"] {
-      width: 11rem;
+      width: min(100%, 12rem);
       max-width: 100%;
-      padding: 0.32rem 0.5rem;
-      font-size: 0.78rem;
+      padding: 0.38rem 0.5rem;
+      font-size: 0.8rem;
       letter-spacing: 0;
       text-transform: none;
+      min-height: 2rem;
     }
     .chef-auto {
       display: inline-flex;
       align-items: center;
       gap: 0.28rem;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       letter-spacing: 0;
       text-transform: none;
       color: var(--ink-soft);
       font-weight: 500;
     }
+    .chef-cat-chips {
+      flex: 0 0 auto;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0.28rem;
+      padding: 0.4rem 0.45rem 0.35rem;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      border-bottom: 1px solid var(--line);
+      background: rgba(8, 11, 9, 0.45);
+    }
+    .chef-cat-chips button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--ink-soft);
+      border-radius: 4px;
+      padding: 0.28rem 0.55rem;
+      font: inherit;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      cursor: pointer;
+      flex: 0 0 auto;
+      min-height: 1.85rem;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .chef-cat-chips button:hover {
+      color: var(--sand);
+      border-color: rgba(185, 171, 140, 0.35);
+    }
+    .chef-cat-chips button.active {
+      background: rgba(185, 171, 140, 0.16);
+      color: var(--white);
+      border-color: rgba(185, 171, 140, 0.45);
+    }
     .chef-ops-list {
       overflow: auto;
-      padding: 0.35rem 0.4rem 0.7rem;
+      padding: 0.3rem 0.35rem 0.55rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.12rem 0.25rem;
+      align-content: start;
+      min-height: 0;
+      flex: 1 1 auto;
     }
-    .chef-cat {
-      margin-bottom: 0.2rem;
-      border: 1px solid transparent;
-      border-radius: 4px;
+    .chef-ops-list .chef-empty {
+      grid-column: 1 / -1;
     }
-    .chef-cat summary {
-      cursor: pointer;
-      list-style: none;
-      padding: 0.38rem 0.45rem;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--sand);
-      display: flex;
-      justify-content: space-between;
-      gap: 0.4rem;
-    }
-    .chef-cat summary::-webkit-details-marker { display: none; }
-    .chef-cat summary em {
-      font-style: normal;
-      color: var(--ink-soft);
-    }
-    .chef-cat summary:hover { color: var(--white); }
     .chef-op {
       display: block;
       width: 100%;
@@ -1633,10 +1715,14 @@
       color: var(--ink-soft);
       font: inherit;
       font-family: var(--font-mono);
-      font-size: 0.74rem;
-      padding: 0.28rem 0.5rem;
+      font-size: 0.68rem;
+      line-height: 1.25;
+      padding: 0.32rem 0.4rem;
       border-radius: 4px;
       cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .chef-op.ready { color: var(--ink); }
     .chef-op.ready:hover {
@@ -1644,39 +1730,44 @@
       color: var(--white);
     }
     .chef-op.ghost {
-      opacity: 0.48;
+      opacity: 0.42;
       cursor: default;
     }
     .chef-recipe-list {
       overflow: auto;
-      padding: 0.55rem;
+      padding: 0.4rem;
       display: grid;
-      gap: 0.45rem;
+      gap: 0.35rem;
       align-content: start;
+      min-height: 0;
+      flex: 1 1 auto;
     }
     .chef-empty {
       color: var(--ink-soft);
-      font-size: 0.88rem;
-      padding: 0.6rem 0.2rem;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.2rem;
     }
     .chef-step {
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 5px;
       background: rgba(16, 20, 18, 0.7);
-      padding: 0.55rem 0.65rem 0.65rem;
+      padding: 0.4rem 0.5rem 0.45rem;
     }
     .chef-step.off { opacity: 0.45; }
     .chef-step-bar {
       display: flex;
       align-items: center;
-      gap: 0.35rem;
-      margin-bottom: 0.4rem;
+      gap: 0.28rem;
+      margin-bottom: 0.25rem;
     }
     .chef-step-bar strong {
       font-family: var(--font-display);
       font-weight: 500;
-      font-size: 0.92rem;
+      font-size: 0.8rem;
       margin-right: auto;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .chef-step-bar button {
       appearance: none;
@@ -1684,25 +1775,26 @@
       background: transparent;
       color: var(--ink-soft);
       border-radius: 4px;
-      width: 1.7rem;
-      height: 1.55rem;
+      width: 1.55rem;
+      height: 1.45rem;
       cursor: pointer;
       font: inherit;
+      flex: 0 0 auto;
     }
     .chef-args {
       display: grid;
-      gap: 0.35rem;
+      gap: 0.28rem;
     }
     .chef-args label {
-      grid-template-columns: 7.2rem 1fr;
+      grid-template-columns: 5.5rem 1fr;
       align-items: center;
-      gap: 0.45rem;
-      font-size: 0.78rem;
+      gap: 0.35rem;
+      font-size: 0.72rem;
     }
     .chef-args input,
     .chef-args select {
-      padding: 0.38rem 0.5rem;
-      font-size: 0.8rem;
+      padding: 0.3rem 0.4rem;
+      font-size: 0.76rem;
     }
     .chef-io textarea {
       flex: 1;
@@ -1712,31 +1804,54 @@
       border-radius: 0;
       background: var(--void);
       font-family: var(--font-mono);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
     }
     .chef-io textarea:focus { box-shadow: none; }
     #chefStatus {
-      font-size: 0.68rem;
+      font-size: 0.64rem;
       letter-spacing: 0;
       text-transform: none;
       color: var(--ink-soft);
-      max-width: 50%;
+      max-width: 45%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     #chefStatus.err { color: #f0a8a0; }
+    .chef-pane.chef-flash {
+      box-shadow: inset 0 0 0 1px rgba(159, 184, 171, 0.45);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .chef-pane.chef-flash {
+        animation: chefFlash 0.55s ease;
+      }
+      @keyframes chefFlash {
+        0% { box-shadow: inset 0 0 0 1px rgba(159, 184, 171, 0.55); }
+        100% { box-shadow: none; }
+      }
+      .machine {
+        transition: box-shadow 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+      }
+      .disk.inner {
+        transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+      }
+    }
     .chef-pane > header .ghost-btn {
-      padding: 0.28rem 0.5rem;
-      font-size: 0.72rem;
+      padding: 0.28rem 0.45rem;
+      font-size: 0.68rem;
       letter-spacing: 0;
       text-transform: none;
+      min-height: 1.85rem;
     }
     .chef-pills {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.65rem;
+      gap: 0.3rem;
+    }
+    .chef-pills .ghost-btn {
+      padding: 0.28rem 0.55rem;
+      font-size: 0.7rem;
+      min-height: 1.9rem;
     }
 
     label[hidden],
@@ -1766,25 +1881,19 @@
         transform: rotate(calc(var(--i) * 13.846deg)) translateY(calc(-1 * min(26vw, 100px))) rotate(calc(var(--i) * -13.846deg - var(--disk-rot)));
       }
       .chef {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-        min-height: 0;
-        gap: 0.65rem;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: minmax(0, 1.15fr) minmax(0, 1fr);
+        gap: 0.45rem;
       }
-      .chef-ops,
-      .chef-recipe,
-      .chef-input,
-      .chef-output {
-        grid-column: auto;
-        grid-row: auto;
-        min-height: 220px;
-      }
-      .chef-ops { min-height: 280px; max-height: 42vh; }
-      .chef-recipe { min-height: 200px; }
-      .chef-io textarea { min-height: 140px; }
+      .chef-ops { grid-column: 1; grid-row: 1; min-height: 0; max-height: none; }
+      .chef-recipe { grid-column: 2; grid-row: 1; min-height: 0; }
+      .chef-input { grid-column: 1; grid-row: 2; min-height: 0; }
+      .chef-output { grid-column: 2; grid-row: 2; min-height: 0; }
+      .chef-ops-list { grid-template-columns: 1fr; }
+      .chef-io textarea { min-height: 0; }
       .chef-pane > header {
-        gap: 0.5rem;
-        padding: 0.65rem 0.75rem;
+        gap: 0.35rem;
+        padding: 0.4rem 0.5rem;
       }
       .chef-pane > header input[type="search"] { width: 100%; flex: 1 1 100%; }
       .chef-args label { grid-template-columns: 1fr; }
@@ -1792,10 +1901,15 @@
       .detect-actions .cta,
       .detect-actions .ghost-btn,
       .mode-toggle button {
-        min-height: 2.6rem;
-        padding: 0.7rem 1rem;
+        min-height: 2.4rem;
+        padding: 0.55rem 0.85rem;
       }
       #chefStatus { max-width: 100%; }
+      .chef-section {
+        min-height: calc(100dvh - 3.6rem);
+        max-height: calc(100dvh - 3.6rem);
+      }
+      .chef-section .section-head p { display: none; }
       .mapping-scroll { margin-inline: -0.25rem; }
       .footer {
         padding-bottom: calc(1.5rem + var(--safe-bottom));
@@ -1831,7 +1945,26 @@
       .detect-box h3 { font-size: 1.1rem; }
       .sample-pills { margin-inline: -0.15rem; }
       .hud { grid-template-columns: repeat(2, 1fr); }
-      .chef-ops { max-height: 38vh; }
+      .chef {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1.2fr) minmax(0, 0.85fr) minmax(0, 0.95fr) minmax(0, 0.95fr);
+      }
+      .chef-ops,
+      .chef-recipe,
+      .chef-input,
+      .chef-output {
+        grid-column: 1;
+        grid-row: auto;
+      }
+      .chef-ops { grid-row: 1; }
+      .chef-recipe { grid-row: 2; }
+      .chef-input { grid-row: 3; }
+      .chef-output { grid-row: 4; }
+      .chef-ops-list { grid-template-columns: 1fr 1fr; }
+      .chef-section {
+        min-height: calc(100dvh - 4.2rem);
+        max-height: calc(100dvh - 4.2rem);
+      }
       .section-head h2 { font-size: 1.55rem; }
     }
 
@@ -1921,32 +2054,32 @@
   </header>
 
   <section class="chef-section wrap" id="kitchen">
-    <p class="chef-kicker">Encrypt · decrypt · encode</p>
+    <p class="chef-kicker">Encrypt · decrypt · encode · one screen</p>
     <div class="section-head">
       <h2>Kitchen</h2>
-      <p>
-        Same four panes as CyberChef: operations, recipe, input, output.
-        Every name in the list is from CyberChef. Bright ones bake here; faded ones stay in the catalog.
-      </p>
+      <p>Ops · recipe · input · output — scroll inside panes, not the page.</p>
     </div>
-    <div class="chef-pills" id="chefSamples">
-      <button type="button" class="ghost-btn" data-sample="rot13">Try ROT13</button>
-      <button type="button" class="ghost-btn" data-sample="b64">Try Base64</button>
-      <button type="button" class="ghost-btn" data-sample="aes">Try AES</button>
-      <button type="button" class="ghost-btn" data-sample="vig">Try Vigenère</button>
+    <div class="chef-toolbar">
+      <div class="chef-pills" id="chefSamples">
+        <button type="button" class="ghost-btn" data-sample="rot13">ROT13</button>
+        <button type="button" class="ghost-btn" data-sample="b64">Base64</button>
+        <button type="button" class="ghost-btn" data-sample="aes">AES</button>
+        <button type="button" class="ghost-btn" data-sample="vig">Vigenère</button>
+      </div>
     </div>
     <div class="chef" aria-label="CyberChef-style workbench">
       <aside class="chef-pane chef-ops">
         <header>
-          <span>Operations</span>
-          <input type="search" id="chefSearch" placeholder="Search algorithms…" autocomplete="off" />
+          <span>Algorithms</span>
+          <input type="search" id="chefSearch" placeholder="Search…" autocomplete="off" />
         </header>
+        <div class="chef-cat-chips" id="chefCatChips" role="tablist" aria-label="Operation categories"></div>
         <div class="chef-ops-list" id="chefOpsList"></div>
       </aside>
       <section class="chef-pane chef-recipe">
         <header>
           <span>Recipe</span>
-          <label class="chef-auto"><input type="checkbox" id="chefAuto" checked /> Auto Bake</label>
+          <label class="chef-auto"><input type="checkbox" id="chefAuto" checked /> Auto</label>
           <button type="button" class="ghost-btn" id="chefMagic">Magic</button>
           <button type="button" class="ghost-btn" id="chefBake">Bake</button>
           <button type="button" class="ghost-btn" id="chefClearRecipe">Clear</button>
@@ -6727,6 +6860,7 @@
       constructor() {
         this.els = {
           search: document.getElementById("chefSearch"),
+          chips: document.getElementById("chefCatChips"),
           list: document.getElementById("chefOpsList"),
           recipe: document.getElementById("chefRecipe"),
           input: document.getElementById("chefInput"),
@@ -6739,6 +6873,8 @@
         this.seq = 0;
         this.gen = 0;
         this.search = "";
+        this.category = "Favourites";
+        this.renderCats();
         this.renderOps();
         this.renderRecipe();
         this.#bind();
@@ -6747,6 +6883,13 @@
       #bind() {
         this.els.search.addEventListener("input", () => {
           this.search = this.els.search.value;
+          this.renderOps();
+        });
+        this.els.chips?.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-cat]");
+          if (!btn) return;
+          this.category = btn.dataset.cat;
+          this.renderCats();
           this.renderOps();
         });
         this.els.list.addEventListener("click", (e) => {
@@ -6798,12 +6941,17 @@
           if (!stepEl) return;
           const step = this.recipe.find((s) => s.id === Number(stepEl.dataset.id));
           if (!step) return;
-          if (e.target.dataset.disable !== undefined) {
+          if (e.target.matches("[data-disable]")) {
             step.enabled = e.target.checked;
-          } else if (e.target.dataset.arg) {
-            step.args[e.target.dataset.arg] = e.target.value;
+            stepEl.classList.toggle("off", !step.enabled);
+            this.maybeBake();
+            return;
           }
-          this.maybeBake();
+          const key = e.target.dataset.arg;
+          if (key) {
+            step.args[key] = e.target.type === "number" ? Number(e.target.value) : e.target.value;
+            this.maybeBake();
+          }
         });
       }
 
@@ -6862,22 +7010,39 @@
         this.maybeBake();
       }
 
+      renderCats() {
+        if (!this.els.chips) return;
+        const cats = [{ name: "All" }, ...CHEF_CATEGORIES];
+        this.els.chips.innerHTML = cats.map((cat) => {
+          const on = cat.name === this.category;
+          return `<button type="button" class="${on ? "active" : ""}" role="tab" aria-selected="${on}" data-cat="${escapeHtml(cat.name)}">${escapeHtml(cat.name)}</button>`;
+        }).join("");
+      }
+
       renderOps() {
         const q = this.search.trim().toLowerCase();
-        this.els.list.innerHTML = CHEF_CATEGORIES.map((cat) => {
-          const ops = cat.ops.filter((n) => !q || n.toLowerCase().includes(q));
-          if (!ops.length) return "";
-          const open = q || cat.name === "Favourites" || cat.name === "Encryption / Encoding";
-          return `<details class="chef-cat"${open ? " open" : ""}>
-            <summary>${escapeHtml(cat.name)} <em>${ops.length}</em></summary>
-            ${ops.map((n) => `<button type="button" class="chef-op ${CHEF_IMPL[n] ? "ready" : "ghost"}" data-op="${escapeHtml(n)}" title="${CHEF_IMPL[n] ? "Add to recipe" : "Listed from CyberChef — not baked here yet"}">${escapeHtml(n)}</button>`).join("")}
-          </details>`;
-        }).join("") || `<p class="chef-empty">No operations match.</p>`;
+        // Search spans the full catalog; chips only filter when the box is empty.
+        const cats = q || this.category === "All"
+          ? CHEF_CATEGORIES
+          : CHEF_CATEGORIES.filter((c) => c.name === this.category);
+        const seen = new Set();
+        const ops = [];
+        for (const cat of cats) {
+          for (const n of cat.ops) {
+            if (seen.has(n)) continue;
+            if (q && !n.toLowerCase().includes(q)) continue;
+            seen.add(n);
+            ops.push(n);
+          }
+        }
+        this.els.list.innerHTML = ops.length
+          ? ops.map((n) => `<button type="button" class="chef-op ${CHEF_IMPL[n] ? "ready" : "ghost"}" data-op="${escapeHtml(n)}" title="${CHEF_IMPL[n] ? "Add to recipe" : "Listed from CyberChef — not baked here yet"}">${escapeHtml(n)}</button>`).join("")
+          : `<p class="chef-empty">No operations match.</p>`;
       }
 
       renderRecipe() {
         if (!this.recipe.length) {
-          this.els.recipe.innerHTML = `<p class="chef-empty">Click an operation on the left to add it. Chain them like CyberChef: output of one step is the input of the next.</p>`;
+          this.els.recipe.innerHTML = `<p class="chef-empty">Add ops → chain → Bake.</p>`;
           return;
         }
         this.els.recipe.innerHTML = this.recipe.map((step) => {
@@ -6950,6 +7115,11 @@
           if (gen !== this.gen) return;
           this.els.output.value = value;
           this.setStatus(used.length ? `${used.length} step${used.length === 1 ? "" : "s"}` : "passthrough");
+          this.els.output.closest(".chef-pane")?.classList.remove("chef-flash");
+          void this.els.output.offsetWidth;
+          this.els.output.closest(".chef-pane")?.classList.add("chef-flash");
+          document.documentElement.style.setProperty("--glow", String(Math.min(4.2, 1 + used.length * 0.35 + Math.min(2, value.length * 0.01))));
+          document.documentElement.style.setProperty("--spark", `${((value.length % 26) - 13) * 0.4}deg`);
         } catch (err) {
           if (gen !== this.gen) return;
           this.els.output.value = "";
