@@ -5733,6 +5733,208 @@
         .join("\n");
     }
 
+
+    function chefCaesarBox(text, width, decode) {
+      const w = Math.max(2, Number(width) || 5);
+      const clean = String(text).replace(/\s+/g, "");
+      if (!clean) return "";
+      if (!decode) {
+        const rows = [];
+        for (let i = 0; i < clean.length; i += w) rows.push(clean.slice(i, i + w).padEnd(w, "X"));
+        let out = "";
+        for (let c = 0; c < w; c += 1) for (const row of rows) out += row[c];
+        return out;
+      }
+      const h = Math.ceil(clean.length / w);
+      const cols = [];
+      let idx = 0;
+      for (let c = 0; c < w; c += 1) { cols.push(clean.slice(idx, idx + h)); idx += h; }
+      let out = "";
+      for (let r = 0; r < h; r += 1) for (let c = 0; c < w; c += 1) if (cols[c][r]) out += cols[c][r];
+      return out.replace(/X+$/, "");
+    }
+    function chefCetaceanEncode(text) {
+      return [...chefBytesOf(text)].map((b) => b.toString(2).padStart(8, "0").replace(/0/g, "e").replace(/1/g, "E")).join(" ");
+    }
+    function chefCetaceanDecode(text) {
+      const groups = String(text).trim().split(/\s+/).filter(Boolean);
+      const bytes = groups.map((g) => {
+        const bits = g.replace(/e/g, "0").replace(/E/g, "1");
+        if (!/^[01]{8}$/.test(bits)) throw new Error("Cetacean groups must be 8 e/E chars");
+        return parseInt(bits, 2);
+      });
+      return chefDec.decode(new Uint8Array(bytes));
+    }
+    const MODHEX = "cbdefghijklnmpqrstuvwxyz";
+    function chefToModhex(text) {
+      return [...chefBytesOf(text)].map((b) => MODHEX[(b >> 4) & 15] + MODHEX[b & 15]).join("");
+    }
+    function chefFromModhex(text) {
+      const s = String(text).toLowerCase().replace(/\s/g, "");
+      if (s.length % 2) throw new Error("Modhex length must be even");
+      const bytes = [];
+      for (let i = 0; i < s.length; i += 2) {
+        const hi = MODHEX.indexOf(s[i]);
+        const lo = MODHEX.indexOf(s[i + 1]);
+        if (hi < 0 || lo < 0) throw new Error("Invalid Modhex");
+        bytes.push((hi << 4) | lo);
+      }
+      return chefDec.decode(new Uint8Array(bytes));
+    }
+    function chefToBcd(text) {
+      return [...String(text)].map((ch) => {
+        if (!/\d/.test(ch)) throw new Error("BCD encode expects digits only");
+        return ch.charCodeAt(0).toString(16);
+      }).join(" ");
+    }
+    function chefFromBcd(text) {
+      return String(text).trim().split(/\s+/).filter(Boolean).map((h) => {
+        const n = parseInt(h, 16);
+        if (!Number.isFinite(n) || n < 0x30 || n > 0x39) throw new Error("BCD decode expects 0x30–0x39");
+        return String.fromCharCode(n);
+      }).join("");
+    }
+    function chefNums(text) { return String(text).trim().split(/[\s,;]+/).filter(Boolean).map(Number); }
+    function chefByteOps(text, fn) { return chefDec.decode(new Uint8Array([...chefBytesOf(text)].map(fn))); }
+    function chefParseLines(text) { return String(text).split(/\r?\n/).filter((l) => l.length); }
+    function chefLevenshtein(a, b) {
+      const s = String(a), t = String(b), m = s.length, n = t.length;
+      const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+      for (let i = 0; i <= m; i += 1) dp[i][0] = i;
+      for (let j = 0; j <= n; j += 1) dp[0][j] = j;
+      for (let i = 1; i <= m; i += 1) for (let j = 1; j <= n; j += 1) {
+        const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+        dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+      }
+      return dp[m][n];
+    }
+    function chefCrc32(text) {
+      let crc = 0xffffffff;
+      for (const b of chefBytesOf(text)) {
+        crc ^= b;
+        for (let i = 0; i < 8; i += 1) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+      }
+      return ((crc ^ 0xffffffff) >>> 0).toString(16).padStart(8, "0");
+    }
+    function chefFletcher(text, bits) {
+      const bytes = [...chefBytesOf(text)];
+      if (bits === 8) {
+        let a = 0, b = 0;
+        for (const x of bytes) { a = (a + x) % 15; b = (b + a) % 15; }
+        return ((b << 4) | a).toString(16).padStart(2, "0");
+      }
+      if (bits === 16) {
+        let a = 0, b = 0;
+        for (const x of bytes) { a = (a + x) % 255; b = (b + a) % 255; }
+        return ((b << 8) | a).toString(16).padStart(4, "0");
+      }
+      if (bits === 32) {
+        let a = 0, b = 0;
+        for (let i = 0; i < bytes.length; i += 2) {
+          const w = bytes[i] | ((bytes[i + 1] || 0) << 8);
+          a = (a + w) % 65535; b = (b + a) % 65535;
+        }
+        return (((b & 0xffff) << 16) | (a & 0xffff)).toString(16).padStart(8, "0");
+      }
+      let a = 0n, b = 0n; const mod = (1n << 32n) - 1n;
+      for (let i = 0; i < bytes.length; i += 4) {
+        let w = 0n;
+        for (let j = 0; j < 4; j += 1) w |= BigInt(bytes[i + j] || 0) << BigInt(8 * j);
+        a = (a + w) % mod; b = (b + a) % mod;
+      }
+      return ((b << 32n) | a).toString(16).padStart(16, "0");
+    }
+    async function chefHkdf(ikm, salt, info, length, hash) {
+      const key = await crypto.subtle.importKey("raw", chefBytesOf(ikm), "HKDF", false, ["deriveBits"]);
+      const bits = await crypto.subtle.deriveBits({ name: "HKDF", hash: hash || "SHA-256", salt: chefBytesOf(salt || ""), info: chefBytesOf(info || "") }, key, (Number(length) || 32) * 8);
+      return chefHex(bits);
+    }
+    async function chefHotp(secret, counter, digits, hash) {
+      const buf = new ArrayBuffer(8);
+      const view = new DataView(buf);
+      const c = BigInt(counter);
+      view.setUint32(0, Number((c >> 32n) & 0xffffffffn));
+      view.setUint32(4, Number(c & 0xffffffffn));
+      const algo = { name: "HMAC", hash: hash || "SHA-1" };
+      const key = await crypto.subtle.importKey("raw", chefBytesOf(secret), algo, false, ["sign"]);
+      const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, buf));
+      const offset = sig[sig.length - 1] & 0xf;
+      const code = ((sig[offset] & 0x7f) << 24) | (sig[offset + 1] << 16) | (sig[offset + 2] << 8) | sig[offset + 3];
+      const d = Number(digits) || 6;
+      return String(code % (10 ** d)).padStart(d, "0");
+    }
+    async function chefTotp(secret, digits, period, hash) {
+      return chefHotp(secret, Math.floor(Date.now() / 1000 / (Number(period) || 30)), digits, hash);
+    }
+    function chefExpandAlphabet(range) {
+      const m = String(range).match(/^(.+)-(.+)$/);
+      if (!m) return String(range);
+      const a = m[1].codePointAt(0), b = m[2].codePointAt(0);
+      if (a == null || b == null || b < a || b - a > 1000) throw new Error("Bad alphabet range");
+      let out = "";
+      for (let i = a; i <= b; i += 1) out += String.fromCodePoint(i);
+      return out;
+    }
+    function chefVarIntEncode(n) {
+      let v = BigInt(String(n).trim());
+      if (v < 0n) throw new Error("VarInt is unsigned here");
+      const bytes = [];
+      while (v >= 0x80n) { bytes.push(Number((v & 0x7fn) | 0x80n)); v >>= 7n; }
+      bytes.push(Number(v));
+      return bytes.map((b) => b.toString(16).padStart(2, "0")).join(" ");
+    }
+    function chefVarIntDecode(text) {
+      const bytes = String(text).trim().split(/[\s,]+/).filter(Boolean).map((h) => parseInt(h, 16));
+      let n = 0n, shift = 0n;
+      for (const b of bytes) {
+        n |= BigInt(b & 0x7f) << shift;
+        if ((b & 0x80) === 0) return n.toString();
+        shift += 7n;
+      }
+      throw new Error("Incomplete VarInt");
+    }
+    function chefCobsEncode(text) {
+      const data = [...chefBytesOf(text), 0];
+      const out = []; let code = 1, codeIdx = 0; out.push(0);
+      for (const b of data) {
+        if (b === 0) { out[codeIdx] = code; codeIdx = out.length; out.push(0); code = 1; }
+        else {
+          out.push(b); code += 1;
+          if (code === 0xff) { out[codeIdx] = code; codeIdx = out.length; out.push(0); code = 1; }
+        }
+      }
+      return out.map((b) => b.toString(16).padStart(2, "0")).join(" ");
+    }
+    function chefCobsDecode(text) {
+      const data = String(text).trim().split(/[\s,]+/).filter(Boolean).map((h) => parseInt(h, 16));
+      const out = []; let i = 0;
+      while (i < data.length) {
+        const code = data[i++];
+        for (let j = 1; j < code; j += 1) out.push(data[i++]);
+        if (code !== 0xff && i < data.length) out.push(0);
+      }
+      if (out.length && out[out.length - 1] === 0) out.pop();
+      return chefDec.decode(new Uint8Array(out));
+    }
+    function chefNetbiosEncode(name) {
+      const padded = String(name).toUpperCase().slice(0, 15).padEnd(16, " ");
+      let out = "";
+      for (const ch of padded) {
+        const c = ch.charCodeAt(0);
+        out += String.fromCharCode(0x41 + ((c >> 4) & 0xf));
+        out += String.fromCharCode(0x41 + (c & 0xf));
+      }
+      return out;
+    }
+    function chefNetbiosDecode(text) {
+      const s = String(text).toUpperCase().replace(/\s/g, "");
+      if (s.length !== 32 || /[^A-P]/.test(s)) throw new Error("NetBIOS encoded name is 32 A–P chars");
+      let out = "";
+      for (let i = 0; i < 32; i += 2) out += String.fromCharCode(((s.charCodeAt(i) - 0x41) << 4) | (s.charCodeAt(i + 1) - 0x41));
+      return out.trimEnd();
+    }
+
+
     const CHEF_IMPL = {
       "To Hex": { args: [chefArg("delim", "Delimiter", "Space", "select", { options: ["Space", "None", "Colon", "Comma"] })], run: (t, a) => chefJoin(chefBytesOf(t), chefDelim(a.delim)) },
       "From Hex": { args: [], run: (t) => chefDec.decode(chefFromHexBytes(t)) },
@@ -6048,6 +6250,253 @@
           const i = ALPHA.indexOf(ch);
           return i >= 0 ? nato[i] : ch;
         }).join(" ");
+      } },
+      "Caesar Box Cipher": { args: [chefArg("width", "Width", 5, "number"), chefArg("mode", "Mode", "Encode", "select", { options: ["Encode", "Decode"] })], run: (t, a) => chefCaesarBox(t, a.width, a.mode === "Decode") },
+      "Cetacean Cipher Encode": { args: [], run: (t) => chefCetaceanEncode(t) },
+      "Cetacean Cipher Decode": { args: [], run: (t) => chefCetaceanDecode(t) },
+      "Show Base64 offsets": { args: [], run: (t) => [...String(t).replace(/\s/g, "")].map((ch, i) => `${String(i).padStart(4, " ")}  ${ch}`).join("\n") },
+      "To Modhex": { args: [], run: (t) => chefToModhex(t) },
+      "From Modhex": { args: [], run: (t) => chefFromModhex(t) },
+      "To BCD": { args: [], run: (t) => chefToBcd(t) },
+      "From BCD": { args: [], run: (t) => chefFromBcd(t) },
+      "PEM to Hex": { args: [], run: (t) => {
+        const b64 = String(t).replace(/-----[^-]+-----/g, "").replace(/\s+/g, "");
+        if (!b64) throw new Error("No PEM body");
+        return [...atob(b64)].map((ch) => ch.charCodeAt(0).toString(16).padStart(2, "0")).join("");
+      } },
+      "Hex to PEM": { args: [chefArg("label", "Label", "CERTIFICATE")], run: (t, a) => {
+        const bytes = [...chefFromHexBytes(t)];
+        let bin = ""; for (const b of bytes) bin += String.fromCharCode(b);
+        const b64 = btoa(bin);
+        const body = b64.match(/.{1,64}/g)?.join("\n") || b64;
+        const label = a.label || "CERTIFICATE";
+        return `-----BEGIN ${label}-----\n${body}\n-----END ${label}-----`;
+      } },
+      "To COBS": { args: [], run: (t) => chefCobsEncode(t) },
+      "From COBS": { args: [], run: (t) => chefCobsDecode(t) },
+      "Caret/M-decode": { args: [], run: (t) => String(t).replace(/\^([A-Z])/g, (_, c) => String.fromCharCode(c.charCodeAt(0) - 64)).replace(/M-(.)/g, (_, c) => String.fromCharCode(c.charCodeAt(0) | 0x80)) },
+      "MIME Decoding": { args: [], run: (t) => String(t).replace(/=\?([^?]+)\?([bqBQ])\?([^?]*)\?=/g, (_, _cs, enc, data) => {
+        if (/^b$/i.test(enc)) return decodeURIComponent(escape(atob(data.replace(/\s/g, ""))));
+        return data.replace(/_/g, " ").replace(/=([0-9A-F]{2})/gi, (__, h) => String.fromCharCode(parseInt(h, 16)));
+      }) },
+      "Alternating Caps": { args: [], run: (t) => [...String(t)].map((ch, i) => (i % 2 ? ch.toLowerCase() : ch.toUpperCase())).join("") },
+      "Remove Diacritics": { args: [], run: (t) => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "") },
+      "Unicode Text Format": { args: [chefArg("form", "Form", "NFC", "select", { options: ["NFC", "NFD", "NFKC", "NFKD"] })], run: (t, a) => String(t).normalize(a.form || "NFC") },
+      "Normalise Unicode": { args: [], run: (t) => String(t).normalize("NFC") },
+      "Escape Smart Characters": { args: [], run: (t) => String(t).replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/\u2013/g, "-").replace(/\u2014/g, "--").replace(/\u2026/g, "...") },
+      "Convert Leet Speak": { args: [], run: (t) => String(t).replace(/4/g, "A").replace(/3/g, "E").replace(/1/g, "I").replace(/0/g, "O").replace(/5/g, "S").replace(/7/g, "T").replace(/@/g, "A").replace(/\$/g, "S") },
+      "HTML To Text": { args: [], run: (t) => { const el = document.createElement("div"); el.innerHTML = String(t); return (el.textContent || "").replace(/\s+/g, " ").trim(); } },
+      "Diff": { args: [chefArg("b", "Compare with", "")], run: (t, a) => {
+        const left = String(t).split("\n"), right = String(a.b || "").split("\n"), n = Math.max(left.length, right.length), out = [];
+        for (let i = 0; i < n; i += 1) {
+          const L = left[i], R = right[i];
+          if (L === R) out.push(`  ${L ?? ""}`);
+          else { if (L != null) out.push(`- ${L}`); if (R != null) out.push(`+ ${R}`); }
+        }
+        return out.join("\n");
+      } },
+      "Wrap": { args: [chefArg("width", "Width", 80, "number")], run: (t, a) => {
+        const w = Math.max(1, Number(a.width) || 80), words = String(t).split(/\s+/), lines = []; let line = "";
+        for (const word of words) {
+          if (!word) continue;
+          if (!line) line = word;
+          else if (line.length + 1 + word.length <= w) line += ` ${word}`;
+          else { lines.push(line); line = word; }
+        }
+        if (line) lines.push(line);
+        return lines.join("\n");
+      } },
+      "Pad lines": { args: [chefArg("width", "Width", 40, "number"), chefArg("ch", "Pad char", " ")], run: (t, a) => {
+        const w = Number(a.width) || 40, ch = (a.ch || " ").slice(0, 1);
+        return String(t).split("\n").map((line) => line.length >= w ? line : line + ch.repeat(w - line.length)).join("\n");
+      } },
+      "Take nth bytes": { args: [chefArg("n", "Every n", 2, "number"), chefArg("start", "Start", 0, "number")], run: (t, a) => {
+        const n = Math.max(1, Number(a.n) || 2), start = Number(a.start) || 0;
+        return chefDec.decode(new Uint8Array([...chefBytesOf(t)].filter((_, i) => i >= start && (i - start) % n === 0)));
+      } },
+      "Drop nth bytes": { args: [chefArg("n", "Every n", 2, "number"), chefArg("start", "Start", 0, "number")], run: (t, a) => {
+        const n = Math.max(1, Number(a.n) || 2), start = Number(a.start) || 0;
+        return chefDec.decode(new Uint8Array([...chefBytesOf(t)].filter((_, i) => i < start || (i - start) % n !== 0)));
+      } },
+      "Expand alphabet range": { args: [], run: (t) => chefExpandAlphabet(t) },
+      "Filter": { args: [chefArg("regex", "Keep matching", ".")], run: (t, a) => (String(t).match(new RegExp(a.regex || ".", "g")) || []).join("") },
+      "Regular expression": { args: [chefArg("regex", "Pattern", "."), chefArg("flags", "Flags", "g")], run: (t, a) => (String(t).match(new RegExp(a.regex || ".", a.flags || "g")) || []).join("\n") },
+      "Hamming Distance": { args: [chefArg("b", "Other string", "")], run: (t, a) => {
+        const x = String(t), y = String(a.b || "");
+        if (x.length !== y.length) throw new Error("Hamming needs equal lengths");
+        let d = 0; for (let i = 0; i < x.length; i += 1) if (x[i] !== y[i]) d += 1;
+        return String(d);
+      } },
+      "Levenshtein Distance": { args: [chefArg("b", "Other string", "")], run: (t, a) => String(chefLevenshtein(t, a.b || "")) },
+      "Offset checker": { args: [chefArg("b", "Other string", "")], run: (t, a) => {
+        const x = [...chefBytesOf(t)], y = [...chefBytesOf(a.b || "")], n = Math.max(x.length, y.length), rows = [];
+        for (let i = 0; i < n; i += 1) {
+          const A = x[i], B = y[i];
+          rows.push(`${String(i).padStart(4, "0")} ${A === B ? " " : "*"} ${A == null ? "--" : A.toString(16).padStart(2, "0")} ${B == null ? "--" : B.toString(16).padStart(2, "0")}`);
+        }
+        return rows.join("\n");
+      } },
+      "Sleep": { args: [chefArg("ms", "Milliseconds", 500, "number")], run: async (t, a) => { await new Promise((r) => setTimeout(r, Math.max(0, Number(a.ms) || 0))); return t; } },
+      "To Case Insensitive Regex": { args: [], run: (t) => [...String(t)].map((ch) => (/[a-z]/i.test(ch) ? `[${ch.toLowerCase()}${ch.toUpperCase()}]` : ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))).join("") },
+      "From Case Insensitive Regex": { args: [], run: (t) => String(t).replace(/\[([a-z])([A-Z])\]/gi, (_, a, b) => (a.toLowerCase() === b.toLowerCase() ? a.toLowerCase() : `[${a}${b}]`)) },
+      "Get All Casings": { args: [], run: (t) => {
+        const s = String(t);
+        if (s.length > 12) throw new Error("Get All Casings capped at 12 letters");
+        const letters = [...s].map((ch, i) => (/[a-z]/i.test(ch) ? i : -1)).filter((i) => i >= 0), out = [];
+        for (let mask = 0; mask < (1 << letters.length); mask += 1) {
+          const chars = [...s];
+          letters.forEach((idx, bit) => { chars[idx] = (mask & (1 << bit)) ? chars[idx].toUpperCase() : chars[idx].toLowerCase(); });
+          out.push(chars.join(""));
+        }
+        return out.join("\n");
+      } },
+      "To Table": { args: [chefArg("delim", "Delimiter", ",")], run: (t, a) => {
+        const delim = a.delim || ",", rows = String(t).split("\n").map((row) => row.split(delim)), widths = [];
+        for (const row of rows) row.forEach((cell, i) => { widths[i] = Math.max(widths[i] || 0, cell.length); });
+        return rows.map((row) => row.map((cell, i) => cell.padEnd(widths[i], " ")).join("  ")).join("\n");
+      } },
+      "OR": { args: [chefArg("key", "Key text", "\xff")], run: (t, a) => { const key = chefBytesOf(a.key || "\xff"); return chefByteOps(t, (b, i) => b | key[i % key.length]); } },
+      "AND": { args: [chefArg("key", "Key text", "\x0f")], run: (t, a) => { const key = chefBytesOf(a.key || "\x0f"); return chefByteOps(t, (b, i) => b & key[i % key.length]); } },
+      "NOT": { args: [], run: (t) => chefByteOps(t, (b) => (~b) & 255) },
+      "ADD": { args: [chefArg("n", "Add", 1, "number")], run: (t, a) => chefByteOps(t, (b) => (b + (Number(a.n) || 0)) & 255) },
+      "SUB": { args: [chefArg("n", "Subtract", 1, "number")], run: (t, a) => chefByteOps(t, (b) => (b - (Number(a.n) || 0)) & 255) },
+      "Sum": { args: [], run: (t) => String(chefNums(t).reduce((a, b) => a + b, 0)) },
+      "Subtract": { args: [], run: (t) => { const n = chefNums(t); if (!n.length) return "0"; return String(n.slice(1).reduce((a, b) => a - b, n[0])); } },
+      "Multiply": { args: [], run: (t) => String(chefNums(t).reduce((a, b) => a * b, 1)) },
+      "Divide": { args: [], run: (t) => { const n = chefNums(t); if (n.length < 2) throw new Error("Need 2+ numbers"); return String(n.slice(1).reduce((a, b) => a / b, n[0])); } },
+      "MOD": { args: [chefArg("m", "Modulus", 256, "number")], run: (t, a) => { const m = Number(a.m) || 256; return chefNums(t).map((n) => ((n % m) + m) % m).join("\n"); } },
+      "Mean": { args: [], run: (t) => { const n = chefNums(t); if (!n.length) throw new Error("No numbers"); return String(n.reduce((a, b) => a + b, 0) / n.length); } },
+      "Median": { args: [], run: (t) => { const n = chefNums(t).slice().sort((a, b) => a - b); if (!n.length) throw new Error("No numbers"); const mid = Math.floor(n.length / 2); return String(n.length % 2 ? n[mid] : (n[mid - 1] + n[mid]) / 2); } },
+      "Standard Deviation": { args: [], run: (t) => { const n = chefNums(t); if (n.length < 2) throw new Error("Need 2+ numbers"); const mean = n.reduce((a, b) => a + b, 0) / n.length; return String(Math.sqrt(n.reduce((a, b) => a + (b - mean) ** 2, 0) / n.length)); } },
+      "Bit shift left": { args: [chefArg("n", "Amount", 1, "number")], run: (t, a) => chefByteOps(t, (b) => (b << (Number(a.n) || 1)) & 255) },
+      "Bit shift right": { args: [chefArg("n", "Amount", 1, "number")], run: (t, a) => chefByteOps(t, (b) => (b >>> (Number(a.n) || 1)) & 255) },
+      "Rotate left": { args: [chefArg("n", "Amount", 1, "number")], run: (t, a) => { const n = (Number(a.n) || 1) & 7; return chefByteOps(t, (b) => ((b << n) | (b >>> (8 - n))) & 255); } },
+      "Rotate right": { args: [chefArg("n", "Amount", 1, "number")], run: (t, a) => { const n = (Number(a.n) || 1) & 7; return chefByteOps(t, (b) => ((b >>> n) | (b << (8 - n))) & 255); } },
+      "Extended GCD": { args: [], run: (t) => {
+        let [a, b] = chefNums(t); if (!Number.isFinite(a) || !Number.isFinite(b)) throw new Error("Need two integers");
+        let x0 = 1, x1 = 0, y0 = 0, y1 = 1; a = Math.trunc(a); b = Math.trunc(b);
+        while (b !== 0) { const q = Math.trunc(a / b); [a, b] = [b, a - q * b]; [x0, x1] = [x1, x0 - q * x1]; [y0, y1] = [y1, y0 - q * y1]; }
+        return `gcd=${a}\nx=${x0}\ny=${y0}`;
+      } },
+      "Modular Inverse": { args: [chefArg("m", "Modulus", 26, "number")], run: (t, a) => {
+        const m = Math.trunc(Number(a.m) || 26), n = Math.trunc(Number(String(t).trim()));
+        let r0 = n, r1 = m, s0 = 1, s1 = 0;
+        while (r1 !== 0) { const q = Math.trunc(r0 / r1); [r0, r1] = [r1, r0 - q * r1]; [s0, s1] = [s1, s0 - q * s1]; }
+        if (Math.abs(r0) !== 1) throw new Error("No inverse");
+        return String(((s0 % m) + m) % m);
+      } },
+      "Modular Exponentiation": { args: [chefArg("exp", "Exponent", 2, "number"), chefArg("mod", "Modulus", 1000, "number")], run: (t, a) => {
+        let base = BigInt(String(t).trim()), exp = BigInt(a.exp || 2); const mod = BigInt(a.mod || 1000); let out = 1n; base %= mod;
+        while (exp > 0n) { if (exp & 1n) out = (out * base) % mod; base = (base * base) % mod; exp >>= 1n; }
+        return out.toString();
+      } },
+      "Set Union": { args: [chefArg("b", "Other set (lines)", "")], run: (t, a) => [...new Set([...chefParseLines(t), ...chefParseLines(a.b || "")])].join("\n") },
+      "Set Intersection": { args: [chefArg("b", "Other set (lines)", "")], run: (t, a) => { const B = new Set(chefParseLines(a.b || "")); return chefParseLines(t).filter((x) => B.has(x)).join("\n"); } },
+      "Set Difference": { args: [chefArg("b", "Other set (lines)", "")], run: (t, a) => { const B = new Set(chefParseLines(a.b || "")); return chefParseLines(t).filter((x) => !B.has(x)).join("\n"); } },
+      "Symmetric Difference": { args: [chefArg("b", "Other set (lines)", "")], run: (t, a) => { const A = new Set(chefParseLines(t)), B = new Set(chefParseLines(a.b || "")); return [...A, ...B].filter((x) => A.has(x) !== B.has(x)).join("\n"); } },
+      "Fletcher-8 Checksum": { args: [], run: (t) => chefFletcher(t, 8) },
+      "Fletcher-16 Checksum": { args: [], run: (t) => chefFletcher(t, 16) },
+      "Fletcher-32 Checksum": { args: [], run: (t) => chefFletcher(t, 32) },
+      "Fletcher-64 Checksum": { args: [], run: (t) => chefFletcher(t, 64) },
+      "CRC Checksum": { args: [], run: (t) => chefCrc32(t) },
+      "XOR Checksum": { args: [], run: (t) => [...chefBytesOf(t)].reduce((a, b) => a ^ b, 0).toString(16).padStart(2, "0") },
+      "Parity Bit": { args: [chefArg("mode", "Mode", "even", "select", { options: ["even", "odd"] })], run: (t, a) => chefByteOps(t, (b) => {
+        let bits = 0; for (let i = 0; i < 7; i += 1) bits += (b >> i) & 1;
+        const wantOdd = a.mode === "odd";
+        return (b & 0x7f) | (((bits % 2 === 1) === wantOdd ? 0 : 1) << 7);
+      }) },
+      "TCP/IP Checksum": { args: [], run: (t) => {
+        const bytes = [...chefBytesOf(t)]; if (bytes.length % 2) bytes.push(0);
+        let sum = 0; for (let i = 0; i < bytes.length; i += 2) sum += (bytes[i] << 8) + bytes[i + 1];
+        while (sum > 0xffff) sum = (sum & 0xffff) + (sum >>> 16);
+        return ((~sum) & 0xffff).toString(16).padStart(4, "0");
+      } },
+      "Windows Filetime to UNIX Timestamp": { args: [], run: (t) => String(Number((BigInt(String(t).trim()) - 116444736000000000n) / 10000000n)) },
+      "UNIX Timestamp to Windows Filetime": { args: [], run: (t) => (BigInt(String(t).trim()) * 10000000n + 116444736000000000n).toString() },
+      "Analyse UUID": { args: [], run: (t) => {
+        const u = String(t).trim().toLowerCase();
+        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(u)) throw new Error("Not a UUID");
+        const variant = parseInt(u[19], 16);
+        return `version=${u[14]}\nvariant=${variant >= 8 && variant <= 11 ? "RFC 4122" : "other"}\nuuid=${u}`;
+      } },
+      "Generate TOTP": { args: [chefArg("secret", "Secret", "secret"), chefArg("digits", "Digits", 6, "number"), chefArg("period", "Period", 30, "number")], run: (t, a) => chefTotp(a.secret || t, a.digits, a.period, "SHA-1") },
+      "Generate HOTP": { args: [chefArg("secret", "Secret", "secret"), chefArg("counter", "Counter", 0, "number"), chefArg("digits", "Digits", 6, "number")], run: (t, a) => chefHotp(a.secret || t, a.counter, a.digits, "SHA-1") },
+      "Derive HKDF key": { args: [chefArg("salt", "Salt", ""), chefArg("info", "Info", ""), chefArg("len", "Bytes", 32, "number"), chefArg("hash", "Hash", "SHA-256", "select", { options: ["SHA-1", "SHA-256", "SHA-384", "SHA-512"] })], run: (t, a) => chefHkdf(t, a.salt, a.info, a.len, a.hash) },
+      "Pseudo-Random Number Generator": { args: [chefArg("bytes", "Bytes", 16, "number")], run: (t, a) => { const n = Math.max(1, Math.min(4096, Number(a.bytes) || 16)); return [...crypto.getRandomValues(new Uint8Array(n))].map((b) => b.toString(16).padStart(2, "0")).join(""); } },
+      "Generate Lorem Ipsum": { args: [chefArg("n", "Words", 40, "number")], run: (t, a) => { const words = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua".split(" "); const n = Math.max(1, Number(a.n) || 40); return Array.from({ length: n }, (_, i) => words[i % words.length]).join(" "); } },
+      "Numberwang": { args: [], run: (t) => `That's Numberwang! (${String(t).trim() || Math.floor(Math.random() * 100)})` },
+      "XKCD Random Number": { args: [], run: () => "4" },
+      "Extract file paths": { args: [], run: (t) => (t.match(/(?:[A-Za-z]:\\|\/)[^\s"'<>|*?]*/g) || []).join("\n") },
+      "Format MAC addresses": { args: [chefArg("sep", "Separator", ":", "select", { options: [":", "-", ""] })], run: (t, a) => {
+        const hex = String(t).replace(/[^0-9a-f]/gi, "");
+        if (hex.length !== 12) throw new Error("Need 12 hex digits");
+        return (hex.match(/.{2}/g) || []).join(a.sep ?? ":");
+      } },
+      "Parse URI": { args: [], run: (t) => { const u = new URL(String(t).trim()); return JSON.stringify({ href: u.href, protocol: u.protocol, host: u.host, pathname: u.pathname, search: u.search, hash: u.hash }, null, 2); } },
+      "Strip HTTP headers": { args: [], run: (t) => { const parts = String(t).split(/\r?\n\r?\n/); return parts.slice(1).join("\n\n") || ""; } },
+      "Dechunk HTTP response": { args: [], run: (t) => {
+        let s = String(t), out = "";
+        while (s.length) {
+          const m = s.match(/^([0-9a-fA-F]+)[^\n]*\r?\n/); if (!m) break;
+          const size = parseInt(m[1], 16); s = s.slice(m[0].length); if (size === 0) break;
+          out += s.slice(0, size); s = s.slice(size).replace(/^\r?\n/, "");
+        }
+        return out || t;
+      } },
+      "Change IP format": { args: [chefArg("fmt", "Format", "dotted", "select", { options: ["dotted", "decimal", "hex"] })], run: (t, a) => {
+        const s = String(t).trim(); let n;
+        if (/^\d+$/.test(s)) n = Number(s);
+        else if (/^0x[0-9a-f]+$/i.test(s)) n = parseInt(s, 16);
+        else {
+          const p = s.split(".").map(Number);
+          if (p.length !== 4 || p.some((x) => x > 255)) throw new Error("Bad IPv4");
+          n = ((p[0] << 24) >>> 0) + (p[1] << 16) + (p[2] << 8) + p[3];
+        }
+        n >>>= 0;
+        if (a.fmt === "decimal") return String(n);
+        if (a.fmt === "hex") return `0x${n.toString(16)}`;
+        return [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join(".");
+      } },
+      "Encode NetBIOS Name": { args: [], run: (t) => chefNetbiosEncode(t) },
+      "Decode NetBIOS Name": { args: [], run: (t) => chefNetbiosDecode(t) },
+      "VarInt Encode": { args: [], run: (t) => chefVarIntEncode(t) },
+      "VarInt Decode": { args: [], run: (t) => chefVarIntDecode(t) },
+      "Parse UNIX file permissions": { args: [], run: (t) => {
+        const s = String(t).trim(); let mode;
+        if (/^[0-7]{3,4}$/.test(s)) mode = parseInt(s.slice(-3), 8);
+        else if (/^[-r][-w][-x][-r][-w][-x][-r][-w][-x]$/.test(s)) {
+          mode = 0; for (let i = 0; i < 9; i += 1) if (s[i] !== "-") mode |= 1 << (8 - i);
+        } else throw new Error("Need chmod octal (644) or rwx string");
+        const bit = (m, ch) => (mode & m ? ch : "-");
+        return `${bit(0o400, "r")}${bit(0o200, "w")}${bit(0o100, "x")}${bit(0o040, "r")}${bit(0o020, "w")}${bit(0o010, "x")}${bit(0o004, "r")}${bit(0o002, "w")}${bit(0o001, "x")} (${(mode & 0o777).toString(8).padStart(3, "0")})`;
+      } },
+      "Parse colour code": { args: [], run: (t) => {
+        let h = String(t).trim().replace(/^#/, "");
+        if (h.length === 3) h = [...h].map((c) => c + c).join("");
+        if (!/^[0-9a-f]{6}$/i.test(h)) throw new Error("Need #RGB or #RRGGBB");
+        return `rgb(${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)})\n#${h.toLowerCase()}`;
+      } },
+      "Parse ObjectID timestamp": { args: [], run: (t) => {
+        const h = String(t).trim().toLowerCase();
+        if (!/^[0-9a-f]{24}$/.test(h)) throw new Error("Need 24-hex Mongo ObjectId");
+        return new Date(parseInt(h.slice(0, 8), 16) * 1000).toISOString();
+      } },
+      "CSV to JSON": { args: [], run: (t) => {
+        const rows = String(t).trim().split(/\r?\n/).map((r) => r.split(","));
+        if (rows.length < 2) return "[]";
+        const [hdr, ...data] = rows;
+        return JSON.stringify(data.map((row) => Object.fromEntries(hdr.map((h, i) => [h.trim(), row[i] ?? ""]))), null, 2);
+      } },
+      "JSON to CSV": { args: [], run: (t) => {
+        const data = JSON.parse(t);
+        if (!Array.isArray(data) || !data.length) return "";
+        const keys = [...new Set(data.flatMap((row) => Object.keys(row)))];
+        return [keys.join(","), ...data.map((row) => keys.map((k) => String(row[k] ?? "").replace(/,/g, ";")).join(","))].join("\n");
+      } },
+      "Convert data units": { args: [chefArg("from", "From", "B", "select", { options: ["B", "KB", "MB", "GB", "KiB", "MiB", "GiB"] }), chefArg("to", "To", "MiB", "select", { options: ["B", "KB", "MB", "GB", "KiB", "MiB", "GiB"] })], run: (t, a) => {
+        const n = Number(String(t).trim()); if (!Number.isFinite(n)) throw new Error("Need a number");
+        const factor = { B: 1, KB: 1e3, MB: 1e6, GB: 1e9, KiB: 1024, MiB: 1024 ** 2, GiB: 1024 ** 3 };
+        return String(n * factor[a.from || "B"] / factor[a.to || "MiB"]);
       } }
     };
 

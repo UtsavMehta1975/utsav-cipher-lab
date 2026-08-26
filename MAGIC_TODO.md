@@ -10,19 +10,18 @@ Track the Cryptography Learning Website Enhancement (Magic Tool + detector). Kit
 - [x] **TASK 4** — Integrate engine with Magic Tool UI
 - [x] **TASK 5** — CyberChef-like Kitchen recipe/ops panel (Magic in Favourites + Recipe **Magic** button)
 - [x] **TASK 6** — Detection → recipe auto-suggest (`Bake in kitchen` + status)
-- [x] **TASK 7** — Test & debug (static checks; browser MCP flaky — open `index.html` / Pages to click-test)
+- [x] **TASK 7** — Test & debug (static / JSC smoke: Caesar, Base64, hex, ROT13; Bifid bake path)
 
 ## Constraints
 
 - [x] Stay one HTML page (no React/Vue)
 - [x] Client-side detection (no server required)
 - [x] Match Guptlekh visual language
-- [x] Kitchen ops stay in-page (no libs) unless listed under TODO “Needs a library”
+- [x] Kitchen ops stay in-page (pure JS + WebCrypto + CompressionStream) unless listed under TODO “Needs a library”
 
 ## Remaining gaps
 
 - Modern ciphers without header/key still cannot be named (by design) — see TODO.md
-- Library/server ops (ChaCha, PGP, Zip, images, HTTP request, …) stay ghosts
+- Library/server ops (ChaCha, PGP, Zip, images, HTTP request, exotic hashes, …) stay ghosts
 - JWT Sign/Verify is HS* only in-page
 - Zlib/Raw Deflate depends on browser `CompressionStream` support
-- Many catalog ghosts remain (arithmetic sets, exotic hashes, multimedia) — prefer small high-value in-page batches over mega-dumps

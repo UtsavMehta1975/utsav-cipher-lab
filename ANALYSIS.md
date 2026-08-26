@@ -42,7 +42,7 @@ Nav jumps: Read · Kitchen · Work · Learn.
 
 ### Kitchen (`#kitchen`)
 
-- Catalog: ~504 CyberChef names; ~125 implemented in `CHEF_IMPL` (bright); rest ghosts
+- Catalog: ~504 CyberChef names; ~228 implemented in `CHEF_IMPL` (bright); rest ghosts (libs/server)
 - `ChefKitchen`: search ops, recipe stack, Auto Bake, Magic op (`CipherDetector` → `loadRecipe`)
 - Detect → Kitchen: `CipherLab.openKitchenRecipe(guess)` fills input + recipe
 
