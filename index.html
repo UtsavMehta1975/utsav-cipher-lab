@@ -1598,7 +1598,7 @@
     .chef {
       flex: 1 1 auto;
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 1.15fr);
+      grid-template-columns: minmax(260px, 1.1fr) minmax(200px, 1fr) minmax(220px, 1.15fr);
       grid-template-rows: 1fr 1fr;
       gap: 0.5rem;
       min-height: 0;
@@ -1615,7 +1615,11 @@
       border-radius: var(--radius);
       overflow: hidden;
     }
-    .chef-ops { grid-column: 1; grid-row: 1 / 3; }
+    .chef-ops {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      min-width: 0;
+    }
     .chef-recipe { grid-column: 2; grid-row: 1 / 3; }
     .chef-input { grid-column: 3; grid-row: 1; }
     .chef-output { grid-column: 3; grid-row: 2; }
@@ -1658,8 +1662,8 @@
       flex: 0 0 auto;
       display: flex;
       flex-wrap: nowrap;
-      gap: 0.28rem;
-      padding: 0.4rem 0.45rem 0.35rem;
+      gap: 0.35rem;
+      padding: 0.45rem 0.5rem 0.4rem;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
@@ -1671,16 +1675,17 @@
       border: 1px solid var(--line);
       background: transparent;
       color: var(--ink-soft);
-      border-radius: 4px;
-      padding: 0.28rem 0.55rem;
+      border-radius: 5px;
+      padding: 0.4rem 0.7rem;
       font: inherit;
       font-family: var(--font-mono);
-      font-size: 0.66rem;
-      letter-spacing: 0.02em;
+      font-size: 0.78rem;
+      letter-spacing: 0.01em;
+      line-height: 1.3;
       white-space: nowrap;
       cursor: pointer;
       flex: 0 0 auto;
-      min-height: 1.85rem;
+      min-height: 2.25rem;
       transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
     .chef-cat-chips button:hover {
@@ -1694,43 +1699,56 @@
     }
     .chef-ops-list {
       overflow: auto;
-      padding: 0.3rem 0.35rem 0.55rem;
+      padding: 0.45rem 0.45rem 0.65rem;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.12rem 0.25rem;
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
       align-content: start;
       min-height: 0;
       flex: 1 1 auto;
+    }
+    @media (min-width: 1400px) {
+      .chef-ops-list {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.25rem 0.45rem;
+      }
     }
     .chef-ops-list .chef-empty {
       grid-column: 1 / -1;
     }
     .chef-op {
-      display: block;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
       width: 100%;
       text-align: left;
       appearance: none;
-      border: 0;
+      border: 1px solid transparent;
       background: transparent;
       color: var(--ink-soft);
       font: inherit;
       font-family: var(--font-mono);
-      font-size: 0.68rem;
-      line-height: 1.25;
-      padding: 0.32rem 0.4rem;
-      border-radius: 4px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      padding: 0.55rem 0.65rem;
+      border-radius: 5px;
       cursor: pointer;
-      white-space: nowrap;
+      white-space: normal;
       overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      min-height: 2.7rem;
+      box-sizing: border-box;
     }
     .chef-op.ready { color: var(--ink); }
     .chef-op.ready:hover {
       background: rgba(185, 171, 140, 0.14);
       color: var(--white);
+      border-color: rgba(185, 171, 140, 0.28);
     }
     .chef-op.ghost {
-      opacity: 0.42;
+      opacity: 0.55;
       cursor: default;
     }
     .chef-recipe-list {
@@ -1960,7 +1978,17 @@
       .chef-recipe { grid-row: 2; }
       .chef-input { grid-row: 3; }
       .chef-output { grid-row: 4; }
-      .chef-ops-list { grid-template-columns: 1fr 1fr; }
+      .chef-ops-list { grid-template-columns: 1fr; }
+      .chef-op {
+        font-size: 0.9rem;
+        min-height: 2.7rem;
+        padding: 0.55rem 0.65rem;
+      }
+      .chef-cat-chips button {
+        font-size: 0.8rem;
+        min-height: 2.4rem;
+        padding: 0.45rem 0.75rem;
+      }
       .chef-section {
         min-height: calc(100dvh - 4.2rem);
         max-height: calc(100dvh - 4.2rem);
@@ -7036,7 +7064,11 @@
           }
         }
         this.els.list.innerHTML = ops.length
-          ? ops.map((n) => `<button type="button" class="chef-op ${CHEF_IMPL[n] ? "ready" : "ghost"}" data-op="${escapeHtml(n)}" title="${CHEF_IMPL[n] ? "Add to recipe" : "Listed from CyberChef — not baked here yet"}">${escapeHtml(n)}</button>`).join("")
+          ? ops.map((n) => {
+              const ready = Boolean(CHEF_IMPL[n]);
+              const tip = ready ? `${n} — add to recipe` : `${n} — listed from CyberChef, not baked here yet`;
+              return `<button type="button" class="chef-op ${ready ? "ready" : "ghost"}" data-op="${escapeHtml(n)}" title="${escapeHtml(tip)}">${escapeHtml(n)}</button>`;
+            }).join("")
           : `<p class="chef-empty">No operations match.</p>`;
       }
 
